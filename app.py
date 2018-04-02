@@ -1,11 +1,7 @@
-from flask import Flask, render_template
+from rides import app 
 
-app = Flask(__name__)
+if __name__ == '__main__':
+    app.run(host=app.config['IP'], port=int(app.config['PORT']))
 
-@app.route('/')
-def hello_world():
-    return render_template('index.html')
+application = app
 
-# Port 8080 for openshift
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
