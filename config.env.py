@@ -1,4 +1,3 @@
-import os
 import secrets
 from os import environ as env
 
@@ -8,7 +7,8 @@ PORT = env.get('PORT', 8080)
 SERVER_NAME = env.get('SERVER_NAME', 'rideboard.csh.rit.edu')
 
 # DB Info
-SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI', 'postgresql://{}'.format(os.path.join(os.getcwd())))
+SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI')
+SQLALCHEMY_TRACK_MODIFICATIONS = 'False'
 
 # Openshift secret
 SECRET_KEY = env.get("SECRET_KEY", default=''.join(secrets.token_hex(16)))

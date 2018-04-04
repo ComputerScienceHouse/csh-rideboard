@@ -9,7 +9,7 @@ class Ride(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     creator = db.Column(db.String(50), nullable=False)
-    cars = db.relationship('Car', backref='ride', lazy=True)
+    cars = db.relationship('Car', backref='rides', lazy=True)
 
     def __init__(self, name, address, start_time, end_time, creator):
         self.name = name
@@ -29,8 +29,8 @@ class Car(db.Model):
     name = db.Column(db.String(50), nullable=False)
     current_capacity = db.Column(db.Integer, nullable=False)
     max_capacity = db.Column(db.Integer, nullable=False)
-    ride_id = db.Column(db.Integer, db.ForeignKey('ride.id'), nullable=False)
-    riders = db.relationship('Rider', backref='car', lazy=True)
+    ride_id = db.Column(db.Integer, db.ForeignKey('rides.id'), nullable=False)
+    riders = db.relationship('Rider', backref='cars', lazy=True)
 
     def __init__(self, username, name, current_capacity, max_capacity, ride_id):
         self.username = username
@@ -48,7 +48,7 @@ class Rider(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(80), nullable=False)
     name = db.Column(db.String(50), nullable=False)
-    car_id = db.Column(db.Integer, db.ForeignKey('car.id'), nullable=False)
+    car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
 
     def __init__(self, username, name, car_id):
         self.username = username
