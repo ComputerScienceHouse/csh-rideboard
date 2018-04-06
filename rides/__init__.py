@@ -1,6 +1,7 @@
 import datetime
 import time
 import os
+from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
@@ -14,9 +15,15 @@ else:
 
 db = SQLAlchemy(app)
 
+auth = OIDCAuthentication(app,
+                          issuer = app.config["OIDC_ISSUER"],
+client_registration_info = app.config["OIDC_CLIENT_CONFIG"])
+
+
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
 from rides.forms import RideForm, CarForm
+
 
 @app.route('/favicon.ico')
 def favicon():
@@ -24,7 +31,8 @@ def favicon():
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
-def hello_world():
+@auth.oidc_auth
+def index():
     # List of objects from the database
     events = Ride.query.all()
     st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
