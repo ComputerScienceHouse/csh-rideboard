@@ -22,4 +22,6 @@ def favicon():
 
 @app.route('/')
 def hello_world():
-    return render_template('index.html')
+    # List of objects from the database
+    events = Ride.query.all()
+    return render_template('index.html', events=events)
