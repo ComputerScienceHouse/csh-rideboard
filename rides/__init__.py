@@ -1,7 +1,5 @@
-import datetime
-import time
 import os
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, redirect,url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -16,7 +14,7 @@ db = SQLAlchemy(app)
 
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
-from rides.forms import RideForm, CarForm
+from rides.forms import RideForm, CarForm, DateForm
 
 @app.route('/favicon.ico')
 def favicon():
@@ -27,10 +25,4 @@ def favicon():
 def hello_world():
     # List of objects from the database
     events = Ride.query.all()
-    st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-    for event in events:
-        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
-        if st > t:
-            events.remove(event)
-
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime)
+    return render_template('index.html', events=events)
