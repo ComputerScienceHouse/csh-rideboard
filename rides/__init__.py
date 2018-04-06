@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -14,6 +14,11 @@ db = SQLAlchemy(app)
 
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static/assets'),
+        'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 def hello_world():
