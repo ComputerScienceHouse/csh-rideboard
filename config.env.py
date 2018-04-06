@@ -16,7 +16,7 @@ SECRET_KEY = env.get("SECRET_KEY", default=''.join(secrets.token_hex(16)))
 # OpenID Connect SSO config
 OIDC_ISSUER = env.get('OIDC_ISSUER', 'https://sso.csh.rit.edu/auth/realms/csh')
 OIDC_CLIENT_CONFIG = {
-    'client_id': env.get('OIDC_CLIENT_ID', 'selections'),
+    'client_id': env.get('OIDC_CLIENT_ID', 'rideboard'),
     'client_secret': env.get('OIDC_CLIENT_SECRET', ''),
     'post_logout_redirect_uris': [env.get('OIDC_LOGOUT_REDIRECT_URI', 'https://rideboard.csh.rit.edu/logout')]
 }

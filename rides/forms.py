@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, SelectField, TextAreaField, TextField, IntegerField, FormField
+from wtforms import SubmitField, DateField, TextAreaField, TextField, IntegerField, FormField,validators
 from wtforms.validators import DataRequired, Length
 
 class DateForm(FlaskForm):
@@ -22,27 +22,27 @@ class DateForm(FlaskForm):
     for i in range(year_num, year_num + 5, 1):
         year_tuple = (i, str(i))
         year_choice.append(year_tuple)
-    month = SelectField(('Month'), choices=month_choice, validators=[DataRequired()])
-    day = SelectField(("Day"), choices=day_choice, validators=[DataRequired()])
-    year = SelectField(("Year"), choices=year_choice, validators=[DataRequired()])
+    #month = SelectField(('Month'), choices=month_choice, validators=[validators.optional()])
+    #day = SelectField(("Day"), choices=day_choice, validators=[validators.optional()])
+    #year = SelectField(("Year"), choices=year_choice, validators=[validators.optional()])
 
 class TimeForm(FlaskForm):
-    time_choice = [(1, ('1')), (2, ('2')), (3, ('3')), (4, ('4')),
-                  (5, ('5')), (6, ('6')), (7, ('7')),
-                  (8, ('8')), (9, ('9')), (10, ('10')), (11, ('11')),
-                  (12, ('12'))]
-    hour = SelectField(("Time"), choices=time_choice, validators=[DataRequired()])
-    minute = SelectField(("Minute"), choices=[(0, '0'), (15, '15'), (30, '30'), (45, '45')],
-                         validators=[DataRequired()])
-    a_p = SelectField(("AM or PM"), choices=[('AM', ('AM')), ('PM', ('PM'))], validators=[DataRequired()])
+    time_choice = []
+    for i in range(0, 25):
+        time_tuple = (i, str(i))
+        time_choice.append(time_tuple)
+    #hour = SelectField(("Time"), choices=time_choice, validators=[validators.optional()])
+    #minute = SelectField(("Minute"), choices=[(0, '0'), (15, '15'), (30, '30'), (45, '45')], validators=[validators.optional()])
 
 class RideForm(FlaskForm):
     name = TextField(('What is the name of the event?'), validators=[DataRequired(), Length(min=1, max=140)])
     address = TextField(('Where is the event?'), validators=[DataRequired()])
-    start_date = FormField(DateForm)
-    start_time = FormField(TimeForm)
-    end_date = FormField(DateForm)
-    end_time = FormField(TimeForm)
+    #start_date = FormField(DateForm)
+    #start_time = FormField(TimeForm)
+    #end_date = FormField(DateForm)
+    #end_time = FormField(TimeForm)
+    start_time = DateField('When Does the event start?', format='%Y-%m-%d')
+    end_time = DateField('When does the event end?', format='%Y-%m-%d')
     submit = SubmitField(('Submit'))
 
 
