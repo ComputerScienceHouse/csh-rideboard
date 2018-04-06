@@ -1,1 +1,4 @@
 rides/__pycache__
+migrations/__pycache__
+.vscode
+rides-venv
