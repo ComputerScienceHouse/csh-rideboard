@@ -31,7 +31,7 @@
                                     <td>{{car.current_capacity}}/{{car.max_capacity}}</td>
                                     <td>{{car.departure_time}}</td>
                                     <td>{{car.return_time}}</td>
-                                    <td  style="word-wrap: break-word;">
+                                    <td>
                                         {% for rider in car.riders %}
                                             {{rider.name}} ({{rider.username}})
                                         {% endfor %}
@@ -48,7 +48,7 @@
                 </div>
             </div>
         </p>
-        <hr class="my-4">
+<hr class="my-4">
     {% endfor %}
     </div>
 </div>
