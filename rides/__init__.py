@@ -15,10 +15,8 @@ else:
 
 db = SQLAlchemy(app)
 
-auth = OIDCAuthentication(app,
-                          issuer = app.config["OIDC_ISSUER"],
-client_registration_info = app.config["OIDC_CLIENT_CONFIG"])
-
+auth= OIDCAuthentication(app, issuer = app.config["OIDC_ISSUER"],
+client_registration_info= app.config["OIDC_CLIENT_CONFIG"])
 
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
@@ -48,4 +46,4 @@ def rideform():
     print(form.start_time.data)
     if form.validate_on_submit():
         return redirect(url_for('index'))
-    return render_template('form.html',form=form)
+    return render_template('form.html', form=form)
