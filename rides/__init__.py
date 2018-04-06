@@ -14,6 +14,7 @@ db = SQLAlchemy(app)
 
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
+from rides.forms import RideForm, CarForm
 
 @app.route('/favicon.ico')
 def favicon():
