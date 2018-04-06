@@ -1,3 +1,5 @@
+import datetime
+import time
 import os
 from flask import Flask, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
@@ -25,4 +27,10 @@ def favicon():
 def hello_world():
     # List of objects from the database
     events = Ride.query.all()
-    return render_template('index.html', events=events)
+    st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+    for event in events:
+        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
+        if st > t:
+            events.remove(event)
+
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime)

@@ -1,9 +1,56 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Go outside, and socialize!</h1>
-
+<div class="bs-component">
+    <div class="jumbotron">
+        <h1 class="display-3">Events</h1>
     {% for event in events %}
-
+        <p class="lead">
+            <div class="card mb-3">
+                <h3 class="card-header"></h3>
+                <div class="card-body">
+                    <h6 class="card-text"> Start: {{event.start_time}}</h6>
+                    <h6 class="card-text"> End: {{event.end_time}}</h6>
+                    <h6 class="card-text"> Address: {{event.address}}</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for car in event.cars %}
+                            <div class="d-flex w-100 justify-content-between">
+                                <h4 class="mb-1">{{car.name}} <button class="btn btn-secondary btn-sm" id="join::{{car.id}}" type="button">Join Ride</button> </h4>
+                            </div>
+                            <table class="table table-hover" style="table-layout: fixed;">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Seats Taken</th>
+                                    <th scope="col">Departure Time</th>
+                                    <th scope="col">Return Time</th>
+                                    <th scope="col">Current Passengers</th>
+                                    <th scope="col">Driver Comments</th>
+                                  </tr>
+                                </thead>
+                                 <tbody>
+                                  <tr class="table-light">
+                                    <td>{{car.current_capacity}}/{{car.max_capacity}}</td>
+                                    <td>{{car.departure_time}}</td>
+                                    <td>{{car.return_time}}</td>
+                                    <td  style="word-wrap: break-word;">
+                                        {% for rider in car.riders %}
+                                            {{rider.name}} ({{rider.username}})
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{car.driver_comment}}</td>
+                                  </tr>
+                                </tbody>
+                            </table>
+                        {% endfor %}
+                    </ul>
+                    <div class="card-footer text-muted">
+                        Hosted By: {{event.creator}}
+                    </div>
+                </div>
+            </div>
+        </p>
+        <hr class="my-4">
     {% endfor %}
-
+    </div>
+</div>
 {% endblock %}
+
