@@ -19,14 +19,14 @@
                                     &nbsp;&nbsp;
                                     <!--TODO: If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
                                     {% if car.riders == [] %}
-                                        <a class="btn btn-primary btn-sm" href="/join/{{car.id}}" id="join2::{{car.id}}" type="button">Join Ride</a>
+                                        <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join2::{{car.id}}" type="button">Join Ride</a>
                                     {% endif %}
                                     {% for person in car.riders %}
                                         {% if person.username == auth_dict["uid"] %}
                                             <a class="btn btn-danger btn-sm" href='/delete/rider/{{car.id}}/{{auth_dict["uid"]}}' id="delete::rider::{{car.id}}" type="button">Leave Ride</a>
                                         {% else %}
                                             {% if car.current_capacity < car.max_capacity %}
-                                                <a class="btn btn-primary btn-sm" href="/join/{{car.id}}" id="join::{{car.id}}" type="button">Join Ride</a>
+                                                <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a>
                                             {% endif %}
                                         {% endif %}
                                     {% endfor %}

@@ -103,16 +103,21 @@ def carform(rideid, auth_dict=None):
     return render_template('carform.html', form=form, auth_dict=auth_dict)
 
 
-@app.route('/join/<string:car_id>', methods=["GET"])
+@app.route('/join/<string:car_id>/<string:user>', methods=["GET"])
 @auth.oidc_auth
 @user_auth
-def join_ride(car_id, auth_dict=None):
+def join_ride(car_id, user, auth_dict=None):
+    # username is currently logged on
     username = auth_dict['uid']
     car = Car.query.filter(Car.id == car_id).first()
-    # if not in any other car, then allowed.
-    if car.current_capacity < car.max_capacity:
-        #TODO Add rider to the car
-        print("OKAY TO JOIN" + username)
+    # attempted username is the the url username given
+    attempted_username = user
+
+    if attempted_username == username:
+        # if not in any other car, then allowed. for loop here, then else would the if following this
+        if car.current_capacity < car.max_capacity:
+            #TODO Add rider to the car
+            print("OKAY TO JOIN" + username)
     return redirect(url_for('index'))
 
 
@@ -150,9 +155,8 @@ def delete_ride(ride_id, auth_dict=None):
 @user_auth
 def leave_ride(car_id, rider_username, auth_dict=None):
     username = auth_dict['uid']
-    car = Car.query.filter(Car.id == car_id).first()
     rider = Rider.query.filter(Rider.username == rider_username, Rider.car_id == car_id).first()
-    if(rider.username == username):
+    if rider.username == username:
         db.session.delete(rider)
         db.session.commit()
     return redirect(url_for('index'))
