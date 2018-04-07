@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="jumbotron">
-    <h1>Add a New Ride</h1>
+    <h1>Add a New Car</h1>
 
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <table class="table table-responsive" style="table-layout: fixed; word-wrap: break-word; overflow-x: auto;">
              <tbody>
               <tr class="table-light">
-                <td class="lead" style="vertical-align: middle;">{{ form.max_capacity.label }}</td>
+                <td class="lead" style="vertical-align: middle;">{{ form.max_capacity.label }}<br>(Driver Excluded)</td>
                 <td class="lead" style="vertical-align: middle;">
                     {{ form.max_capacity(size=32, class="lead") }}
                     {% for error in form.max_capacity.errors %}

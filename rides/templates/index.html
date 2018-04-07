@@ -20,6 +20,9 @@
                                     <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
                                     {% set temp = namespace(foo=0) %}
                                     {% for tem_car in event.cars %}
+                                        {% if tem_car.username == auth_dict["uid"] %}
+                                            {% set temp.foo = 1 %}
+                                        {% endif %}
                                         {% for tem_person in tem_car.riders %}
                                             {% if tem_person.username == auth_dict["uid"] %}
                                                 {% set temp.foo = 1 %}
