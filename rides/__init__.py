@@ -40,14 +40,20 @@ def index(auth_dict=None):
     events = Ride.query.all()
     eastern = pytz.timezone('US/Eastern')
     fmt = '%Y-%m-%d %H:%M:%S'
-    loc_dt = eastern.localize(datetime.datetime(2012, 10, 29, 6, 0, 0))
+    loc_dt = eastern.localize(datetime.datetime.utcnow())
     st = loc_dt.strftime(fmt)
 
     for event in events:
         t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
-        print("ST: " + st + " t:" + t)
         if st > t:
-            events.remove(event)
+            for car in event.cars:
+                for peeps in car.riders:
+                    db.session.delete(peeps)
+                db.session.delete(car)
+            db.session.delete(event)
+            db.session.commit()
+
+    events = Ride.query.all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime, auth_dict=auth_dict)
 
 
