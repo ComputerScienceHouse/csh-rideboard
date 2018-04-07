@@ -56,12 +56,17 @@ def rideform(auth_dict=None):
     if form.validate_on_submit():
         name = form.name.data
         address = form.address.data
-        start_time = datetime.datetime(int(form.start_date.data['year']), int(form.start_date.data['month']),
-        int(form.start_date.data['day']), int(form.start_time.data['hour']), int(form.start_time.data['minute']))
-        end_time = datetime.datetime(int(form.end_date.data['year']), int(form.end_date.data['month']), 
-        int(form.end_date.data['day']), int(form.end_time.data['hour']), int(form.end_time.data['minute']))
+        start_time = datetime.datetime(int(form.start_date.data['year']),
+                                       int(form.start_date.data['month']),
+                                       int(form.start_date.data['day']), int(form.start_time.data['hour']),
+                                       int(form.start_time.data['minute']))
+        end_time = datetime.datetime(int(form.end_date.data['year']),
+                                     int(form.end_date.data['month']),
+                                     int(form.end_date.data['day']),
+                                     int(form.end_time.data['hour']),
+                                     int(form.end_time.data['minute']))
         creator = auth_dict['uid']
-        ride = Ride(name,address, start_time, end_time, creator)
+        ride = Ride(name, address, start_time, end_time, creator)
         db.session.add(ride)
         db.session.commit()
         return redirect(url_for('index'))
@@ -78,10 +83,16 @@ def carform(auth_dict=None):
         name = auth_dict['first']+" "+ auth_dict['last']
         current_capacity = 0
         max_capacity = form.max_capacity.data
-        departure_time = datetime.datetime(int(form.departure_date.data['year']), int(form.departure_date.data['month']),
-        int(form.departure_date.data['day']), int(form.departure_time.data['hour']), int(form.departure_time.data['minute']))
-        return_time = datetime.datetime(int(form.return_date.data['year']), int(form.return_date.data['month']),
-        int(form.return_date.data['day']), int(form.return_time.data['hour']), int(form.return_time.data['minute']))
+        departure_time = datetime.datetime(int(form.departure_date.data['year']),
+                                           int(form.departure_date.data['month']),
+                                           int(form.departure_date.data['day']),
+                                           int(form.departure_time.data['hour']),
+                                           int(form.departure_time.data['minute']))
+        return_time = datetime.datetime(int(form.return_date.data['year']),
+                                        int(form.return_date.data['month']),
+                                        int(form.return_date.data['day']),
+                                        int(form.return_time.data['hour']),
+                                        int(form.return_time.data['minute']))
         driver_comment = form.comments.data
         #TODO: Ride_id is 3??
         ride_id = 3
@@ -100,7 +111,7 @@ def join_ride(car_id, auth_dict=None):
     car = Car.query.filter(Car.id == car_id).first()
     if car.current_capacity < car.max_capacity:
         #TODO Add rider to the car
-        print("OKAY TO JOIN")
+        print("OKAY TO JOIN" + username)
     return redirect(url_for('index'))
 
 
