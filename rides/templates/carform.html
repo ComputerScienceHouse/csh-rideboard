@@ -11,12 +11,26 @@
         {% endfor %}
     </p>
     <p>
+            {{ form.departure_date.label }}<br>
+            {{ form.departure_date(size=32) }}
+            {% for error in form.departure_date.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+    <p>
         {{ form.departure_time.label }}<br>
         {{ form.departure_time(size=32) }}
         {% for error in form.departure_time.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
+    <p>
+            {{ form.return_date.label }}<br>
+            {{ form.return_date(size=32) }}
+            {% for error in form.return_date.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
     <p>
         {{ form.return_time.label }}<br>
         {{ form.return_time(size=32) }}
@@ -32,9 +46,9 @@
             {% endfor %}
         </p>
     <p>
-            {{ form.end_date.label }}<br>
-            {{ form.end_date(size=32, class='datepicker') }}
-            {% for error in form.end_date.errors %}
+            {{ form.return_date.label }}<br>
+            {{ form.return_date(size=32) }}
+            {% for error in form.return_date.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
