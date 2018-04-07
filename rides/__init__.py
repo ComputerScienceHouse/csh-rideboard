@@ -83,7 +83,7 @@ def carform(rideid, auth_dict=None):
         username = auth_dict['uid']
         name = auth_dict['first']+" "+ auth_dict['last']
         current_capacity = 0
-        max_capacity = form.max_capacity.data
+        max_capacity = int(form.max_capacity.data['max_capacity'])
         departure_time = datetime.datetime(int(form.departure_date.data['year']),
                                            int(form.departure_date.data['month']),
                                            int(form.departure_date.data['day']),
