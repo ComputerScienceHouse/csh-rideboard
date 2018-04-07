@@ -30,7 +30,14 @@
             {% for error in form.start_time.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
+    </p>
+    <p>
+            {{ form.end_date.label }}<br>
+            {{ form.end_date(size=32) }}
+            {% for error in form.end_date.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+    </p>
     <p>
         {{ form.end_time.label }}<br>
         {{ form.end_time(size=32) }}
@@ -38,13 +45,6 @@
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
-    <p>
-            {{ form.end_date.label }}<br>
-            {{ form.end_date(size=32, class='datepicker') }}
-            {% for error in form.end_date.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
     <p>{{ form.submit() }}</p>
 </form>
 {% endblock %}

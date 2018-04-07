@@ -44,21 +44,44 @@ def index(auth_dict=None):
 
 @app.route('/rideform', methods=['GET', 'POST'])
 @auth.oidc_auth
-def rideform():
+def rideform(auth_dict=None):
     form = RideForm()
+    print(form.start_date.data)
     print(form.start_time.data)
     if form.validate_on_submit():
+        name = form.name.data
+        address = form.address.data
+        start_time = datetime.datetime(int(form.start_date.data['year']), int(form.start_date.data['month']),
+        int(form.start_date.data['day']), int(form.start_time.data['hour']), int(form.start_time.data['minute']))
+        end_time = datetime.datetime(int(form.end_date.data['year']), int(form.end_date.data['month']), 
+        int(form.end_date.data['day']), int(form.end_time.data['hour']), int(form.end_time.data['minute']))
+        creator = 'agoel'
+        ride = Ride(name,address, start_time, end_time, creator)
+        db.session.add(ride)
+        db.session.commit()
         return redirect(url_for('index'))
-    return render_template('rideform.html', form=form)
+    return render_template('rideform.html', form=form, auth_dict=auth_dict)
 
 @app.route('/carform', methods=['GET', 'POST'])
 @auth.oidc_auth
-def carform():
-    form = RideForm()
-    print(form.start_time.data)
+def carform(auth_dict=None):
+    form = CarForm()
     if form.validate_on_submit():
+        username = 'agoel'
+        name = 'agoel'
+        current_capacity = 0
+        max_capacity = form.max_capacity.data
+        departure_time = datetime.datetime(int(form.departure_date.data['year']), int(form.departure_date.data['month']),
+        int(form.departure_date.data['day']), int(form.departure_time.data['hour']), int(form.departure_time.data['minute']))
+        return_time = datetime.datetime(int(form.return_date.data['year']), int(form.return_date.data['month']),
+        int(form.return_date.data['day']), int(form.return_time.data['hour']), int(form.return_time.data['minute']))
+        driver_comment = form.comments.data
+        ride_id = 3
+        car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, ride_id)
+        db.session.add(car)
+        db.session.commit()
         return redirect(url_for('index'))
-    return render_template('carform.html', form=form)
+    return render_template('carform.html', form=form, auth_dict=auth_dict)
 
 @app.route("/logout")
 @auth.oidc_logout

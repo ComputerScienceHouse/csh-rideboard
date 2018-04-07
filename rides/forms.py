@@ -47,7 +47,9 @@ class RideForm(FlaskForm):
 
 class CarForm(FlaskForm):
     max_capacity = IntegerField(('What is the max number of people in your car?'))
+    departure_date = FormField(DateForm)
     departure_time = FormField(TimeForm)
+    return_date = FormField(DateForm)
     return_time = FormField(TimeForm)
     comments = TextAreaField("Any Comments?")
     submit = SubmitField(('Submit'))
