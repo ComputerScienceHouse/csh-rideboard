@@ -24,10 +24,12 @@ from rides.models import Ride, Rider, Car
 from rides.forms import RideForm, CarForm
 from .utils import user_auth
 
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/assets'),
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 
 @app.route('/')
 @app.route('/home')
@@ -42,6 +44,7 @@ def index(auth_dict=None):
         if st > t:
             events.remove(event)
     return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime, auth_dict=auth_dict)
+
 
 @app.route('/rideform', methods=['GET', 'POST'])
 @auth.oidc_auth
@@ -64,6 +67,7 @@ def rideform(auth_dict=None):
         return redirect(url_for('index'))
     return render_template('rideform.html', form=form, auth_dict=auth_dict)
 
+
 @app.route('/carform', methods=['GET', 'POST'])
 @auth.oidc_auth
 @user_auth
@@ -79,6 +83,7 @@ def carform(auth_dict=None):
         return_time = datetime.datetime(int(form.return_date.data['year']), int(form.return_date.data['month']),
         int(form.return_date.data['day']), int(form.return_time.data['hour']), int(form.return_time.data['minute']))
         driver_comment = form.comments.data
+        #TODO: Ride_id is 3??
         ride_id = 3
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, ride_id)
         db.session.add(car)
@@ -86,26 +91,39 @@ def carform(auth_dict=None):
         return redirect(url_for('index'))
     return render_template('carform.html', form=form, auth_dict=auth_dict)
 
+
 @app.route('/join/<string:car_id>', methods=["GET"])
-def join_ride(car_id):
+@auth.oidc_auth
+@user_auth
+def join_ride(car_id, auth_dict=None):
     #TODO
     # if room then join
-    print('join car:' + car_id)
+    username = auth_dict['uid']
+    print(username + ' wants to join car:' + car_id)
     return redirect(url_for('index'))
+
 
 @app.route('/delete/car/<string:car_id>', methods=["GET"])
-def delete_car(car_id):
+@auth.oidc_auth
+@user_auth
+def delete_car(car_id, auth_dict=None):
     #TODO
     # if owner then delete
-    print('delete car: ' + car_id)
+    username = auth_dict['uid']
+    print(username + ' wants to delete car: ' + car_id)
     return redirect(url_for('index'))
 
+
 @app.route('/delete/ride/<string:ride_id>', methods=["GET"])
-def delete_ride(ride_id):
+@auth.oidc_auth
+@user_auth
+def delete_ride(ride_id, auth_dict=None):
     #TODO
     # if owner then delete
-    print('delete ride: ' + ride_id)
+    username = auth_dict['uid']
+    print(username + ' wants to delete ride: ' + ride_id)
     return redirect(url_for('index'))
+
 
 @app.route("/logout")
 @auth.oidc_logout
