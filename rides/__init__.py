@@ -30,6 +30,7 @@ def favicon():
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
+@app.route('/home')
 @auth.oidc_auth
 @user_auth
 def index(auth_dict=None):
@@ -84,6 +85,27 @@ def carform(auth_dict=None):
         db.session.commit()
         return redirect(url_for('index'))
     return render_template('carform.html', form=form, auth_dict=auth_dict)
+
+@app.route('/join/<string:car_id>', methods=["GET"])
+def join_ride(car_id):
+    #TODO
+    # if room then join
+    print('join car:' + car_id)
+    return redirect(url_for('index'))
+
+@app.route('/delete/car/<string:car_id>', methods=["GET"])
+def delete_car(car_id):
+    #TODO
+    # if owner then delete
+    print('delete car: ' + car_id)
+    return redirect(url_for('index'))
+
+@app.route('/delete/ride/<string:ride_id>', methods=["GET"])
+def delete_ride(ride_id):
+    #TODO
+    # if owner then delete
+    print('delete ride: ' + ride_id)
+    return redirect(url_for('index'))
 
 @app.route("/logout")
 @auth.oidc_logout
