@@ -5,73 +5,65 @@
 
     <form action="" method="post">
         {{ form.hidden_tag() }}
-
-        <div class="row">
-          <div class="col-lg-4">
-            <div class="bs-component">
-              <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.max_capacity.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.max_capacity(size=32, class="lead") }}
-                        {% for error in form.max_capacity.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.departure_date.label }} </h5></div>
-                    <p class="lead">
-                        {{ form.departure_date(size=32, class="lead") }}
-                        {% for error in form.departure_date.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.departure_time.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.departure_time(size=32, class="lead") }}
-                        {% for error in form.departure_time.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.return_date.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.return_date(size=32, class="lead") }}
-                        {% for error in form.return_date.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.return_time.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.return_time(size=32, class="lead") }}
-                        {% for error in form.return_time.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <!--HERE-->
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.comments.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.comments(size=32, class="lead form-control") }}
-                        {% for error in form.comments.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <p>{{ form.submit( class="btn btn-primary btn-sm")}}</p>
-              </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        <table class="table table-responsive" style="table-layout: fixed; word-wrap: break-word; overflow-x: auto;">
+             <tbody>
+              <tr class="table-light">
+                <td class="lead" style="vertical-align: middle;">{{ form.max_capacity.label }}</td>
+                <td class="lead" style="vertical-align: middle;">
+                    {{ form.max_capacity(size=32, class="lead") }}
+                    {% for error in form.max_capacity.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </td>
+              </tr>
+              <tr class="table-light">
+                <td class="lead" style="vertical-align: middle;">{{ form.departure_date.label }}</td>
+                <td class="lead" style="vertical-align: middle;">
+                    {{ form.departure_date(size=32, class="lead") }}
+                    {% for error in form.departure_date.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </td>
+              </tr>
+              <tr class="table-light">
+                <td class="lead" style="vertical-align: middle;">{{ form.departure_time.label }}</td>
+                <td class="lead" style="vertical-align: middle;">
+                    {{ form.departure_time(size=32, class="lead") }}
+                    {% for error in form.departure_time.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </td>
+              </tr>
+              <tr class="table-light">
+                <td class="lead" style="vertical-align: middle;">{{ form.return_date.label }}</td>
+                <td class="lead" style="vertical-align: middle;">
+                    {{ form.return_date(size=32, class="lead") }}
+                    {% for error in form.return_date.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </td>
+              </tr>
+              <tr class="table-light">
+                <td class="lead" style="vertical-align: middle;">{{ form.return_time.label }}</td>
+                <td class="lead" style="vertical-align: middle;">
+                    {{ form.return_time(size=32, class="lead") }}
+                    {% for error in form.return_time.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </td>
+              </tr>
+              <tr class="table-light">
+                <td class="lead" style="vertical-align: middle;">{{ form.comments.label }}</td>
+                <td class="lead" style="vertical-align: middle;">
+                    {{ form.comments(size=32, class="lead form-control") }}
+                    {% for error in form.comments.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </td>
+              </tr>
+            </tbody>
+        </table>
+        <p>{{ form.submit( class="btn btn-primary btn-sm")}}</p>
     </form>
 </div>
 {% endblock %}
