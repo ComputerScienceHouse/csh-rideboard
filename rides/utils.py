@@ -9,11 +9,13 @@ from flask import session
 def user_auth(func):
     @wraps(func)
     def wrapped_function(*args, **kwargs):
-        uuid = str(session["userinfo"].get("sub", ""))
+        last = str(session["userinfo"].get("family_name", ""))
+        first = str(session["userinfo"].get("given_name", ""))
         uid = str(session["userinfo"].get("preferred_username", ""))
 
         auth_dict = {
-            "uuid": uuid,
+            "first": first,
+            "last": last,
             "uid": uid
         }
         kwargs["auth_dict"] = auth_dict
