@@ -17,23 +17,30 @@
                                 <h5 class="mb-1">
                                     {{car.name}} ({{car.username}})
                                     &nbsp;&nbsp;
-                                    <!--TODO: If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
-                                    {% if car.riders == [] %}
-                                        <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join2::{{car.id}}" type="button">Join Ride</a>
+                                    <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
+                                    {% set temp = namespace(foo=0) %}
+                                    {% for tem_car in event.cars %}
+                                        {% for tem_person in tem_car.riders %}
+                                            {% if tem_person.username == auth_dict["uid"] %}
+                                                {% set temp.foo = 1 %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+
+                                    {% if temp.foo == 0 %}
+                                        {% if car.current_capacity < car.max_capacity %}
+                                            <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a>
+                                        {% endif %}
                                     {% endif %}
+
                                     {% for person in car.riders %}
                                         {% if person.username == auth_dict["uid"] %}
                                             <a class="btn btn-danger btn-sm" href='/delete/rider/{{car.id}}/{{auth_dict["uid"]}}' id="delete::rider::{{car.id}}" type="button">Leave Ride</a>
-                                        {% else %}
-                                            {% if car.current_capacity < car.max_capacity %}
-                                                <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a>
-                                            {% endif %}
                                         {% endif %}
                                     {% endfor %}
                                     {% if car.username == auth_dict["uid"] %}
                                         <a class="btn btn-danger btn-sm" href="/delete/car/{{car.id}}" id="delete::car::{{car.id}}" type="button">Delete Ride</a>
                                     {% endif %}
-
                                 </h5>
                             </div>
                             <table class="table table-responsive" style="table-layout: fixed; word-wrap: break-word; overflow-x: auto;">
