@@ -44,6 +44,7 @@ def index(auth_dict=None):
 
 @app.route('/rideform', methods=['GET', 'POST'])
 @auth.oidc_auth
+@user_auth
 def rideform(auth_dict=None):
     form = RideForm()
     print(form.start_date.data)
@@ -55,7 +56,7 @@ def rideform(auth_dict=None):
         int(form.start_date.data['day']), int(form.start_time.data['hour']), int(form.start_time.data['minute']))
         end_time = datetime.datetime(int(form.end_date.data['year']), int(form.end_date.data['month']), 
         int(form.end_date.data['day']), int(form.end_time.data['hour']), int(form.end_time.data['minute']))
-        creator = 'agoel'
+        creator = auth_dict['uid']
         ride = Ride(name,address, start_time, end_time, creator)
         db.session.add(ride)
         db.session.commit()
@@ -64,11 +65,12 @@ def rideform(auth_dict=None):
 
 @app.route('/carform', methods=['GET', 'POST'])
 @auth.oidc_auth
+@user_auth
 def carform(auth_dict=None):
     form = CarForm()
     if form.validate_on_submit():
-        username = 'agoel'
-        name = 'agoel'
+        username = auth_dict['uid']
+        name = auth_dict['first']+" "+ auth_dict['last']
         current_capacity = 0
         max_capacity = form.max_capacity.data
         departure_time = datetime.datetime(int(form.departure_date.data['year']), int(form.departure_date.data['month']),
