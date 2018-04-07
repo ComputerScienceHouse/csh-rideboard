@@ -1,3 +1,7 @@
+####################################
+# File name: models.py             #
+# Author: Fred Rybin               #
+####################################
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, TextField, FormField, SelectField
