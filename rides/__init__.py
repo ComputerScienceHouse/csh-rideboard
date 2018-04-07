@@ -47,6 +47,8 @@ def index(auth_dict=None):
     loc_dt = eastern.localize(datetime.datetime.utcnow())
     st = loc_dt.strftime(fmt)
 
+    print("LOCAL TIME: " + st)
+
     # for event in events:
     #     t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
     #     if st > t:
