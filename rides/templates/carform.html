@@ -8,7 +8,7 @@
         <table class="table table-responsive" style="table-layout: fixed; word-wrap: break-word; overflow-x: auto;">
              <tbody>
               <tr class="table-light">
-                <td class="lead" style="vertical-align: middle;">{{ form.max_capacity.label }}<br>(Driver Excluded)</td>
+                  <td class="lead" style="vertical-align: middle;">{{ form.max_capacity.label }}<br><strong>(Driver Excluded)</strong></td>
                 <td class="lead" style="vertical-align: middle;">
                     {{ form.max_capacity(size=32, class="lead") }}
                     {% for error in form.max_capacity.errors %}
