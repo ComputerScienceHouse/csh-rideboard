@@ -74,10 +74,10 @@ def rideform(auth_dict=None):
     return render_template('rideform.html', form=form, auth_dict=auth_dict)
 
 
-@app.route('/carform', methods=['GET', 'POST'])
+@app.route('/carform/<string:rideid>', methods=['GET', 'POST'])
 @auth.oidc_auth
 @user_auth
-def carform(auth_dict=None):
+def carform(rideid, auth_dict=None):
     form = CarForm()
     if form.validate_on_submit():
         username = auth_dict['uid']
@@ -95,8 +95,7 @@ def carform(auth_dict=None):
                                         int(form.return_time.data['hour']),
                                         int(form.return_time.data['minute']))
         driver_comment = form.comments.data
-        #TODO: Ride_id is 3??
-        ride_id = 3
+        ride_id = rideid
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, ride_id)
         db.session.add(car)
         db.session.commit()
