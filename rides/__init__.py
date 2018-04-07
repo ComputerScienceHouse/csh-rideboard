@@ -109,6 +109,7 @@ def carform(rideid, auth_dict=None):
 def join_ride(car_id, auth_dict=None):
     username = auth_dict['uid']
     car = Car.query.filter(Car.id == car_id).first()
+    # if not in any other car, then allowed.
     if car.current_capacity < car.max_capacity:
         #TODO Add rider to the car
         print("OKAY TO JOIN" + username)
@@ -122,8 +123,10 @@ def delete_car(car_id, auth_dict=None):
     username = auth_dict['uid']
     car = Car.query.filter(Car.id == car_id).first()
     if car.username == username:
-        #TODO: Not taking effect.
-        db.delete(Car.query.filter(Car.id == car_id))
+        for peeps in car.riders:
+            db.session.delete(peeps)
+        db.session.delete(car)
+        db.session.commit()
     return redirect(url_for('index'))
 
 
@@ -134,8 +137,24 @@ def delete_ride(ride_id, auth_dict=None):
     username = auth_dict['uid']
     ride = Ride.query.filter(Ride.id == ride_id).first()
     if ride.creator == username:
-        # TODO Throwing database side error
-        db.delete(Ride.query.filter(Ride.id == ride_id))
+        for car in ride.cars:
+            for peeps in car.riders:
+                db.session.delete(peeps)
+            db.session.delete(car)
+        db.session.delete(ride)
+        db.session.commit()
+    return redirect(url_for('index'))
+
+@app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
+@auth.oidc_auth
+@user_auth
+def leave_ride(car_id, rider_username, auth_dict=None):
+    username = auth_dict['uid']
+    car = Car.query.filter(Car.id == car_id).first()
+    rider = Rider.query.filter(Rider.username == rider_username, Rider.car_id == car_id).first()
+    if(rider.username == username):
+        db.session.delete(rider)
+        db.session.commit()
     return redirect(url_for('index'))
 
 
