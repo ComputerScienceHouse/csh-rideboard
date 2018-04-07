@@ -41,6 +41,7 @@ def index(auth_dict=None):
     st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
     for event in events:
         t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
+        print("ST: " + st + " t:" + t)
         if st > t:
             events.remove(event)
     return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime, auth_dict=auth_dict)
@@ -123,7 +124,7 @@ def delete_car(car_id, auth_dict=None):
     car = Car.query.filter(Car.id == car_id).first()
     if car.username == username:
         #TODO: Not taking effect.
-        Car.query.filter(Car.id == car_id).delete()
+        db.delete(Car.query.filter(Car.id == car_id))
     return redirect(url_for('index'))
 
 
@@ -135,7 +136,7 @@ def delete_ride(ride_id, auth_dict=None):
     ride = Ride.query.filter(Ride.id == ride_id).first()
     if ride.creator == username:
         # TODO Throwing database side error
-        Ride.query.filter(Ride.id == ride_id).delete()
+        db.delete(Ride.query.filter(Ride.id == ride_id))
     return redirect(url_for('index'))
 
 

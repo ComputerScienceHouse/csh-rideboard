@@ -6,7 +6,7 @@
     {% for event in events %}
         <p class="lead">
             <div class="card mb-3">
-                <h3 class="card-header"></h3>
+                <h3 class="card-header">{{event.name}}</h3>
                 <div class="card-body">
                     <h6 class="card-text"> Start: {{event.start_time}}</h6>
                     <h6 class="card-text"> End: {{event.end_time}}</h6>
