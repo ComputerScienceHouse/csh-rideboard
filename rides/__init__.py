@@ -1,3 +1,7 @@
+####################################
+# File name: __init__.py           #
+# Author: Ayush Goel & Fred Rybin  #
+####################################
 import datetime
 import os
 import pytz

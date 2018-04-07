@@ -1,3 +1,7 @@
+####################################
+# File name: models.py             #
+# Author: Fred Rybin               #
+####################################
 from rides import db
 
 class Ride(db.Model):
