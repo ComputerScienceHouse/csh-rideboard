@@ -22,8 +22,9 @@ class DateForm(FlaskForm):
     for i in range(year_num, year_num + 5, 1):
         year_tuple = (str(i), str(i))
         year_choice.append(year_tuple)
-    month = SelectField(('Month'), choices=month_choice, validators=[DataRequired()])
-    day = SelectField(("Day"), choices=day_choice, validators=[DataRequired()])
+    month = SelectField(('Month'), choices=month_choice, validators=[DataRequired()],
+            default=str(datetime.utcnow().month))
+    day = SelectField(("Day"), choices=day_choice, validators=[DataRequired()], default=str(datetime.utcnow().day))
     year = SelectField(("Year"), choices=year_choice, validators=[DataRequired()])
 
 class TimeForm(FlaskForm):

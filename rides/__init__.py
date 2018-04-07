@@ -1,6 +1,6 @@
 import datetime
-import pytz
 import os
+import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
