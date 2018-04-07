@@ -22,7 +22,7 @@ client_registration_info=app.config["OIDC_CLIENT_CONFIG"])
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
 from rides.forms import RideForm, CarForm
-
+from .utils import user_auth
 
 @app.route('/favicon.ico')
 def favicon():
@@ -31,6 +31,7 @@ def favicon():
 
 @app.route('/')
 @auth.oidc_auth
+@user_auth
 def index(auth_dict=None):
     # List of objects from the database
     events = Ride.query.all()

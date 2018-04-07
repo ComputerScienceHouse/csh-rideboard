@@ -2,7 +2,7 @@
 {% block content %}
 <div class="bs-component">
     <div class="jumbotron">
-        <h1 class="display-3">Events</h1>
+        <h1 class="display-3">Events:</h1>
     {% for event in events %}
         <p class="lead">
             <div class="card mb-3">
@@ -14,7 +14,17 @@
                     <ul class="list-group list-group-flush">
                         {% for car in event.cars %}
                             <div class="d-flex w-100 justify-content-between">
-                                <h4 class="mb-1">{{car.name}} <button class="btn btn-secondary btn-sm" id="join::{{car.id}}" type="button">Join Ride</button> </h4>
+                                <h4 class="mb-1">
+                                    {{car.name}} ({{car.username}})
+                                    &nbsp;&nbsp;
+                                    {% if car.current_capacity < car.max_capacity %}
+                                        <button class="btn btn-secondary btn-sm" id="join::{{car.id}}" type="button">Join Ride</button>
+                                    {% endif %}
+
+                                    {% if car.username == auth_dict["uid"] %}
+                                        <button class="btn btn-danger btn-sm" id="delete::car::{{car.id}}" type="button">Delete Ride</button>
+                                    {% endif %}
+                                </h4>
                             </div>
                             <table class="table table-hover" style="table-layout: fixed;">
                                 <thead>
@@ -44,6 +54,10 @@
                     </ul>
                     <div class="card-footer text-muted">
                         Hosted By: {{event.creator}}
+                        &nbsp;&nbsp;
+                        {% if event.creator == auth_dict["uid"] %}
+                            <button class="btn btn-danger btn-sm" id="delete::ride::{{event.id}}" type="button">Delete Event</button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
