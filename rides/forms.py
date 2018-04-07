@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, TextAreaField, TextField, IntegerField, FormField, SelectField
+from wtforms import SubmitField, TextAreaField, TextField, FormField, SelectField
 from wtforms.validators import DataRequired, Length
 
 class DateForm(FlaskForm):
@@ -27,12 +27,12 @@ class DateForm(FlaskForm):
     year = SelectField(("Year"), choices=year_choice, validators=[DataRequired()])
 
 class TimeForm(FlaskForm):
-    time_choice = []
-    for i in range(0, 25):
+    time_choice = [('0', '00')]
+    for i in range(1, 23):
         time_tuple = (str(i), str(i))
         time_choice.append(time_tuple)
     hour = SelectField(("Time"), choices=time_choice, validators=[DataRequired()])
-    minute = SelectField(("Minute"), choices=[('0', '0'), ('15', '15'), ('30', '30'),
+    minute = SelectField(("Minute"), choices=[('0', '00'), ('15', '15'), ('30', '30'),
     ('45', '45')], validators=[DataRequired()])
 
 class RideForm(FlaskForm):
@@ -44,9 +44,16 @@ class RideForm(FlaskForm):
     end_time = FormField(TimeForm)
     submit = SubmitField(('Submit'))
 
+class SizeForm(FlaskForm):
+    capacity_choice = []
+    for i in range(1, 11):
+        capacity_tuple = (str(i), str(i))
+        capacity_choice.append(capacity_tuple)
+    max_capacity = SelectField(("What is the max number of people in your car?"),
+                    choices=capacity_choice, validators=[DataRequired()])
 
 class CarForm(FlaskForm):
-    max_capacity = IntegerField(('What is the max number of people in your car?'))
+    max_capacity = FormField(SizeForm)
     departure_date = FormField(DateForm)
     departure_time = FormField(TimeForm)
     return_date = FormField(DateForm)
