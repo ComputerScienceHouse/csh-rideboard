@@ -32,7 +32,7 @@ def favicon():
 
 @app.route('/')
 @auth.oidc_auth
-def index():
+def index(auth_dict=None):
     # List of objects from the database
     events = Ride.query.all()
     st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -40,12 +40,18 @@ def index():
         t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
         if st > t:
             events.remove(event)
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime)
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime, auth_dict=auth_dict)
 
 @app.route('/rideform', methods=['GET', 'POST'])
+@auth.oidc_auth
 def rideform():
     form = RideForm()
     print(form.start_time.data)
     if form.validate_on_submit():
         return redirect(url_for('index'))
     return render_template('form.html',form=form)
+
+@app.route("/logout")
+@auth.oidc_logout
+def _logout():
+    return redirect("/", 302)
