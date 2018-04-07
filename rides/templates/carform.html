@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Add a New Ride</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+    <p>
+        {{ form.max_capacity.label }}<br>
+        {{ form.max_capacity(size=32) }}
+        {% for error in form.max_capacity.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.departure_time.label }}<br>
+        {{ form.departure_time(size=32) }}
+        {% for error in form.departure_time.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.return_time.label }}<br>
+        {{ form.return_time(size=32) }}
+        {% for error in form.return_time.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+            {{ form.comments.label }}<br>
+            {{ form.comments(size=32) }}
+            {% for error in form.comments.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+    <p>
+            {{ form.end_date.label }}<br>
+            {{ form.end_date(size=32, class='datepicker') }}
+            {% for error in form.end_date.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}

@@ -32,7 +32,8 @@ class TimeForm(FlaskForm):
         time_tuple = (str(i), str(i))
         time_choice.append(time_tuple)
     hour = SelectField(("Time"), choices=time_choice, validators=[DataRequired()])
-    minute = SelectField(("Minute"), choices=[('0', '0'), ('15', '15'), ('30', '30'), ('45', '45')], validators=[DataRequired()])
+    minute = SelectField(("Minute"), choices=[('0', '0'), ('15', '15'), ('30', '30'),
+    ('45', '45')], validators=[DataRequired()])
 
 class RideForm(FlaskForm):
     name = TextField(('What is the name of the event?'), validators=[DataRequired(), Length(min=1, max=140)])

@@ -15,9 +15,8 @@ else:
 
 db = SQLAlchemy(app)
 
-auth = OIDCAuthentication(app,
-                          issuer = app.config["OIDC_ISSUER"],
-client_registration_info = app.config["OIDC_CLIENT_CONFIG"])
+auth = OIDCAuthentication(app, issuer=app.config["OIDC_ISSUER"],
+client_registration_info=app.config["OIDC_CLIENT_CONFIG"])
 
 
 # pylint: disable=wrong-import-position
@@ -49,7 +48,16 @@ def rideform():
     print(form.start_time.data)
     if form.validate_on_submit():
         return redirect(url_for('index'))
-    return render_template('form.html',form=form)
+    return render_template('rideform.html', form=form)
+
+@app.route('/carform', methods=['GET', 'POST'])
+@auth.oidc_auth
+def carform():
+    form = RideForm()
+    print(form.start_time.data)
+    if form.validate_on_submit():
+        return redirect(url_for('index'))
+    return render_template('carform.html', form=form)
 
 @app.route("/logout")
 @auth.oidc_logout
