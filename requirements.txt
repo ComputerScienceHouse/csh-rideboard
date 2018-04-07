@@ -8,3 +8,4 @@ psycopg2==2.7.4
 pylint==1.8.3
 SQLAlchemy==1.2.6
 Flask-pyoidc==1.2.0
+pytz==2018.3

@@ -1,5 +1,5 @@
 import datetime
-import time
+import pytz
 import os
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask import Flask, render_template, send_from_directory, redirect, url_for
@@ -38,7 +38,11 @@ def favicon():
 def index(auth_dict=None):
     # List of objects from the database
     events = Ride.query.all()
-    st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+    eastern = pytz.timezone('US/Eastern')
+    fmt = '%Y-%m-%d %H:%M:%S'
+    loc_dt = eastern.localize(datetime.datetime(2012, 10, 29, 6, 0, 0))
+    st = loc_dt.strftime(fmt)
+
     for event in events:
         t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
         print("ST: " + st + " t:" + t)
