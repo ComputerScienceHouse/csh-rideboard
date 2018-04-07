@@ -27,18 +27,19 @@ class DateForm(FlaskForm):
         year_tuple = (str(i), str(i))
         year_choice.append(year_tuple)
     month = SelectField(('Month'), choices=month_choice, validators=[DataRequired()],
-            default=str(datetime.utcnow().month))
-    day = SelectField(("Day"), choices=day_choice, validators=[DataRequired()], default=str(datetime.utcnow().day))
-    year = SelectField(("Year"), choices=year_choice, validators=[DataRequired()])
+            default=str(datetime.utcnow().month), render_kw={"class":"form-control"})
+    day = SelectField(("Day"), choices=day_choice, validators=[DataRequired()],
+        default=str(datetime.utcnow().day), render_kw={"class":"form-control"})
+    year = SelectField(("Year"), choices=year_choice, validators=[DataRequired()], render_kw={"class":"form-control"})
 
 class TimeForm(FlaskForm):
     time_choice = [('0', '00')]
     for i in range(1, 23):
         time_tuple = (str(i), str(i))
         time_choice.append(time_tuple)
-    hour = SelectField(("Time"), choices=time_choice, validators=[DataRequired()])
+    hour = SelectField(("Time"), choices=time_choice, validators=[DataRequired()], render_kw={"class":"form-control"})
     minute = SelectField(("Minute"), choices=[('0', '00'), ('15', '15'), ('30', '30'),
-    ('45', '45')], validators=[DataRequired()])
+    ('45', '45')], validators=[DataRequired()], render_kw={"class":"form-control"})
 
 class RideForm(FlaskForm):
     name = TextField(('What is the name of the event?'), validators=[DataRequired(), Length(min=1, max=140)])
@@ -54,7 +55,7 @@ class SizeForm(FlaskForm):
     for i in range(1, 11):
         capacity_tuple = (str(i), str(i))
         capacity_choice.append(capacity_tuple)
-    max_capacity = SelectField(("What is the max number of people in your car?"),
+    max_capacity = SelectField((""),
                     choices=capacity_choice, validators=[DataRequired()])
 
 class CarForm(FlaskForm):
