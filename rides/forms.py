@@ -28,10 +28,11 @@ class DateForm(FlaskForm):
         year_tuple = (str(i), str(i))
         year_choice.append(year_tuple)
     month = SelectField(('Month'), choices=month_choice, validators=[DataRequired()],
-            default=str(datetime.utcnow().month), render_kw={"class":"form-control"})
+        default=str(datetime.utcnow().month), render_kw={"class":"form-control"})
     day = SelectField(("Day"), choices=day_choice, validators=[DataRequired()],
         default=str(datetime.utcnow().day), render_kw={"class":"form-control"})
-    year = SelectField(("Year"), choices=year_choice, validators=[DataRequired()], render_kw={"class":"form-control"})
+    year = SelectField(("Year"), choices=year_choice, validators=[DataRequired()],
+        render_kw={"class":"form-control"})
 
 class TimeForm(FlaskForm):
     eastern = pytz.timezone('US/Eastern')
@@ -40,7 +41,8 @@ class TimeForm(FlaskForm):
     for i in range(1, 23):
         time_tuple = (str(i), str(i))
         time_choice.append(time_tuple)
-    hour = SelectField(("Hour"), choices=time_choice, validators=[DataRequired()], default=str(loc_dt.hour), render_kw={"class":"form-control"})
+    hour = SelectField(("Hour"), choices=time_choice, validators=[DataRequired()],
+        default=str(loc_dt.hour), render_kw={"class":"form-control"})
     minute = SelectField(("Minute"), choices=[('0', '00'), ('15', '15'), ('30', '30'),
     ('45', '45')], validators=[DataRequired()], render_kw={"class":"form-control"})
 
