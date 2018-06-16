@@ -6,13 +6,13 @@
     <div class="container">
       <form action="" method="post">
         <fieldset>
-          {{ form.hidden_tag() }}
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
           <div class="form-group">
-            <h5 class="mb-1">{{ form.name.label }}</h5> {{ form.name(class="form-control") }} {% for error in form.name.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+            <h5 class="mb-1">{{ form.name.label }}</h5> {{ form.name(class="form-control") }} <div class="alert alert-danger"> {% for error in form.name.errors %} {{ error }}{% endfor %} </div>
           </div>
           <div class="form-group">
-            <h5 class="mb-1">{{ form.address.label }}</h5> {{ form.address(class="form-control") }} {% for error in form.address.errors %}
-            <span style="color: red;">[{{ error }}]</span> {% endfor %}
+            <h5 class="mb-1">{{ form.address.label }}</h5> {{ form.address(class="form-control") }} <div class="alert alert-danger"> {% for error in form.address.errors %}
+            {{ error }}{% endfor %} </div>
           </div>
           <fieldset class="form-group">
             <div class="row">
@@ -22,7 +22,7 @@
                   <div class="form-group row"> {{ form.start_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.month }}</div></div>
                   <div class="form-group row"> {{ form.start_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.day }}</div></div>
                   <div class="form-group row"> {{ form.start_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.year }}</div></div>
-                  {% for error in form.start_date.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                  <div class="alert alert-danger"> {% for error in form.start_date.errors %} {{ error }}{% endfor %} </div>
                 </div>
               </div>
               <div class="col">
@@ -32,7 +32,7 @@
                   <div class="form-group row"> {{ form.start_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_time.minute }}</div></div>
                   <!-- I don't know if the following looks better or not. TODO: Get opinion -->
                   <!-- <div class="form-group row"> <div class="col">{{ form.start_time.hour }}</div> : <div class="col">{{ form.start_time.minute }}</div></div> -->
-                  {% for error in form.start_time.errors %}<span style="color: red;">[{{ error }}]</span> {% endfor %}
+                  <div class="alert alert-danger"> {% for error in form.start_time.errors %}{{ error }}{% endfor %} </div>
                 </div>
               </div>
             </div>
@@ -45,7 +45,7 @@
                   <div class="form-group row"> {{ form.end_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.month }}</div></div>
                   <div class="form-group row"> {{ form.end_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.day }}</div></div>
                   <div class="form-group row"> {{ form.end_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.year }}</div></div>
-                  {% for error in form.end_date.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                  <div class="alert alert-danger"> {% for error in form.end_date.errors %} {{ error }}{% endfor %} </div>
                 </div>
               </div>
               <div class="col">
@@ -53,7 +53,7 @@
                   <h5 class="mb-1">{{ form.end_time.label }}</h5>
                   <div class="form-group row"> {{ form.end_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_time.hour }}</div></div>
                   <div class="form-group row"> {{ form.end_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_time.minute }}</div></div>
-                  {% for error in form.end_time.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                  <div class="alert alert-danger"> {% for error in form.end_time.errors %} {{ error }}{% endfor %} </div>
                 </div>
               </div>
           </fieldset>

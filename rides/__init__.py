@@ -8,8 +8,10 @@ import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CsrfProtect
 
 app = Flask(__name__)
+csrf = CsrfProtect(app)
 
 # Get app config from absolute file path
 if os.path.exists(os.path.join(os.getcwd(), "config.py")):
