@@ -4,53 +4,52 @@
 <title>Ride Board</title>
 
 <head>
-    {% block head %}
-        <meta charset="UTF-8">
-        <meta name="description" content="Ride Board for CSH">
-        <meta name="author" content="Ayush Goel & Fred Rybin">
-        <meta name="viewport" content="width=device-width", initial-scale="1">
-        <link rel="stylesheet" href="https://themeswitcher.csh.rit.edu/api/get" media="screen">
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-            <a class="navbar-brand abs" href="/">Ride Board&trade;</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                  {% if auth_dict != None %}
-                    <li class="nav-item navbar-user dropdown">
-                      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user01">
-                      <img src='https://profiles.csh.rit.edu/image/{{ auth_dict["uid"] }}'>
-                      {{ auth_dict["first"] }} {{ auth_dict["last"] }}
-                      <span class="caret"></span>
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="user01">
-                          <!-- <div class="dropdown-divider"></div> -->
-                          <a class="dropdown-item" href="/logout">Logout</a>
-                      </div>
-                    </li>
-                  {% endif %}
-                </ul>
-            </div>
-        </nav>
-        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
-    {% endblock %}
+  {% block head %}
+  <meta charset="UTF-8">
+  <meta name="description" content="Ride Board for CSH">
+  <meta name="author" content="Ayush Goel & Fred Rybin">
+  <meta name="viewport" content="width=device-width" , initial-scale="1">
+  <link rel="stylesheet" href="https://themeswitcher.csh.rit.edu/api/get" media="screen">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+  {% endblock %}
 </head>
 
-<body>
-    <div id="content">
-        {% block content %}
-        <!--Template extended content here.-->
-        {% endblock %}
+<body class="" style="">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand abs" href="/">Ride Board&trade;</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          {% if auth_dict != None %}
+          <li class="nav-item navbar-user dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user01">
+              <img src='https://profiles.csh.rit.edu/image/{{ auth_dict["uid"] }}'> {{ auth_dict["first"] }} {{ auth_dict["last"] }}
+              <span class="caret"></span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="user01">
+              <!-- <div class="dropdown-divider"></div> -->
+              <a class="dropdown-item" href="/logout">Logout</a>
+            </div>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
     </div>
-
-</body>
-
-<footer class="py-10 bg-light">
+  </nav>
+  <div id="content" class="container">
+    {% block content %}
+    <!--Template extended content here.-->
+    {% endblock %}
+  </div>
+  <footer class="py-10 bg-light">
     <p class="m-0 text-center text-black"><a class="text-black" href="https://github.com/ag-ayush/rides">RideBoard&trade;</a></p>
-</footer>
+  </footer>
+</body>
 
 </html>

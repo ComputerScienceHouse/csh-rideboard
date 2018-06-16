@@ -1,77 +1,67 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends "layout.html" %} {% block content %}
 <div class="jumbotron">
-    <h1>Add a New Ride</h1>
-
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-
-        <div class="row">
-          <div class="col-lg-4">
-            <div class="bs-component">
-              <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.name.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.name(size=32) }}
-                        {% for error in form.name.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.address.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.address(size=32) }}
-                        {% for error in form.address.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.start_date.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.start_date(size=32, class="form-control") }}
-                        {% for error in form.start_date.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.start_time.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.start_time(size=32, class="form-control") }}
-                        {% for error in form.start_time.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.end_date.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.end_date(size=32, class="form-control") }}
-                        {% for error in form.end_date.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-                <!--HERE-->
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between"><h5 class="mb-1">{{ form.end_time.label }}</h5></div>
-                    <p class="lead">
-                        {{ form.end_time(size=32, class="form-control") }}
-                        {% for error in form.end_time.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <p>{{ form.submit( class="btn btn-primary btn-sm")}}</p>
-              </li>
-              </ul>
-            </div>
+  <div class="bs-component">
+    <h1>Add a New Event</h1>
+    <hr class="my-4">
+    <div class="container">
+      <form action="" method="post">
+        <fieldset>
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            <h5 class="mb-1">{{ form.name.label }}</h5> {{ form.name(class="form-control") }} {% for error in form.name.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
           </div>
-        </div>
-    </form>
-</div>
-{% endblock %}
+          <div class="form-group">
+            <h5 class="mb-1">{{ form.address.label }}</h5> {{ form.address(class="form-control") }} {% for error in form.address.errors %}
+            <span style="color: red;">[{{ error }}]</span> {% endfor %}
+          </div>
+          <fieldset class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.start_date.label }}</h5>
+                  <div class="form-group row"> {{ form.start_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.month }}</div></div>
+                  <div class="form-group row"> {{ form.start_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.day }}</div></div>
+                  <div class="form-group row"> {{ form.start_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.year }}</div></div>
+                  {% for error in form.start_date.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.start_time.label }}</h5>
+                  <div class="form-group row"> {{ form.start_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_time.hour }}</div></div>
+                  <div class="form-group row"> {{ form.start_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_time.minute }}</div></div>
+                  <!-- I don't know if the following looks better or not. TODO: Get opinion -->
+                  <!-- <div class="form-group row"> <div class="col">{{ form.start_time.hour }}</div> : <div class="col">{{ form.start_time.minute }}</div></div> -->
+                  {% for error in form.start_time.errors %}<span style="color: red;">[{{ error }}]</span> {% endfor %}
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.end_date.label }}</h5>
+                  <div class="form-group row"> {{ form.end_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.month }}</div></div>
+                  <div class="form-group row"> {{ form.end_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.day }}</div></div>
+                  <div class="form-group row"> {{ form.end_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.year }}</div></div>
+                  {% for error in form.end_date.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.end_time.label }}</h5>
+                  <div class="form-group row"> {{ form.end_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_time.hour }}</div></div>
+                  <div class="form-group row"> {{ form.end_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_time.minute }}</div></div>
+                  {% for error in form.end_time.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                </div>
+              </div>
+          </fieldset>
+          {{ form.submit(class="btn btn-primary btn-sm btn-block")}}
+        </fieldset>
+      </form>
+      </div>
+    </div>
+
+  </div>
+  {% endblock %}

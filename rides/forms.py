@@ -6,6 +6,7 @@ from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, TextField, FormField, SelectField
 from wtforms.validators import DataRequired, Length
+import pytz
 
 class DateForm(FlaskForm):
     month_choice = [('1', ('January')), ('2', ('February')), ('3', ('March')),
@@ -33,11 +34,13 @@ class DateForm(FlaskForm):
     year = SelectField(("Year"), choices=year_choice, validators=[DataRequired()], render_kw={"class":"form-control"})
 
 class TimeForm(FlaskForm):
+    eastern = pytz.timezone('US/Eastern')
+    loc_dt = datetime.now(tz=eastern)
     time_choice = [('0', '00')]
     for i in range(1, 23):
         time_tuple = (str(i), str(i))
         time_choice.append(time_tuple)
-    hour = SelectField(("Time"), choices=time_choice, validators=[DataRequired()], render_kw={"class":"form-control"})
+    hour = SelectField(("Hour"), choices=time_choice, validators=[DataRequired()], default=str(loc_dt.hour), render_kw={"class":"form-control"})
     minute = SelectField(("Minute"), choices=[('0', '00'), ('15', '15'), ('30', '30'),
     ('45', '45')], validators=[DataRequired()], render_kw={"class":"form-control"})
 

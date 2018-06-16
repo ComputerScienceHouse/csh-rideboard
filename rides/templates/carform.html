@@ -1,69 +1,68 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends "layout.html" %} {% block content %}
 <div class="jumbotron">
+  <div class="bs-component">
     <h1>Add a New Car</h1>
-
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <table class="table table-responsive" style="table-layout: fixed; word-wrap: break-word; overflow-x: auto;">
-             <tbody>
-              <tr class="table-light">
-                  <td class="lead" style="vertical-align: middle;">{{ form.max_capacity.label }}<br><strong>(Driver Excluded)</strong></td>
-                <td class="lead" style="vertical-align: middle;">
-                    {{ form.max_capacity(size=32, class="lead") }}
-                    {% for error in form.max_capacity.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </td>
-              </tr>
-              <tr class="table-light">
-                <td class="lead" style="vertical-align: middle;">{{ form.departure_date.label }}</td>
-                <td class="lead" style="vertical-align: middle;">
-                    {{ form.departure_date(size=32, class="lead") }}
-                    {% for error in form.departure_date.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </td>
-              </tr>
-              <tr class="table-light">
-                <td class="lead" style="vertical-align: middle;">{{ form.departure_time.label }}</td>
-                <td class="lead" style="vertical-align: middle;">
-                    {{ form.departure_time(size=32, class="lead") }}
-                    {% for error in form.departure_time.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </td>
-              </tr>
-              <tr class="table-light">
-                <td class="lead" style="vertical-align: middle;">{{ form.return_date.label }}</td>
-                <td class="lead" style="vertical-align: middle;">
-                    {{ form.return_date(size=32, class="lead") }}
-                    {% for error in form.return_date.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </td>
-              </tr>
-              <tr class="table-light">
-                <td class="lead" style="vertical-align: middle;">{{ form.return_time.label }}</td>
-                <td class="lead" style="vertical-align: middle;">
-                    {{ form.return_time(size=32, class="lead") }}
-                    {% for error in form.return_time.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </td>
-              </tr>
-              <tr class="table-light">
-                <td class="lead" style="vertical-align: middle;">{{ form.comments.label }}</td>
-                <td class="lead" style="vertical-align: middle;">
-                    {{ form.comments(size=32, class="lead form-control") }}
-                    {% for error in form.comments.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </td>
-              </tr>
-            </tbody>
-        </table>
-        <p>{{ form.submit( class="btn btn-primary btn-sm")}}</p>
-    </form>
-</div>
-{% endblock %}
+    <hr class="my-4">
+    <div class="container">
+      <form action="" method="post">
+        <fieldset>
+          {{ form.hidden_tag() }}
+          <div class="form-group row">
+            <!-- Was {{ form.max_capacity.label(class="col col-form-label") }} -->
+            <h5><label class="col col-form-label" for="max_capacity">Max Capacity (Driver Excluded)</label></h5> <div class="col">{{ form.max_capacity(class="col col-form-label") }}</div>
+            {% for error in form.max_capacity.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+          </div>
+          <fieldset class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.departure_date.label }}</h5>
+                  <div class="form-group row"> {{ form.departure_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_date.month }}</div></div>
+                  <div class="form-group row"> {{ form.departure_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_date.day }}</div></div>
+                  <div class="form-group row"> {{ form.departure_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_date.year }}</div></div>
+                  {% for error in form.departure_date.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.departure_time.label }}</h5>
+                  <div class="form-group row"> {{ form.departure_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_time.hour }}</div></div>
+                  <div class="form-group row"> {{ form.departure_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_time.minute }}</div></div>
+                  <!-- I don't know if the following looks better or not. TODO: Get opinion -->
+                  <!-- <div class="form-group row"> <div class="col">{{ form.departure_time.hour }}</div> : <div class="col">{{ form.departure_time.minute }}</div></div> -->
+                  {% for error in form.departure_time.errors %}<span style="color: red;">[{{ error }}]</span> {% endfor %}
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.return_date.label }}</h5>
+                  <div class="form-group row"> {{ form.return_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_date.month }}</div></div>
+                  <div class="form-group row"> {{ form.return_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_date.day }}</div></div>
+                  <div class="form-group row"> {{ form.return_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_date.year }}</div></div>
+                  {% for error in form.return_date.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.return_time.label }}</h5>
+                  <div class="form-group row"> {{ form.return_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_time.hour }}</div></div>
+                  <div class="form-group row"> {{ form.return_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_time.minute }}</div></div>
+                  {% for error in form.return_time.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+                </div>
+              </div>
+          </fieldset>
+          <div class="form-group row">
+            <h5>{{ form.comments.label(class="col-sm-2 col-form-label") }}</h5><div class="col-sm-10">{{ form.comments(class="form-control") }}</div>
+            {% for error in form.comments.errors %} <span style="color: red;">[{{ error }}]</span> {% endfor %}
+          </div>
+          {{ form.submit( class="btn btn-primary btn-sm btn-block")}}
+        </fieldset>
+      </form>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
