@@ -41,8 +41,6 @@ def favicon():
 
 @app.route('/')
 @app.route('/home')
-@auth.oidc_auth
-@user_auth
 def index(auth_dict=None):
     # List of objects from the database
     events = Ride.query.all()

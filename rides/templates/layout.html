@@ -20,17 +20,19 @@
             </button>
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
+                  {% if auth_dict != None %}
                     <li class="nav-item navbar-user dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user01">
-                            <img src='https://profiles.csh.rit.edu/image/{{ auth_dict["uid"] }}'>
-                            {{ auth_dict["first"] }} {{ auth_dict["last"] }}
-                            <span class="caret"></span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="user01">
-                            <!-- <div class="dropdown-divider"></div> -->
-                            <a class="dropdown-item" href="/logout">Logout</a>
-                        </div>
+                      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user01">
+                      <img src='https://profiles.csh.rit.edu/image/{{ auth_dict["uid"] }}'>
+                      {{ auth_dict["first"] }} {{ auth_dict["last"] }}
+                      <span class="caret"></span>
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="user01">
+                          <!-- <div class="dropdown-divider"></div> -->
+                          <a class="dropdown-item" href="/logout">Logout</a>
+                      </div>
                     </li>
+                  {% endif %}
                 </ul>
             </div>
         </nav>
@@ -48,7 +50,7 @@
 </body>
 
 <footer class="py-10 bg-light">
-    <p class="m-0 text-center text-black"><a class="text-black" href="https://github.com/axg4975/rides">RideBoard&trade;</a></p>
+    <p class="m-0 text-center text-black"><a class="text-black" href="https://github.com/ag-ayush/rides">RideBoard&trade;</a></p>
 </footer>
 
 </html>
