@@ -70,8 +70,6 @@ def rideform(auth_dict=None):
     form = RideForm()
     # print(form.start_date.data)
     # print(form.start_time.data)
-    departuretime = datetime.datetime.now()
-    returntime = datetime.datetime.now()
     if form.validate_on_submit():
         name = form.name.data
         address = form.address.data
@@ -84,8 +82,6 @@ def rideform(auth_dict=None):
                                      int(form.end_date.data['day']),
                                      int(form.end_time.data['hour']),
                                      int(form.end_time.data['minute']))
-        departuretime = start_time
-        return_time = end_time
         creator = auth_dict['uid']
         ride = Ride(name, address, start_time, end_time, creator)
         db.session.add(ride)
