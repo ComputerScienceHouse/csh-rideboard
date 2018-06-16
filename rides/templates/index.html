@@ -34,6 +34,9 @@
                                         {% if car.current_capacity < car.max_capacity %}
                                             <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a>
                                         {% endif %}
+                                        {% if car.max_capacity == 0 %}
+                                            <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a>
+                                        {% endif %}
                                     {% endif %}
 
                                     {% for person in car.riders %}
@@ -87,9 +90,11 @@
                 </div>
             </div>
         </p>
-<hr class="my-4">
+        <div style="display: flex; align-items: center; justify-content: center;">
+          <a class="btn btn-info btn-lg btn-block" align="center" href="/rideform" id="new">Create Event</a>
+        </div>
+        <hr class="my-4">
     {% endfor %}
     </div>
 </div>
 {% endblock %}
-

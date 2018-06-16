@@ -29,6 +29,10 @@ from rides.forms import RideForm, CarForm
 from .utils import user_auth
 
 
+# time
+eastern = pytz.timezone('US/Eastern')
+fmt = '%Y-%m-%d %H:%M:%S'
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/assets'),
@@ -42,24 +46,22 @@ def favicon():
 def index(auth_dict=None):
     # List of objects from the database
     events = Ride.query.all()
-    eastern = pytz.timezone('US/Eastern')
-    fmt = '%Y-%m-%d %H:%M:%S'
-    loc_dt = eastern.localize(datetime.datetime.utcnow())
+
+    loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
+    print("EST TIME: " + st)
 
-    print("LOCAL TIME: " + st)
+    for event in events:
+        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
+        if st > t:
+            for car in event.cars:
+                for peeps in car.riders:
+                    db.session.delete(peeps)
+                db.session.delete(car)
+            db.session.delete(event)
+            db.session.commit()
 
-    # for event in events:
-    #     t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
-    #     if st > t:
-    #         for car in event.cars:
-    #             for peeps in car.riders:
-    #                 db.session.delete(peeps)
-    #             db.session.delete(car)
-    #         db.session.delete(event)
-    #         db.session.commit()
-
-    # events = Ride.query.all()
+    events = Ride.query.all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime, auth_dict=auth_dict)
 
 
@@ -68,8 +70,10 @@ def index(auth_dict=None):
 @user_auth
 def rideform(auth_dict=None):
     form = RideForm()
-    print(form.start_date.data)
-    print(form.start_time.data)
+    # print(form.start_date.data)
+    # print(form.start_time.data)
+    departuretime = datetime.datetime.now()
+    returntime = datetime.datetime.now()
     if form.validate_on_submit():
         name = form.name.data
         address = form.address.data
@@ -82,9 +86,14 @@ def rideform(auth_dict=None):
                                      int(form.end_date.data['day']),
                                      int(form.end_time.data['hour']),
                                      int(form.end_time.data['minute']))
+        departuretime = start_time
+        return_time = end_time
         creator = auth_dict['uid']
         ride = Ride(name, address, start_time, end_time, creator)
         db.session.add(ride)
+        db.session.commit()
+        infinity = Car('∞', 'Need a Ride', 0, 0, start_time, end_time, "I need a ride.", ride.id)
+        db.session.add(infinity)
         db.session.commit()
         return redirect(url_for('index'))
     return render_template('rideform.html', form=form, auth_dict=auth_dict)
@@ -132,7 +141,7 @@ def join_ride(car_id, user, auth_dict=None):
         for person in car.riders:
             if person.username == username:
                 incar = True
-        if car.current_capacity < car.max_capacity and not incar:
+        if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
             rider = Rider(username, name, car_id)
             car.current_capacity += 1
             db.session.add(rider)
