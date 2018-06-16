@@ -8,10 +8,10 @@ import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf.csrf import CsrfProtect
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
-csrf = CsrfProtect(app)
+csrf = CSRFProtect(app)
 
 # Get app config from absolute file path
 if os.path.exists(os.path.join(os.getcwd(), "config.py")):
@@ -42,8 +42,31 @@ def favicon():
 
 
 @app.route('/')
-@app.route('/home')
 def index(auth_dict=None):
+    # List of objects from the database
+    events = Ride.query.all()
+
+    loc_dt = datetime.datetime.now(tz=eastern)
+    st = loc_dt.strftime(fmt)
+    print("EST TIME: " + st)
+
+    for event in events:
+        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
+        if st > t:
+            for car in event.cars:
+                for peeps in car.riders:
+                    db.session.delete(peeps)
+                db.session.delete(car)
+            db.session.delete(event)
+            db.session.commit()
+
+    events = Ride.query.all()
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime, auth_dict=auth_dict)
+
+@app.route('/home')
+@auth.oidc_auth
+@user_auth
+def indextwo(auth_dict=None):
     # List of objects from the database
     events = Ride.query.all()
 
@@ -143,7 +166,7 @@ def join_ride(car_id, user, auth_dict=None):
             db.session.add(rider)
             db.session.add(car)
             db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('indextwo'))
 
 
 @app.route('/delete/car/<string:car_id>', methods=["GET"])
@@ -157,7 +180,7 @@ def delete_car(car_id, auth_dict=None):
             db.session.delete(peeps)
         db.session.delete(car)
         db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('indextwo'))
 
 
 @app.route('/delete/ride/<string:ride_id>', methods=["GET"])
@@ -173,7 +196,7 @@ def delete_ride(ride_id, auth_dict=None):
             db.session.delete(car)
         db.session.delete(ride)
         db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('indextwo'))
 
 @app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
 @auth.oidc_auth
@@ -187,7 +210,7 @@ def leave_ride(car_id, rider_username, auth_dict=None):
         car.current_capacity -= 1
         db.session.add(car)
         db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('indextwo'))
 
 
 @app.route("/logout")
