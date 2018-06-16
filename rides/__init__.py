@@ -114,7 +114,7 @@ def rideform(auth_dict=None):
         infinity = Car('∞', 'Need a Ride', 0, 0, start_time, end_time, "I need a ride.", ride.id)
         db.session.add(infinity)
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('indextwo'))
     return render_template('rideform.html', form=form, auth_dict=auth_dict)
 
 
@@ -143,7 +143,7 @@ def carform(rideid, auth_dict=None):
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, ride_id)
         db.session.add(car)
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('indextwo'))
     return render_template('carform.html', form=form, auth_dict=auth_dict)
 
 

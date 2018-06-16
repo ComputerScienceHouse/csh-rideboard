@@ -30,7 +30,7 @@
                   <div class="form-group row"> {{ form.departure_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_time.minute }}</div></div>
                   <!-- I don't know if the following looks better or not. TODO: Get opinion -->
                   <!-- <div class="form-group row"> <div class="col">{{ form.departure_time.hour }}</div> : <div class="col">{{ form.departure_time.minute }}</div></div> -->
-                  <div class="alert alert-danger">{% for error in form.departure_time.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  {% for error in form.departure_time.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
                 </div>
               </div>
             </div>

@@ -86,7 +86,9 @@
                   {% endif %}
               </h5>
             </div>
-            <table class="table table-responsive" style="table-layout: fixed; word-wrap: break-word; overflow-x: auto;">
+            <div class="bs-component">
+              <div class="table-responsive">
+            <table class="table table-hover table-sm">
               <thead>
                 <tr>
                   <th scope="col">Seats Taken</th>
@@ -108,10 +110,22 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          </div>
             {% endfor %}
-            <div class="d-flex w-100 justify-content-between">
-              {% if auth_dict != None %}<h4 class="mb-1"><a class="btn btn-success btn-sm" href="/carform/{{event.id}}" id="ride" type="button">Create Ride</a></h4>{% endif %}
-            </div>
+              <!-- If you already created a ride or are in one, you cannot create one.-->
+              {% set temp = namespace(bar=0) %}
+              {% for tem_car in event.cars %}
+                  {% if tem_car.username == auth_dict["uid"] %}
+                      {% set temp.bar = 1 %}
+                  {% endif %}
+                  {% for tem_person in tem_car.riders %}
+                      {% if tem_person.username == auth_dict["uid"] %}
+                          {% set temp.bar = 1 %}
+                      {% endif %}
+                  {% endfor %}
+              {% endfor %}
+              {% if auth_dict != None %}{% if temp.bar == 0 %}<form method="get" action="/carform/{{event.id}}" id="ride"><button class="btn btn-success btn-sm btn-block" type="submit">Create Ride</button></form>{% endif %}{% endif %}
           </ul>
           <div class="card-footer text-muted">
             Hosted By: {{event.creator}} &nbsp;&nbsp;
@@ -141,10 +155,10 @@
         </div>
       </div>
     </p>
-    <hr class="my-4"> {% endfor %}
     <div style="display: flex; align-items: center; justify-content: center;">
-      {% if auth_dict != None %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/rideform" id="new">Create Event</a>{% endif %}
     </div>
+    <hr class="my-4"> {% endfor %}
+    {% if auth_dict != None %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/rideform" id="new">Create Event</a>{% endif %}
   </div>
 </div>
 {% endblock %}
