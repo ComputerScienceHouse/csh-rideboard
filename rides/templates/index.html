@@ -6,8 +6,8 @@
       <h3 class="card-header">{{event.name}}</h3>
       <div class="card-body">
         <div class="d-flex justify-content-between">
-          <div><h6 class="card-text lead float-left"> <strong>Start:</strong> {{event.start_time}}</h6></div>
-          <div><h6 class="card-text lead float-right"> <strong>End: </strong> {{event.end_time}}</h6></div>
+          <div><h6 class="card-text lead float-left"> <strong>Start:</strong> {{datetime.datetime.strftime(event.start_time, '%B %d, %Y at %H:%M')}}</h6></div>
+          <div><h6 class="card-text lead float-right"> <strong>End: </strong> {{datetime.datetime.strftime(event.end_time, '%B %d, %Y at %H:%M')}}</h6></div>
         </div>
         <h6 class="card-text lead my-2"> <strong>Address:</strong> {{event.address}}</h6>
         {% for car in event.cars %}
@@ -96,8 +96,8 @@
               <tr class="table-light">
                 <td class="text-center font-weight-normal">{{car.current_capacity}}/{{car.max_capacity}}</td>
                 <td class="text-center font-weight-normal"> {% for rider in car.riders %} {{rider.name}} ({{rider.username}}) {% endfor %}</td>
-                <td class="text-center font-weight-normal">{{car.departure_time}}</td>
-                <td class="text-center font-weight-normal">{{car.return_time}}</td>
+                <td class="text-center font-weight-normal">{{datetime.datetime.strftime(car.departure_time, '%B %d, %Y at %H:%M')}}</td>
+                <td class="text-center font-weight-normal">{{datetime.datetime.strftime(car.return_time, '%B %d, %Y at %H:%M')}}</td>
                 <td class="text-center font-weight-normal">{{car.driver_comment}}</td>
               </tr>
             </tbody>

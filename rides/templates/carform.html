@@ -22,6 +22,9 @@
                   <div class="form-group row"> {{ form.departure_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_date.year }}</div></div> -->
                   <div class="form-group row"> <div class="col-sm-3">{{ form.departure_date.month }}</div> <div class="col-sm-2">{{ form.departure_date.day }}</div> <div class="col-sm-2">{{ form.departure_date.year }}</div></div>
                   {% for error in form.departure_date.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  <script>$("#departure_date-month").val("{{ride.start_time.month}}");</script>
+                  <script>$("#departure_date-day").val("{{ride.start_time.day}}");</script>
+                  <script>$("#departure_date-year").val("{{ride.start_time.year}}");</script>
                 </div>
               </div>
               <div class="col">
@@ -32,6 +35,8 @@
                   <!-- I don't know if the following looks better or not. TODO: Get opinion -->
                   <div class="form-group row"> <div class="col">{{ form.departure_time.hour }}</div>  <div class="col">{{ form.departure_time.minute }}</div></div>
                   {% for error in form.departure_time.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  <script>$("#departure_time-hour").val("{{ride.start_time.hour}}");</script>
+                  <script>$("#departure_time-minute").val("{{ride.start_time.minute}}");</script>
                 </div>
               </div>
             </div>
@@ -46,6 +51,9 @@
                   <div class="form-group row"> {{ form.return_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_date.year }}</div></div> -->
                   <div class="form-group row"> <div class="col-sm-3">{{ form.return_date.month }}</div> <div class="col-sm-2">{{ form.return_date.day }}</div> <div class="col-sm-2">{{ form.return_date.year }}</div></div>
                   {% for error in form.return_date.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  <script>$("#return_date-month").val("{{ride.end_time.month}}");</script>
+                  <script>$("#return_date-day").val("{{ride.end_time.day}}");</script>
+                  <script>$("#return_date-year").val("{{ride.end_time.year}}");</script>
                 </div>
               </div>
               <div class="col">
@@ -55,6 +63,8 @@
                   <div class="form-group row"> {{ form.return_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_time.minute }}</div></div> -->
                   <div class="form-group row"> <div class="col">{{ form.return_time.hour }}</div>  <div class="col">{{ form.return_time.minute }}</div></div>
                   {% for error in form.return_time.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  <script>$("#return_time-hour").val("{{ride.end_time.hour}}");</script>
+                  <script>$("#return_time-minute").val("{{ride.end_time.minute}}");</script>
                 </div>
               </div>
           </fieldset>

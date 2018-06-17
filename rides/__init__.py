@@ -61,7 +61,7 @@ def index(auth_dict=None):
             db.session.commit()
 
     events = Ride.query.all()
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime, auth_dict=auth_dict)
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
 @app.route('/home')
 @auth.oidc_auth
@@ -85,7 +85,7 @@ def indextwo(auth_dict=None):
             db.session.commit()
 
     events = Ride.query.all()
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime.datetime, auth_dict=auth_dict)
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
 
 @app.route('/rideform', methods=['GET', 'POST'])
@@ -149,13 +149,12 @@ def editrideform(rideid, auth_dict=None):
 @user_auth
 def carform(rideid, auth_dict=None):
     form = CarForm()
+    ride = Ride.query.get(rideid)
     if form.validate_on_submit():
         username = auth_dict['uid']
         name = auth_dict['first']+" "+ auth_dict['last']
         current_capacity = 0
         max_capacity = int(form.max_capacity.data['max_capacity'])
-        print("DB SESSION DEPARTURE TIME")
-        print(Ride.query.filter_by(id=rideid).first().start_time.hour)
         departure_time = datetime.datetime(int(form.departure_date.data['year']),
                                            int(form.departure_date.data['month']),
                                            int(form.departure_date.data['day']),
@@ -172,7 +171,7 @@ def carform(rideid, auth_dict=None):
         db.session.add(car)
         db.session.commit()
         return redirect(url_for('indextwo'))
-    return render_template('carform.html', form=form, auth_dict=auth_dict)
+    return render_template('carform.html', form=form, ride=ride, auth_dict=auth_dict)
 
 
 @app.route('/edit/carform/<string:carid>', methods=['GET', 'POST'])
