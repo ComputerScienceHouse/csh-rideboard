@@ -224,6 +224,21 @@ def join_ride(car_id, user, auth_dict=None):
     return redirect(url_for('indextwo'))
 
 
+# @app.route('/joinNoAuth/<string:car_id>/<string:user>', methods=["GET"])
+# def join_ride_no_auth(car_id, user):
+#     username = "N/A"
+#     name = user
+#     car = Car.query.filter(Car.id == car_id).first()
+#     attempted_username = user
+#     if (car.current_capacity < car.max_capacity or car.max_capacity == 0):
+#         rider = Rider(username, name, car_id)
+#         car.current_capacity += 1
+#         db.session.add(rider)
+#         db.session.add(car)
+#         db.session.commit()
+#     return redirect(url_for('index'))
+
+
 @app.route('/delete/car/<string:car_id>', methods=["GET"])
 @auth.oidc_auth
 @user_auth
