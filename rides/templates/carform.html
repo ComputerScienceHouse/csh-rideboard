@@ -1,7 +1,7 @@
 {% extends "layout.html" %} {% block content %}
 <div class="jumbotron">
   <div class="bs-component">
-    <h1>Add a New Car</h1>
+    <h1 class="display-4 mt-4">Add a New Car</h1>
     <hr class="my-4">
     <div class="container">
       <form action="" method="post">
@@ -56,7 +56,7 @@
               </div>
           </fieldset>
           <div class="form-group row">
-            <h5>{{ form.comments.label(class="col-sm-2 col-form-label") }}</h5><div class="col-sm-10">{{ form.comments(class="form-control") }}</div>
+            <h5>{{ form.comments.label(class="col col-form-label") }}</h5><div class="col-sm-10">{{ form.comments(class="form-control") }}</div>
             {% for error in form.comments.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
           </div>
           {{ form.submit( class="btn btn-primary btn-sm btn-block")}}

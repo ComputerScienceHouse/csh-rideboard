@@ -61,7 +61,7 @@ class SizeForm(FlaskForm):
         capacity_tuple = (str(i), str(i))
         capacity_choice.append(capacity_tuple)
     max_capacity = SelectField((""), choices=capacity_choice,
-    validators=[DataRequired()], render_kw={"class":"form-control"})
+    validators=[DataRequired()], default=2, render_kw={"class":"form-control"})
 
 class CarForm(FlaskForm):
     max_capacity = FormField(SizeForm)

@@ -14,10 +14,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
-  {% endblock %}
-</head>
-
-<body class="" style="">
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
       <a class="navbar-brand abs" href="/home">Ride Board&trade;</a>
@@ -45,13 +41,19 @@
       </div>
     </div>
   </nav>
+  {% endblock %}
+</head>
+
+<body class="" style="">
   <div id="content" class="container">
     {% block content %}
     <!--Template extended content here.-->
     {% endblock %}
   </div>
   <footer class="py-10 bg-light">
-    <p class="m-0 text-center text-black"><a class="text-black" href="https://github.com/ag-ayush/rides">RideBoard&trade;</a></p>
+    <div class="container">
+      <p class="m-0 text-center text-black"><a class="text-black" href="https://github.com/ag-ayush/rides">RideBoard&trade;</a></p>
+    </div>
   </footer>
 </body>
 

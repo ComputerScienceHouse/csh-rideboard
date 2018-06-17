@@ -2,9 +2,7 @@
 # File name: __init__.py           #
 # Author: Ayush Goel & Fred Rybin  #
 ####################################
-import datetime
-import os
-import pytz
+import datetime, os, pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -111,7 +109,7 @@ def rideform(auth_dict=None):
         ride = Ride(name, address, start_time, end_time, creator)
         db.session.add(ride)
         db.session.commit()
-        infinity = Car('∞', 'Need a Ride', 0, 0, start_time, end_time, "I need a ride.", ride.id)
+        infinity = Car('∞', 'Need a Ride', 0, 0, start_time, end_time, "", ride.id)
         db.session.add(infinity)
         db.session.commit()
         return redirect(url_for('indextwo'))
@@ -128,6 +126,8 @@ def carform(rideid, auth_dict=None):
         name = auth_dict['first']+" "+ auth_dict['last']
         current_capacity = 0
         max_capacity = int(form.max_capacity.data['max_capacity'])
+        print("DB SESSION DEPARTURE TIME")
+        print(Ride.query.filter_by(id=rideid).first().start_time.hour)
         departure_time = datetime.datetime(int(form.departure_date.data['year']),
                                            int(form.departure_date.data['month']),
                                            int(form.departure_date.data['day']),
