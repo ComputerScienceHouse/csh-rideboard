@@ -1,0 +1,80 @@
+{% extends "layout.html" %} {% block content %}
+<div class="jumbotron">
+  <div class="bs-component">
+    <h1 class="display-4 mt-4">Edit car</h1>
+    <hr class="my-4">
+    <div class="container">
+      <form action="" method="post">
+        <fieldset>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group row">
+            <!-- Was {{ form.max_capacity.label(class="col col-form-label") }} -->
+            <h5><label class="col col-form-label" for="max_capacity">Max Capacity (Driver Excluded)</label></h5> <div class="col">{{ form.max_capacity(class="col col-form-label") }}</div>
+            {% for error in form.max_capacity.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+            <script>$("#max_capacity-max_capacity").val("{{car.max_capacity}}");</script>
+          </div>
+          <fieldset class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.departure_date.label }}</h5>
+                  <div class="form-group row"> {{ form.departure_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_date.month }}</div></div>
+                  <div class="form-group row"> {{ form.departure_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_date.day }}</div></div>
+                  <div class="form-group row"> {{ form.departure_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_date.year }}</div></div>
+                  {% for error in form.departure_date.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  <script>$("#departure_date-month").val("{{car.departure_time.month}}");</script>
+                  <script>$("#departure_date-day").val("{{car.departure_time.day}}");</script>
+                  <script>$("#departure_date-year").val("{{car.departure_time.year}}");</script>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.departure_time.label }}</h5>
+                  <div class="form-group row"> {{ form.departure_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_time.hour }}</div></div>
+                  <div class="form-group row"> {{ form.departure_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.departure_time.minute }}</div></div>
+                  <!-- I don't know if the following looks better or not. TODO: Get opinion -->
+                  <!-- <div class="form-group row"> <div class="col">{{ form.departure_time.hour }}</div> : <div class="col">{{ form.departure_time.minute }}</div></div> -->
+                  {% for error in form.departure_time.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  <script>$("#departure_time-hour").val("{{car.departure_time.hour}}");</script>
+                  <script>$("#departure_time-minute").val("{{car.departure_time.minute}}");</script>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.return_date.label }}</h5>
+                  <div class="form-group row"> {{ form.return_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_date.month }}</div></div>
+                  <div class="form-group row"> {{ form.return_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_date.day }}</div></div>
+                  <div class="form-group row"> {{ form.return_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_date.year }}</div></div>
+                  {% for error in form.return_date.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  <script>$("#return_date-month").val("{{car.return_time.month}}");</script>
+                  <script>$("#return_date-day").val("{{car.return_time.day}}");</script>
+                  <script>$("#return_date-year").val("{{car.return_time.year}}");</script>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.return_time.label }}</h5>
+                  <div class="form-group row"> {{ form.return_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_time.hour }}</div></div>
+                  <div class="form-group row"> {{ form.return_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.return_time.minute }}</div></div>
+                  {% for error in form.return_time.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+                  <script>$("#return_time-hour").val("{{car.return_time.hour}}");</script>
+                  <script>$("#return_time-minute").val("{{car.return_time.minute}}");</script>
+                </div>
+              </div>
+          </fieldset>
+          <div class="form-group row">
+            <h5>{{ form.comments.label(class="col col-form-label") }} </h5><div class="col-sm-10">{{ form.comments(class="form-control", id="drivercomment") }}</div>
+            {% for error in form.comments.errors %} <div class="alert alert-danger">{{ error }}</div> {% endfor %}
+            <script> var textarea = document.getElementById('drivercomment'); textarea.innerHTML = "{{ car.driver_comment }}" </script>
+          </div>
+          {{ form.submit( class="btn btn-primary btn-sm btn-block")}}
+        </fieldset>
+      </form>
+      </div>
+    </div>
+  </div>
+  {% endblock %}

@@ -1,0 +1,79 @@
+{% extends "layout.html" %} {% block content %}
+<div class="jumbotron">
+  <div class="bs-component">
+    <h1 class="display-4 mt-4">Edit Event</h1>
+    <hr class="my-4">
+    <div class="container">
+      <form action="" method="post">
+        <fieldset>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <h5 class="mb-1">{{ form.name.label }}</h5> {{ form.name(class="form-control") }} {% for error in form.name.errors %} <div class="alert alert-danger">{{ error }}</div>{% endfor %}
+            <script>$("#name").val("{{ride.name}}");</script>
+          </div>
+          <div class="form-group">
+            <h5 class="mb-1">{{ form.address.label }}</h5> {{ form.address(class="form-control", id="address") }}
+            <script>$("#address").val("{{ride.address}}");</script>
+            {% for error in form.address.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+          </div>
+          <fieldset class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.start_date.label }}</h5>
+                  <div class="form-group row"> {{ form.start_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.month }}</div></div>
+                  <div class="form-group row"> {{ form.start_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.day }}</div></div>
+                  <div class="form-group row"> {{ form.start_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.year }}</div></div>
+                   {% for error in form.start_date.errors %}<div class="alert alert-danger"><div class="alert alert-danger">{{ error }}</div></div>{% endfor %}
+                   <script>$("#start_date-month").val("{{ride.start_time.month}}");</script>
+                   <script>$("#start_date-day").val("{{ride.start_time.day}}");</script>
+                   <script>$("#start_date-year").val("{{ride.start_time.year}}");</script>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.start_time.label }}</h5>
+                  <div class="form-group row"> {{ form.start_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_time.hour }}</div></div>
+                  <div class="form-group row"> {{ form.start_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_time.minute }}</div></div>
+                  <!-- I don't know if the following looks better or not. TODO: Get opinion -->
+                  <!-- <div class="form-group row"> <div class="col">{{ form.start_time.hour }}</div> : <div class="col">{{ form.start_time.minute }}</div></div> -->
+                  {% for error in form.start_time.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                  <script>$("#start_time-hour").val("{{ride.start_time.hour}}");</script>
+                  <script>$("#start_time-minute").val("{{ride.start_time.minute}}");</script>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.end_date.label }}</h5>
+                  <div class="form-group row"> {{ form.end_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.month }}</div></div>
+                  <div class="form-group row"> {{ form.end_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.day }}</div></div>
+                  <div class="form-group row"> {{ form.end_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.year }}</div></div>
+                  {% for error in form.end_date.errors %} <div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                  <script>$("#end_date-month").val("{{ride.end_time.month}}");</script>
+                  <script>$("#end_date-day").val("{{ride.end_time.day}}");</script>
+                  <script>$("#end_date-year").val("{{ride.end_time.year}}");</script>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <h5 class="mb-1">{{ form.end_time.label }}</h5>
+                  <div class="form-group row"> {{ form.end_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_time.hour }}</div></div>
+                  <div class="form-group row"> {{ form.end_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_time.minute }}</div></div>
+                  {% for error in form.end_time.errors %} <div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                  <script>$("#end_time-hour").val("{{ride.end_time.hour}}");</script>
+                  <script>$("#end_time-minute").val("{{ride.end_time.minute}}");</script>
+                </div>
+              </div>
+          </fieldset>
+          {{ form.submit(class="btn btn-primary btn-sm btn-block")}}
+        </fieldset>
+      </form>
+      </div>
+    </div>
+
+  </div>
+  {% endblock %}

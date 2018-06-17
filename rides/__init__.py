@@ -2,7 +2,9 @@
 # File name: __init__.py           #
 # Author: Ayush Goel & Fred Rybin  #
 ####################################
-import datetime, os, pytz
+import datetime
+import os
+import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -116,6 +118,32 @@ def rideform(auth_dict=None):
     return render_template('rideform.html', form=form, auth_dict=auth_dict)
 
 
+@app.route('/edit/rideform/<string:rideid>', methods=['GET', 'POST'])
+@auth.oidc_auth
+@user_auth
+def editrideform(rideid, auth_dict=None):
+    form = RideForm()
+    ride = Ride.query.get(rideid)
+    # print(form.start_date.data)
+    # print(form.start_time.data)
+    if form.validate_on_submit():
+        ride.name = form.name.data
+        ride.address = form.address.data
+        ride.start_time = datetime.datetime(int(form.start_date.data['year']),
+                                       int(form.start_date.data['month']),
+                                       int(form.start_date.data['day']), int(form.start_time.data['hour']),
+                                       int(form.start_time.data['minute']))
+        ride.end_time = datetime.datetime(int(form.end_date.data['year']),
+                                     int(form.end_date.data['month']),
+                                     int(form.end_date.data['day']),
+                                     int(form.end_time.data['hour']),
+                                     int(form.end_time.data['minute']))
+        ride.creator = auth_dict['uid']
+        db.session.commit()
+        return redirect(url_for('indextwo'))
+    return render_template('editrideform.html', form=form, ride=ride, auth_dict=auth_dict)
+
+
 @app.route('/carform/<string:rideid>', methods=['GET', 'POST'])
 @auth.oidc_auth
 @user_auth
@@ -145,6 +173,34 @@ def carform(rideid, auth_dict=None):
         db.session.commit()
         return redirect(url_for('indextwo'))
     return render_template('carform.html', form=form, auth_dict=auth_dict)
+
+
+@app.route('/edit/carform/<string:carid>', methods=['GET', 'POST'])
+@auth.oidc_auth
+@user_auth
+def editcarform(carid, auth_dict=None):
+    form = CarForm()
+    car = Car.query.get(carid)
+    if form.validate_on_submit():
+        car.username = auth_dict['uid']
+        car.name = auth_dict['first']+" "+ auth_dict['last']
+        car.max_capacity = int(form.max_capacity.data['max_capacity'])
+        # print("DB SESSION DEPARTURE TIME")
+        # print(Ride.query.filter_by(id=rideid).first().start_time.hour)
+        car.departure_time = datetime.datetime(int(form.departure_date.data['year']),
+                                           int(form.departure_date.data['month']),
+                                           int(form.departure_date.data['day']),
+                                           int(form.departure_time.data['hour']),
+                                           int(form.departure_time.data['minute']))
+        car.return_time = datetime.datetime(int(form.return_date.data['year']),
+                                        int(form.return_date.data['month']),
+                                        int(form.return_date.data['day']),
+                                        int(form.return_time.data['hour']),
+                                        int(form.return_time.data['minute']))
+        car.driver_comment = form.comments.data
+        db.session.commit()
+        return redirect(url_for('indextwo'))
+    return render_template('editcarform.html', form=form, car=car, auth_dict=auth_dict)
 
 
 @app.route('/join/<string:car_id>/<string:user>', methods=["GET"])

@@ -1,96 +1,84 @@
 {% extends "layout.html" %} {% block content %}
-<div class="bs-component">
-  <div class="jumbotron">
-    <h1 class="display-4 mt-4">Events:</h1>
-    {% for event in events %}
-    <p class="lead">
-      <div class="card mb-3">
-        <h3 class="card-header">{{event.name}}</h3>
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <div><h6 class="card-text lead float-left"> <strong>Start:</strong> {{event.start_time}}</h6></div>
-            <div><h6 class="card-text lead float-right"> <strong>End: </strong> {{event.end_time}}</h6></div>
-          </div>
-          <h6 class="card-text lead my-2"> <strong>Address:</strong> {{event.address}}</h6>
-          <ul class="list-group list-group-flush">
-            {% for car in event.cars %}
-              <h5 class="mb-2">
-                <div class="d-flex justify-content-between">
-                  <div>{{car.name}} ({{car.username}})</div>
+<div class="bs-component"> <div class="jumbotron">
+  <h1 class="display-4 mt-4">Events:</h1>
+  {% for event in events %}
+    <div class="card mb-3">
+      <h3 class="card-header">{{event.name}}</h3>
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div><h6 class="card-text lead float-left"> <strong>Start:</strong> {{event.start_time}}</h6></div>
+          <div><h6 class="card-text lead float-right"> <strong>End: </strong> {{event.end_time}}</h6></div>
+        </div>
+        <h6 class="card-text lead my-2"> <strong>Address:</strong> {{event.address}}</h6>
+        <ul class="list-group list-group-flush">
+          {% for car in event.cars %}
+            <h5 class="mb-2">
+              <div class="d-flex">
+                <div>{{car.name}} ({{car.username}})</div>
+                <div class="ml-auto">
                   <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
                   {% set temp = namespace(foo=0) %}
                   {% for tem_car in event.cars %}
-                      {% if tem_car.username == auth_dict["uid"] %}
-                          {% set temp.foo = 1 %}
+                    {% if tem_car.username == auth_dict["uid"] %}
+                      {% set temp.foo = 1 %}
+                    {% endif %}
+                    {% for tem_person in tem_car.riders %}
+                      {% if tem_person.username == auth_dict["uid"] %}
+                        {% set temp.foo = 1 %}
                       {% endif %}
-                      {% for tem_person in tem_car.riders %}
-                          {% if tem_person.username == auth_dict["uid"] %}
-                              {% set temp.foo = 1 %}
-                          {% endif %}
-                      {% endfor %}
+                    {% endfor %}
                   {% endfor %}
                   {% if auth_dict != None %}
                     {% if temp.foo == 0 %}
-                        {% if car.current_capacity < car.max_capacity %}
-                            <div><a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a></div>
-                        {% endif %}
-                        {% if car.max_capacity == 0 %}
-                            <div><a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a></div>
-                        {% endif %}
+                      {% if car.current_capacity < car.max_capacity %}
+                        <div><a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a></div>
+                      {% endif %}
+                      {% if car.max_capacity == 0 %}
+                        <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}" type="button">Join Ride</a>
+                      {% endif %}
                     {% endif %}
                     {% for person in car.riders %}
-                        {% if person.username == auth_dict["uid"] %}
-                            <div><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#leaveRide">Leave Ride</button></div>
-                </div>
-                            <div class="modal" id="leaveRide">
-                              <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title">Leave Ride</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                      <span aria-hidden="true">&times;</span>
-                                    </button>
-                                  </div>
-                                  <div class="modal-body">
-                                    <p>Are you sure you want to leave this ride?</p>
-                                  </div>
-                                  <div class="modal-footer">
-                                    <!-- TODO: Probably should not be using form and buttons and rather be using input. -->
-                                    <!-- <a class="btn btn-primary btn-sm" href="/delete/rider/{{car.id}}/{{auth_dict["uid"]}}" id="delete::rider::{{car.id}}" type="button btn-danger">Yes</a> -->
-                                    <form method="get" action="/delete/rider/{{car.id}}/{{auth_dict["uid"]}}" id="delete::rider::{{car.id}}"> <button type="submit" class="btn btn-danger">Yes</button></form>
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">No</button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                        {% endif %}
+                      {% if person.username == auth_dict["uid"] %}
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#leaveRide">Leave Ride</button>
+                        <div class="modal" id="leaveRide"> <div class="modal-dialog" role="document"> <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Leave Ride</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          </div>
+                          <div class="modal-body">
+                            <p>Are you sure you want to leave this ride?</p>
+                          </div>
+                          <div class="modal-footer">
+                            <!-- TODO: Probably should not be using form and buttons and rather be using input. -->
+                            <!-- <a class="btn btn-primary btn-sm" href="/delete/rider/{{car.id}}/{{auth_dict["uid"]}}" id="delete::rider::{{car.id}}" type="button btn-danger">Yes</a> -->
+                            <form method="get" action="/delete/rider/{{car.id}}/{{auth_dict["uid"]}}" id="delete::rider::{{car.id}}"> <button type="submit" class="btn btn-danger">Yes</button></form>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">No</button>
+                          </div>
+                      </div> </div> </div>
+                      {% endif %}
                     {% endfor %}
                     {% if car.username == auth_dict["uid"] %}
-                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteRide">Delete Ride</button>
-                        <div class="modal" id="deleteRide">
-                          <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title">Delete Ride</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                                </button>
-                              </div>
-                              <div class="modal-body">
-                                <p>Are you sure you want to delete your ride?</p>
-                              </div>
-                              <div class="modal-footer">
-                                <form method="get" action="/delete/car/{{car.id}}" id="delete::car::{{car.id}}"> <button type="submit" class="btn btn-danger">Yes</button></form>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">No</button>
-                              </div>
-                            </div>
-                          </div>
+                      <a class="btn btn-info btn-sm ml-1" align="center" href="/edit/carform/{{car.id}}" id="edit::car::{{car.id}}">Edit</a>
+                      <button type="button" class="btn btn-danger btn-sm ml-1" data-toggle="modal" data-target="#deleteRide">Delete</button>
+                      <div class="modal" id="deleteRide"> <div class="modal-dialog" role="document"> <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Delete Ride</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span></button>
                         </div>
+                        <div class="modal-body">
+                          <p>Are you sure you want to delete your ride?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <form method="get" action="/delete/car/{{car.id}}" id="delete::car::{{car.id}}"> <button type="submit" class="btn btn-danger">Yes</button></form>
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">No</button>
+                        </div>
+                      </div> </div> </div>
                     {% endif %}
                   {% endif %}
-              </h5>
-            <div class="bs-component">
-              <div class="table-responsive">
+                </div>
+              </div>
+            </h5>
+            <div class="bs-component"> <div class="table-responsive">
             <table class="table table-hover table-sm">
               <thead>
                 <tr>
@@ -104,66 +92,58 @@
               <tbody>
                 <tr class="table-light">
                   <td class="text-center">{{car.current_capacity}}/{{car.max_capacity}}</td>
-                  <td class="text-center">
-                    {% for rider in car.riders %} {{rider.name}} ({{rider.username}}) {% endfor %}
-                  </td>
+                  <td class="text-center"> {% for rider in car.riders %} {{rider.name}} ({{rider.username}}) {% endfor %}</td>
                   <td class="text-center">{{car.departure_time}}</td>
                   <td class="text-center">{{car.return_time}}</td>
                   <td class="text-center">{{car.driver_comment}}</td>
                 </tr>
               </tbody>
             </table>
-          </div>
-          </div>
-            {% endfor %}
-              <!-- If you already created a ride or are in one, you cannot create one.-->
-              {% set temp = namespace(bar=0) %}
-              {% for tem_car in event.cars %}
-                  {% if tem_car.username == auth_dict["uid"] %}
-                      {% set temp.bar = 1 %}
-                  {% endif %}
-                  {% for tem_person in tem_car.riders %}
-                      {% if tem_person.username == auth_dict["uid"] %}
-                          {% set temp.bar = 1 %}
-                      {% endif %}
-                  {% endfor %}
+            </div> </div>
+          {% endfor %}
+            <!-- If you already created a ride or are in one, you cannot create one.-->
+            {% set temp = namespace(bar=0) %}
+            {% for tem_car in event.cars %}
+              {% if tem_car.username == auth_dict["uid"] %}
+                {% set temp.bar = 1 %}
+              {% endif %}
+              {% for tem_person in tem_car.riders %}
+                {% if tem_person.username == auth_dict["uid"] %}
+                  {% set temp.bar = 1 %}
+                {% endif %}
               {% endfor %}
-              {% if auth_dict != None %}{% if temp.bar == 0 %}<form method="get" action="/carform/{{event.id}}" id="ride"><button class="btn btn-success btn-sm btn-block my-2" type="submit">Create Ride</button></form>{% endif %}{% endif %}
-          </ul>
-          <div class="card-footer text-muted">
-            <div class="d-flex justify-content-between">
-              <div> Hosted By: {{event.creator}} </div>
-            {% if event.creator == auth_dict["uid"] %}
-              <div><button type="button" class="btn btn-danger btn-sm ml-3" data-toggle="modal" data-target="#deleteEvent">Delete Event</button></div>
-            </div>
-              <div class="modal" id="deleteEvent">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">Delete Event</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                      <p>Are you sure you want to delete this event?</p>
-                    </div>
-                    <div class="modal-footer">
-                      <form method="get" action="/delete/ride/{{event.id}}" id="delete::ride::{{event.id}}"> <button type="submit" class="btn btn-danger">Yes</button></form>
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">No</button>
-                    </div>
+            {% endfor %}
+          {% if auth_dict != None %}{% if temp.bar == 0 %}<form method="get" action="/carform/{{event.id}}" id="ride"><button class="btn btn-success btn-sm btn-block my-2" type="submit">Create Ride</button></form>{% endif %}{% endif %}
+        </ul>
+        <div class="card-footer text-muted">
+          <div class="d-flex">
+            <div> Hosted By: {{event.creator}} </div>
+            <div class="ml-auto">
+              {% if event.creator == auth_dict["uid"] %}
+                <a class="btn btn-info btn-sm" align="center" href="/edit/rideform/{{event.id}}" id="edit::event::{{event.id}}">Edit</a>
+                <button type="button" class="btn btn-danger btn-sm ml-1" data-toggle="modal" data-target="#deleteEvent">Delete</button>
+
+                <div class="modal" id="deleteEvent"><div class="modal-dialog" role="document"><div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Delete Event</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                   </div>
-                </div>
-              </div>
-            {% endif %}
+                  <div class="modal-body">
+                    <p>Are you sure you want to delete this event?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <form method="get" action="/delete/ride/{{event.id}}" id="delete::ride::{{event.id}}"> <button type="submit" class="btn btn-danger">Yes</button></form>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">No</button>
+                  </div>
+                </div></div></div>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
-    </p>
-    <div style="display: flex; align-items: center; justify-content: center;">
     </div>
-    <hr class="my-3"> {% endfor %}
-    {% if auth_dict != None %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/rideform" id="new">Create Event</a>{% endif %}
-  </div>
-</div>
+    <hr class="my-3">
+  {% endfor %}
+  {% if auth_dict != None %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/rideform" id="new">Create Event</a>{% endif %}
+</div> </div>
 {% endblock %}
