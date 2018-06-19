@@ -65,7 +65,7 @@ def index(auth_dict=None):
 @app.route('/home')
 @auth.oidc_auth
 @user_auth
-def indexAuth(auth_dict=None):
+def index_auth(auth_dict=None):
     print('userinfo' in session)
 
     # List of objects from the database
@@ -116,7 +116,7 @@ def rideform(auth_dict=None):
         infinity = Car('∞', 'Need a Ride', 0, 0, start_time, end_time, "", ride.id)
         db.session.add(infinity)
         db.session.commit()
-        return redirect(url_for('indexAuth'))
+        return redirect(url_for('index_auth'))
     return render_template('rideform.html', form=form, timestamp=st, auth_dict=auth_dict)
 
 
@@ -142,7 +142,7 @@ def editrideform(rideid, auth_dict=None):
         ride.creator = auth_dict['uid']
         # TODO: Change the infinity ride times as well.
         db.session.commit()
-        return redirect(url_for('indexAuth'))
+        return redirect(url_for('index_auth'))
     return render_template('editrideform.html', form=form, ride=ride, auth_dict=auth_dict)
 
 
@@ -172,7 +172,7 @@ def carform(rideid, auth_dict=None):
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, ride_id)
         db.session.add(car)
         db.session.commit()
-        return redirect(url_for('indexAuth'))
+        return redirect(url_for('index_auth'))
     return render_template('carform.html', form=form, ride=ride, auth_dict=auth_dict)
 
 
@@ -198,7 +198,7 @@ def editcarform(carid, auth_dict=None):
                                             int(form.return_date_time.data.minute))
         car.driver_comment = form.comments.data
         db.session.commit()
-        return redirect(url_for('indexAuth'))
+        return redirect(url_for('index_auth'))
     return render_template('editcarform.html', form=form, car=car, auth_dict=auth_dict)
 
 
@@ -221,7 +221,7 @@ def join_ride(car_id, user, auth_dict=None):
             db.session.add(rider)
             db.session.add(car)
             db.session.commit()
-    return redirect(url_for('indexAuth'))
+    return redirect(url_for('index_auth'))
 
 
 # @app.route('/joinNoAuth/<string:car_id>/<string:user>', methods=["GET"])
@@ -250,7 +250,7 @@ def delete_car(car_id, auth_dict=None):
             db.session.delete(peeps)
         db.session.delete(car)
         db.session.commit()
-    return redirect(url_for('indexAuth'))
+    return redirect(url_for('index_auth'))
 
 
 @app.route('/delete/ride/<string:ride_id>', methods=["GET"])
@@ -266,7 +266,7 @@ def delete_ride(ride_id, auth_dict=None):
             db.session.delete(car)
         db.session.delete(ride)
         db.session.commit()
-    return redirect(url_for('indexAuth'))
+    return redirect(url_for('index_auth'))
 
 @app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
 @auth.oidc_auth
@@ -280,7 +280,7 @@ def leave_ride(car_id, rider_username, auth_dict=None):
         car.current_capacity -= 1
         db.session.add(car)
         db.session.commit()
-    return redirect(url_for('indexAuth'))
+    return redirect(url_for('index_auth'))
 
 
 @app.route("/logout")

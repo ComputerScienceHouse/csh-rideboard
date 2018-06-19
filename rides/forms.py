@@ -2,15 +2,13 @@
 # File name: models.py             #
 # Author: Fred Rybin & Ayush Goel  #
 ####################################
-from datetime import datetime
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, TextAreaField, TextField, FormField, DateTimeField, SelectField
+from wtforms import SubmitField, TextAreaField, StringField, FormField, DateTimeField, SelectField
 from wtforms.validators import DataRequired, Length
-import pytz
 
 class RideForm(FlaskForm):
-    name = TextField(('What is the name of the event?'), validators=[DataRequired(), Length(min=1, max=140)])
-    address = TextField(('Where is the event?'), validators=[DataRequired()])
+    name = StringField(('What is the name of the event?'), validators=[DataRequired(), Length(min=1, max=140)])
+    address = StringField(('Where is the event?'), validators=[DataRequired()])
     start_date_time = DateTimeField(label="Start", validators=[DataRequired()], format='%Y-%m-%d %H:%M')
     end_date_time = DateTimeField(label="End", validators=[DataRequired()], format='%Y-%m-%d %H:%M')
     submit = SubmitField(('Submit'))
