@@ -6,7 +6,7 @@ import datetime
 import os
 import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
-from flask import Flask, render_template, send_from_directory, redirect, url_for
+from flask import Flask, render_template, send_from_directory, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 
@@ -24,7 +24,6 @@ db = SQLAlchemy(app)
 auth = OIDCAuthentication(app, issuer=app.config["OIDC_ISSUER"],
 client_registration_info=app.config["OIDC_CLIENT_CONFIG"])
 
-
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
 from rides.forms import RideForm, CarForm
@@ -33,7 +32,7 @@ from .utils import user_auth
 
 # time
 eastern = pytz.timezone('US/Eastern')
-fmt = '%Y-%m-%d %H:%M:%S'
+fmt = '%Y-%m-%d %H:%M'
 
 @app.route('/favicon.ico')
 def favicon():
@@ -43,15 +42,14 @@ def favicon():
 
 @app.route('/')
 def index(auth_dict=None):
-    # List of objects from the database
+    print('userinfo' in session)
     events = Ride.query.all()
-
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
     print("EST TIME: " + st)
 
     for event in events:
-        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
+        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M')
         if st > t:
             for car in event.cars:
                 for peeps in car.riders:
@@ -63,10 +61,13 @@ def index(auth_dict=None):
     events = Ride.query.all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
+
 @app.route('/home')
 @auth.oidc_auth
 @user_auth
-def indextwo(auth_dict=None):
+def indexAuth(auth_dict=None):
+    print('userinfo' in session)
+
     # List of objects from the database
     events = Ride.query.all()
 
@@ -75,7 +76,7 @@ def indextwo(auth_dict=None):
     print("EST TIME: " + st)
 
     for event in events:
-        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M:%S')
+        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M')
         if st > t:
             for car in event.cars:
                 for peeps in car.riders:
@@ -92,21 +93,22 @@ def indextwo(auth_dict=None):
 @auth.oidc_auth
 @user_auth
 def rideform(auth_dict=None):
+    loc_dt = datetime.datetime.now(tz=eastern)
+    st = loc_dt.strftime(fmt)
     form = RideForm()
-    # print(form.start_date.data)
-    # print(form.start_time.data)
     if form.validate_on_submit():
         name = form.name.data
         address = form.address.data
-        start_time = datetime.datetime(int(form.start_date.data['year']),
-                                       int(form.start_date.data['month']),
-                                       int(form.start_date.data['day']), int(form.start_time.data['hour']),
-                                       int(form.start_time.data['minute']))
-        end_time = datetime.datetime(int(form.end_date.data['year']),
-                                     int(form.end_date.data['month']),
-                                     int(form.end_date.data['day']),
-                                     int(form.end_time.data['hour']),
-                                     int(form.end_time.data['minute']))
+        start_time = datetime.datetime(int(form.start_date_time.data.year),
+                                       int(form.start_date_time.data.month),
+                                       int(form.start_date_time.data.day),
+                                       int(form.start_date_time.data.hour),
+                                       int(form.start_date_time.data.minute))
+        end_time = datetime.datetime(int(form.end_date_time.data.year),
+                                     int(form.end_date_time.data.month),
+                                     int(form.end_date_time.data.day),
+                                     int(form.end_date_time.data.hour),
+                                     int(form.end_date_time.data.minute))
         creator = auth_dict['uid']
         ride = Ride(name, address, start_time, end_time, creator)
         db.session.add(ride)
@@ -114,8 +116,8 @@ def rideform(auth_dict=None):
         infinity = Car('∞', 'Need a Ride', 0, 0, start_time, end_time, "", ride.id)
         db.session.add(infinity)
         db.session.commit()
-        return redirect(url_for('indextwo'))
-    return render_template('rideform.html', form=form, auth_dict=auth_dict)
+        return redirect(url_for('indexAuth'))
+    return render_template('rideform.html', form=form, timestamp=st, auth_dict=auth_dict)
 
 
 @app.route('/edit/rideform/<string:rideid>', methods=['GET', 'POST'])
@@ -124,23 +126,23 @@ def rideform(auth_dict=None):
 def editrideform(rideid, auth_dict=None):
     form = RideForm()
     ride = Ride.query.get(rideid)
-    # print(form.start_date.data)
-    # print(form.start_time.data)
     if form.validate_on_submit():
         ride.name = form.name.data
         ride.address = form.address.data
-        ride.start_time = datetime.datetime(int(form.start_date.data['year']),
-                                       int(form.start_date.data['month']),
-                                       int(form.start_date.data['day']), int(form.start_time.data['hour']),
-                                       int(form.start_time.data['minute']))
-        ride.end_time = datetime.datetime(int(form.end_date.data['year']),
-                                     int(form.end_date.data['month']),
-                                     int(form.end_date.data['day']),
-                                     int(form.end_time.data['hour']),
-                                     int(form.end_time.data['minute']))
+        ride.start_time = datetime.datetime(int(form.start_date_time.data.year),
+                                            int(form.start_date_time.data.month),
+                                            int(form.start_date_time.data.day),
+                                            int(form.start_date_time.data.hour),
+                                            int(form.start_date_time.data.minute))
+        ride.end_time = datetime.datetime(int(form.end_date_time.data.year),
+                                          int(form.end_date_time.data.month),
+                                          int(form.end_date_time.data.day),
+                                          int(form.end_date_time.data.hour),
+                                          int(form.end_date_time.data.minute))
         ride.creator = auth_dict['uid']
+        # TODO: Change the infinity ride times as well.
         db.session.commit()
-        return redirect(url_for('indextwo'))
+        return redirect(url_for('indexAuth'))
     return render_template('editrideform.html', form=form, ride=ride, auth_dict=auth_dict)
 
 
@@ -155,22 +157,22 @@ def carform(rideid, auth_dict=None):
         name = auth_dict['first']+" "+ auth_dict['last']
         current_capacity = 0
         max_capacity = int(form.max_capacity.data['max_capacity'])
-        departure_time = datetime.datetime(int(form.departure_date.data['year']),
-                                           int(form.departure_date.data['month']),
-                                           int(form.departure_date.data['day']),
-                                           int(form.departure_time.data['hour']),
-                                           int(form.departure_time.data['minute']))
-        return_time = datetime.datetime(int(form.return_date.data['year']),
-                                        int(form.return_date.data['month']),
-                                        int(form.return_date.data['day']),
-                                        int(form.return_time.data['hour']),
-                                        int(form.return_time.data['minute']))
+        departure_time = datetime.datetime(int(form.departure_date_time.data.year),
+                                           int(form.departure_date_time.data.month),
+                                           int(form.departure_date_time.data.day),
+                                           int(form.departure_date_time.data.hour),
+                                           int(form.departure_date_time.data.minute))
+        return_time = datetime.datetime(int(form.return_date_time.data.year),
+                                        int(form.return_date_time.data.month),
+                                        int(form.return_date_time.data.day),
+                                        int(form.return_date_time.data.hour),
+                                        int(form.return_date_time.data.minute))
         driver_comment = form.comments.data
         ride_id = rideid
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, ride_id)
         db.session.add(car)
         db.session.commit()
-        return redirect(url_for('indextwo'))
+        return redirect(url_for('indexAuth'))
     return render_template('carform.html', form=form, ride=ride, auth_dict=auth_dict)
 
 
@@ -184,21 +186,19 @@ def editcarform(carid, auth_dict=None):
         car.username = auth_dict['uid']
         car.name = auth_dict['first']+" "+ auth_dict['last']
         car.max_capacity = int(form.max_capacity.data['max_capacity'])
-        # print("DB SESSION DEPARTURE TIME")
-        # print(Ride.query.filter_by(id=rideid).first().start_time.hour)
-        car.departure_time = datetime.datetime(int(form.departure_date.data['year']),
-                                           int(form.departure_date.data['month']),
-                                           int(form.departure_date.data['day']),
-                                           int(form.departure_time.data['hour']),
-                                           int(form.departure_time.data['minute']))
-        car.return_time = datetime.datetime(int(form.return_date.data['year']),
-                                        int(form.return_date.data['month']),
-                                        int(form.return_date.data['day']),
-                                        int(form.return_time.data['hour']),
-                                        int(form.return_time.data['minute']))
+        car.departure_time = datetime.datetime(int(form.departure_date_time.data.year),
+                                               int(form.departure_date_time.data.month),
+                                               int(form.departure_date_time.data.day),
+                                               int(form.departure_date_time.data.hour),
+                                               int(form.departure_date_time.data.minute))
+        car.return_time = datetime.datetime(int(form.return_date_time.data.year),
+                                            int(form.return_date_time.data.month),
+                                            int(form.return_date_time.data.day),
+                                            int(form.return_date_time.data.hour),
+                                            int(form.return_date_time.data.minute))
         car.driver_comment = form.comments.data
         db.session.commit()
-        return redirect(url_for('indextwo'))
+        return redirect(url_for('indexAuth'))
     return render_template('editcarform.html', form=form, car=car, auth_dict=auth_dict)
 
 
@@ -221,7 +221,7 @@ def join_ride(car_id, user, auth_dict=None):
             db.session.add(rider)
             db.session.add(car)
             db.session.commit()
-    return redirect(url_for('indextwo'))
+    return redirect(url_for('indexAuth'))
 
 
 # @app.route('/joinNoAuth/<string:car_id>/<string:user>', methods=["GET"])
@@ -250,7 +250,7 @@ def delete_car(car_id, auth_dict=None):
             db.session.delete(peeps)
         db.session.delete(car)
         db.session.commit()
-    return redirect(url_for('indextwo'))
+    return redirect(url_for('indexAuth'))
 
 
 @app.route('/delete/ride/<string:ride_id>', methods=["GET"])
@@ -266,7 +266,7 @@ def delete_ride(ride_id, auth_dict=None):
             db.session.delete(car)
         db.session.delete(ride)
         db.session.commit()
-    return redirect(url_for('indextwo'))
+    return redirect(url_for('indexAuth'))
 
 @app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
 @auth.oidc_auth
@@ -280,7 +280,7 @@ def leave_ride(car_id, rider_username, auth_dict=None):
         car.current_capacity -= 1
         db.session.add(car)
         db.session.commit()
-    return redirect(url_for('indextwo'))
+    return redirect(url_for('indexAuth'))
 
 
 @app.route("/logout")

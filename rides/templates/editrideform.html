@@ -19,65 +19,65 @@
           </div>
           <fieldset class="form-group">
             <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <h5 class="mb-1">{{ form.start_date.label }}</h5>
-                  <!-- <div class="form-group row"> {{ form.start_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.month }}</div></div>
-                  <div class="form-group row"> {{ form.start_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.day }}</div></div>
-                  <div class="form-group row"> {{ form.start_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_date.year }}</div></div> -->
-                  <div class="form-group row"> <div class="col-sm-3">{{ form.start_date.month }}</div> <div class="col-sm-2">{{ form.start_date.day }}</div> <div class="col-sm-2">{{ form.start_date.year }}</div></div>
-                   {% for error in form.start_date.errors %}<div class="alert alert-danger"><div class="alert alert-danger">{{ error }}</div></div>{% endfor %}
-                   <script>$("#start_date-month").val("{{ride.start_time.month}}");</script>
-                   <script>$("#start_date-day").val("{{ride.start_time.day}}");</script>
-                   <script>$("#start_date-year").val("{{ride.start_time.year}}");</script>
+              <div class="col-sm-5">
+                <h5 class="mb-1">{{ form.start_date_time.label }}</h5>
+                <div class="input-group date" id="start_date_time" data-target-input="nearest">{{form.start_date_time(class="form-control datetimepicker-input")}}
+                  <div class="input-group-append" data-target="#start_date_time" data-toggle="datetimepicker">
+                    <div class="input-group-text" id="donothide"><i class="fa fa-calendar"></i></div>
+                  </div>
                 </div>
+                {% for error in form.start_date_time.errors %}<div class="alert alert-danger"><div class="alert alert-danger">{{ error }}</div></div>{% endfor %}
               </div>
-              <div class="col">
-                <div class="form-group">
-                  <h5 class="mb-1">{{ form.start_time.label }}</h5>
-                  <!-- <div class="form-group row"> {{ form.start_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_time.hour }}</div></div>
-                  <div class="form-group row"> {{ form.start_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.start_time.minute }}</div></div> -->
-                  <!-- I don't know if the following looks better or not. TODO: Get opinion -->
-                  <div class="form-group row"> <div class="col-sm-2">{{ form.start_time.hour }}</div>  <div class="col-sm-2">{{ form.start_time.minute }}</div></div>
-                  {% for error in form.start_time.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
-                  <script>$("#start_time-hour").val("{{ride.start_time.hour}}");</script>
-                  <script>$("#start_time-minute").val("{{ride.start_time.minute}}");</script>
+              <div class="col-sm-5">
+                <h5 class="mb-1">{{ form.end_date_time.label }}</h5>
+                <div class="input-group date" id="end_date_time" data-target-input="nearest">{{form.end_date_time(class="form-control datetimepicker-input")}}
+                  <div class="input-group-append" data-target="#end_date_time" data-toggle="datetimepicker">
+                    <div class="input-group-text" id="donothide"><i class="fa fa-calendar"></i></div>
+                  </div>
                 </div>
+                 {% for error in form.end_date_time.errors %}<div class="alert alert-danger"><div class="alert alert-danger">{{ error }}</div></div>{% endfor %}
               </div>
             </div>
-          </fieldset>
-          <fieldset class="form-group">
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <h5 class="mb-1">{{ form.end_date.label }}</h5>
-                  <!-- <div class="form-group row"> {{ form.end_date.month.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.month }}</div></div>
-                  <div class="form-group row"> {{ form.end_date.day.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.day }}</div></div>
-                  <div class="form-group row"> {{ form.end_date.year.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_date.year }}</div></div> -->
-                  <div class="form-group row"> <div class="col-sm-3">{{ form.end_date.month }}</div> <div class="col-sm-2">{{ form.end_date.day }}</div> <div class="col-sm-2">{{ form.end_date.year }}</div></div>
-                  {% for error in form.end_date.errors %} <div class="alert alert-danger">{{ error }}</div>{% endfor %}
-                  <script>$("#end_date-month").val("{{ride.end_time.month}}");</script>
-                  <script>$("#end_date-day").val("{{ride.end_time.day}}");</script>
-                  <script>$("#end_date-year").val("{{ride.end_time.year}}");</script>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-group">
-                  <h5 class="mb-1">{{ form.end_time.label }}</h5>
-                  <!-- <div class="form-group row"> {{ form.end_time.hour.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_time.hour }}</div></div>
-                  <div class="form-group row"> {{ form.end_time.minute.label(class="col-sm-2 col-form-label") }} <div class="col-sm-10">{{ form.end_time.minute }}</div></div> -->
-                  <div class="form-group row"> <div class="col-sm-2">{{ form.end_time.hour }}</div>  <div class="col-sm-2">{{ form.end_time.minute }}</div></div>
-                  {% for error in form.end_time.errors %} <div class="alert alert-danger">{{ error }}</div>{% endfor %}
-                  <script>$("#end_time-hour").val("{{ride.end_time.hour}}");</script>
-                  <script>$("#end_time-minute").val("{{ride.end_time.minute}}");</script>
-                </div>
-              </div>
           </fieldset>
           {{ form.submit(class="btn btn-primary btn-sm btn-block")}}
         </fieldset>
       </form>
-      </div>
     </div>
-
   </div>
-  {% endblock %}
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#start_date_time').datetimepicker({
+            icons: {
+                time: "fa fa-clock",
+                date: "fa fa-calendar",
+                up: "fa fa-arrow-up",
+                down: "fa fa-arrow-down"
+            },
+            format: 'YYYY-MM-DD HH:mm',
+            defaultDate: '{{ride.start_time}}',
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('#end_date_time').datetimepicker({
+            icons: {
+                time: "fa fa-clock",
+                date: "fa fa-calendar",
+                up: "fa fa-arrow-up",
+                down: "fa fa-arrow-down"
+            },
+            format: 'YYYY-MM-DD HH:mm',
+            defaultDate: '{{ride.end_time}}',
+        });
+    });
+</script>
+<script>
+  $('body').click(function(evt){
+  if(!$(evt.target).is('#donothide')) {
+      $('.bootstrap-datetimepicker-widget').hide();
+   }
+  });
+</script>
+{% endblock %}

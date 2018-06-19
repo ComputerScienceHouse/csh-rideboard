@@ -3,3 +3,4 @@ migrations/__pycache__
 .vscode
 rides-venv
 __pycache__
+.idea/
