@@ -73,10 +73,6 @@ def index(auth_dict=None):
 @auth.oidc_auth
 @user_auth
 def index_auth(auth_dict=None):
-    # If user has logged in before then redirect them to home page.
-    if 'userinfo' in session:
-        return redirect(url_for('index_auth'))
-
     # Get all the events and current EST time.
     events = Ride.query.all()
     loc_dt = datetime.datetime.now(tz=eastern)
