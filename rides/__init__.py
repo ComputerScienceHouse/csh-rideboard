@@ -45,7 +45,7 @@ def favicon():
 @app.route('/')
 def index(auth_dict=None):
     # If user has logged in before then redirect them to home page.
-    if('userinfo' in session):
+    if 'userinfo' in session:
         return redirect(url_for('index_auth'))
 
     # Get all the events and current EST time.
@@ -74,7 +74,7 @@ def index(auth_dict=None):
 @user_auth
 def index_auth(auth_dict=None):
     # If user has logged in before then redirect them to home page.
-    if('userinfo' in session):
+    if 'userinfo' in session:
         return redirect(url_for('index_auth'))
 
     # Get all the events and current EST time.
@@ -102,6 +102,8 @@ def index_auth(auth_dict=None):
 @auth.oidc_auth
 @user_auth
 def rideform(auth_dict=None):
+    loc_dt = datetime.datetime.now(tz=eastern)
+    st = loc_dt.strftime(fmt)
     form = RideForm()
     if form.validate_on_submit():
         name = form.name.data
