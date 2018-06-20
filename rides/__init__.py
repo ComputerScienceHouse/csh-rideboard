@@ -10,6 +10,7 @@ from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 
+# Setting up Flask and csrf token for forms.
 app = Flask(__name__)
 csrf = CSRFProtect(app)
 
@@ -21,6 +22,7 @@ else:
 
 db = SQLAlchemy(app)
 
+# OIDC Authentication, for CSH member login.
 auth = OIDCAuthentication(app, issuer=app.config["OIDC_ISSUER"],
 client_registration_info=app.config["OIDC_CLIENT_CONFIG"])
 
@@ -29,27 +31,31 @@ from rides.models import Ride, Rider, Car
 from rides.forms import RideForm, CarForm
 from .utils import user_auth
 
-
-# time
+# time setup for the server side time
 eastern = pytz.timezone('US/Eastern')
 fmt = '%Y-%m-%d %H:%M'
 
+# Favicon
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/assets'),
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-
+# Home page without authentication.
 @app.route('/')
 def index(auth_dict=None):
-    print('userinfo' in session)
+    # If user has logged in before then redirect them to home page.
+    if('userinfo' in session):
+        return redirect(url_for('index_auth'))
+
+    # Get all the events and current EST time.
     events = Ride.query.all()
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
-    print("EST TIME: " + st)
 
+    # If any event has expired by 1 hour then delete the event.
     for event in events:
-        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M')
+        t = datetime.datetime.strftime((event.end_time + datetime.timedelta(hours=1)), '%Y-%m-%d %H:%M')
         if st > t:
             for car in event.cars:
                 for peeps in car.riders:
@@ -58,25 +64,27 @@ def index(auth_dict=None):
             db.session.delete(event)
             db.session.commit()
 
+    # Query one more time for the display.
     events = Ride.query.all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
-
+# Home page with auth
 @app.route('/home')
 @auth.oidc_auth
 @user_auth
 def index_auth(auth_dict=None):
-    print('userinfo' in session)
+    # If user has logged in before then redirect them to home page.
+    if('userinfo' in session):
+        return redirect(url_for('index_auth'))
 
-    # List of objects from the database
+    # Get all the events and current EST time.
     events = Ride.query.all()
-
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
-    print("EST TIME: " + st)
 
+    # If any event has expired by 1 hour then delete the event.
     for event in events:
-        t = datetime.datetime.strftime(event.end_time, '%Y-%m-%d %H:%M')
+        t = datetime.datetime.strftime((event.end_time + datetime.timedelta(hours=1)), '%Y-%m-%d %H:%M')
         if st > t:
             for car in event.cars:
                 for peeps in car.riders:
@@ -85,16 +93,15 @@ def index_auth(auth_dict=None):
             db.session.delete(event)
             db.session.commit()
 
+    # Query one more time for the display.
     events = Ride.query.all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
-
+# Event Form
 @app.route('/rideform', methods=['GET', 'POST'])
 @auth.oidc_auth
 @user_auth
 def rideform(auth_dict=None):
-    loc_dt = datetime.datetime.now(tz=eastern)
-    st = loc_dt.strftime(fmt)
     form = RideForm()
     if form.validate_on_submit():
         name = form.name.data
@@ -119,13 +126,14 @@ def rideform(auth_dict=None):
         return redirect(url_for('index_auth'))
     return render_template('rideform.html', form=form, timestamp=st, auth_dict=auth_dict)
 
-
+# Edit event form
 @app.route('/edit/rideform/<string:rideid>', methods=['GET', 'POST'])
 @auth.oidc_auth
 @user_auth
 def editrideform(rideid, auth_dict=None):
     form = RideForm()
     ride = Ride.query.get(rideid)
+    print()
     if form.validate_on_submit():
         ride.name = form.name.data
         ride.address = form.address.data
@@ -140,12 +148,22 @@ def editrideform(rideid, auth_dict=None):
                                           int(form.end_date_time.data.hour),
                                           int(form.end_date_time.data.minute))
         ride.creator = auth_dict['uid']
-        # TODO: Change the infinity ride times as well.
+        car = Car.query.filter(Car.ride_id == rideid).filter(Car.name == "Need a Ride").first()
+        car.departure_time = datetime.datetime(int(form.start_date_time.data.year),
+                                            int(form.start_date_time.data.month),
+                                            int(form.start_date_time.data.day),
+                                            int(form.start_date_time.data.hour),
+                                            int(form.start_date_time.data.minute))
+        car.return_time = datetime.datetime(int(form.end_date_time.data.year),
+                                          int(form.end_date_time.data.month),
+                                          int(form.end_date_time.data.day),
+                                          int(form.end_date_time.data.hour),
+                                          int(form.end_date_time.data.minute))
         db.session.commit()
         return redirect(url_for('index_auth'))
     return render_template('editrideform.html', form=form, ride=ride, auth_dict=auth_dict)
 
-
+# Car form
 @app.route('/carform/<string:rideid>', methods=['GET', 'POST'])
 @auth.oidc_auth
 @user_auth
@@ -175,7 +193,7 @@ def carform(rideid, auth_dict=None):
         return redirect(url_for('index_auth'))
     return render_template('carform.html', form=form, ride=ride, auth_dict=auth_dict)
 
-
+# Edit car form
 @app.route('/edit/carform/<string:carid>', methods=['GET', 'POST'])
 @auth.oidc_auth
 @user_auth
@@ -201,7 +219,7 @@ def editcarform(carid, auth_dict=None):
         return redirect(url_for('index_auth'))
     return render_template('editcarform.html', form=form, car=car, auth_dict=auth_dict)
 
-
+# Join a ride
 @app.route('/join/<string:car_id>/<string:user>', methods=["GET"])
 @auth.oidc_auth
 @user_auth
@@ -223,22 +241,7 @@ def join_ride(car_id, user, auth_dict=None):
             db.session.commit()
     return redirect(url_for('index_auth'))
 
-
-# @app.route('/joinNoAuth/<string:car_id>/<string:user>', methods=["GET"])
-# def join_ride_no_auth(car_id, user):
-#     username = "N/A"
-#     name = user
-#     car = Car.query.filter(Car.id == car_id).first()
-#     attempted_username = user
-#     if (car.current_capacity < car.max_capacity or car.max_capacity == 0):
-#         rider = Rider(username, name, car_id)
-#         car.current_capacity += 1
-#         db.session.add(rider)
-#         db.session.add(car)
-#         db.session.commit()
-#     return redirect(url_for('index'))
-
-
+# Delete Car
 @app.route('/delete/car/<string:car_id>', methods=["GET"])
 @auth.oidc_auth
 @user_auth
@@ -252,7 +255,7 @@ def delete_car(car_id, auth_dict=None):
         db.session.commit()
     return redirect(url_for('index_auth'))
 
-
+# Delete Event
 @app.route('/delete/ride/<string:ride_id>', methods=["GET"])
 @auth.oidc_auth
 @user_auth
@@ -268,6 +271,7 @@ def delete_ride(ride_id, auth_dict=None):
         db.session.commit()
     return redirect(url_for('index_auth'))
 
+# Leave a ride
 @app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
 @auth.oidc_auth
 @user_auth
@@ -282,7 +286,7 @@ def leave_ride(car_id, rider_username, auth_dict=None):
         db.session.commit()
     return redirect(url_for('index_auth'))
 
-
+# Log out
 @app.route("/logout")
 @auth.oidc_logout
 def _logout():
