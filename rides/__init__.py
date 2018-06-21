@@ -98,6 +98,7 @@ def index_auth(auth_dict=None):
 @auth.oidc_auth
 @user_auth
 def rideform(auth_dict=None):
+    # Time to prepopulate the datetime field
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
     form = RideForm()
@@ -129,9 +130,9 @@ def rideform(auth_dict=None):
 @auth.oidc_auth
 @user_auth
 def editrideform(rideid, auth_dict=None):
-    form = RideForm()
+    # Get ride that is being edited, TODO: Add if username matches
     ride = Ride.query.get(rideid)
-    print()
+    form = RideForm()
     if form.validate_on_submit():
         ride.name = form.name.data
         ride.address = form.address.data
@@ -196,8 +197,9 @@ def carform(rideid, auth_dict=None):
 @auth.oidc_auth
 @user_auth
 def editcarform(carid, auth_dict=None):
-    form = CarForm()
+    # Get car that is being edited, TODO: Add if username matches
     car = Car.query.get(carid)
+    form = CarForm()
     if form.validate_on_submit():
         car.username = auth_dict['uid']
         car.name = auth_dict['first']+" "+ auth_dict['last']
@@ -228,6 +230,7 @@ def join_ride(car_id, user, auth_dict=None):
     car = Car.query.filter(Car.id == car_id).first()
     attempted_username = user
     if attempted_username == username:
+        # TODO: Another for loop to loop through all cars in the event.
         for person in car.riders:
             if person.username == username:
                 incar = True

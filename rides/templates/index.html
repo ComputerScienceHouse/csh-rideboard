@@ -123,8 +123,8 @@
             <div class="ml-auto">
               {% if event.creator == auth_dict["uid"] %}
                 <div class="btn-group" role="group" aria-label="Basic example">
-                  <a class="btn btn-info btn-sm" align="center" href="/edit/rideform/{{event.id}}" id="edit::event::{{event.id}}">Edit</a>
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteEvent">Delete</button>
+                  <a class="btn btn-info btn-sm" align="center" href="/edit/rideform/{{event.id}}" id="edit::event::{{event.id}}">Edit Event</a>
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteEvent">Delete Event</button>
                 </div>
                 <div class="modal" id="deleteEvent"><div class="modal-dialog" role="document"><div class="modal-content">
                   <div class="modal-header">
