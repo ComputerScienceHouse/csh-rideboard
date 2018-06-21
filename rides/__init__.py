@@ -78,6 +78,13 @@ def index_auth(auth_dict=None):
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
 
+    rider_instance = []
+    for rider_instances in Rider.query.filter(Rider.username == auth_dict['uid']).all():
+        rider_instance.append(Car.query.get(rider_instances.car_id).ride_id)
+    for rider_instances in Car.query.all():
+        if rider_instances.username == auth_dict['uid']:
+            rider_instance.append(rider_instances.ride_id)
+
     # If any event has expired by 1 hour then delete the event.
     for event in events:
         t = datetime.datetime.strftime((event.end_time + datetime.timedelta(hours=1)), '%Y-%m-%d %H:%M')
@@ -91,7 +98,7 @@ def index_auth(auth_dict=None):
 
     # Query one more time for the display.
     events = Ride.query.all()
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict, rider_instance=rider_instance)
 
 # Event Form
 @app.route('/rideform', methods=['GET', 'POST'])
