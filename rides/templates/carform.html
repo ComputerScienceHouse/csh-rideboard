@@ -15,7 +15,7 @@
             <div class="row">
               <div class="col-sm-5">
                 <h5 class="mb-1">{{ form.departure_date_time.label }}</h5>
-                <div class="input-group date" id="departure_date_time" data-target-input="nearest">{{form.departure_date_time(class="form-control datetimepicker-input", id="")}}
+                <div class="input-group date" id="departure_date_time" data-target-input="nearest">{{form.departure_date_time(class="form-control datetimepicker-input", readonly=true)}}
                   <div class="input-group-append" data-target="#departure_date_time" data-toggle="datetimepicker">
                     <div class="input-group-text" id="donothide"><i class="fa fa-calendar"></i></div>
                   </div>
@@ -24,7 +24,7 @@
               </div>
               <div class="col-sm-5">
                 <h5 class="mb-1">{{ form.return_date_time.label }}</h5>
-                <div class="input-group date" id="return_date_time" data-target-input="nearest">{{form.return_date_time(class="form-control datetimepicker-input")}}
+                <div class="input-group date" id="return_date_time" data-target-input="nearest">{{form.return_date_time(class="form-control datetimepicker-input", readonly=true)}}
                   <div class="input-group-append" data-target="#return_date_time" data-toggle="datetimepicker">
                     <div class="input-group-text" id="donothide"><i class="fa fa-calendar"></i></div>
                   </div>
@@ -54,6 +54,7 @@
             },
             format: 'YYYY-MM-DD HH:mm',
             defaultDate: '{{ride.start_time}}',
+            ignoreReadonly: true,
         });
     });
 </script>
@@ -68,6 +69,7 @@
             },
             format: 'YYYY-MM-DD HH:mm',
             defaultDate: '{{ride.end_time}}',
+            ignoreReadonly: true,
         });
     });
 </script>

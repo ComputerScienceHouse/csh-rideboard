@@ -1,6 +1,7 @@
 {% extends "layout.html" %} {% block content %}
 <div class="bs-component"> <div class="jumbotron">
   <h1 class="display-4 mt-4">Events:</h1>
+  <hr class="mb-4">
   {% for event in events %}
     <div class="card mb-3">
       <h3 class="card-header">{{event.name}}</h3>
@@ -77,29 +78,6 @@
                     </div> </div> </div>
                   {% endif %}
                 {% endif %}
-                <!-- Capability to join a ride even if you are not a CSH user. -->
-                <!-- {% if auth_dict==None %}
-                  {% if temp.foo == 0 %}
-                    {% if car.current_capacity < car.max_capacity %}
-                      <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#joinRide">Join Ride</button>
-                    {% endif %}
-                    {% if car.max_capacity == 0 %}
-                      <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#joinRide">Join Ride</button>
-                    {% endif %}
-                  {% endif %}
-                {% endif %}
-                <div class="modal" id="joinRide"> <div class="modal-dialog" role="document"> <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">What is your name?</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span></button>
-                  </div>
-                  <div class="modal-body">
-                    <p class="font-normal lead"> <input class="form-control" id="userName" placeholder="Enter your name"></p>
-                  </div>
-                  <div class="modal-footer">
-                    <a href='' onclick="this.href='/joinNoAuth/{{car.id}}/'+document.getElementById('userName').value" class="btn btn-info btn-sm">Submit</a>
-                  </div>
-                </div> </div> </div> -->
               </div>
             </div>
           </h5>
