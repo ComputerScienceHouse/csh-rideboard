@@ -98,7 +98,8 @@ def index_auth(auth_dict=None):
 
     # Query one more time for the display.
     events = Ride.query.all()
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict, rider_instance=rider_instance)
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime,
+                                         auth_dict=auth_dict, rider_instance=rider_instance)
 
 # Event Form
 @app.route('/rideform', methods=['GET', 'POST'])
