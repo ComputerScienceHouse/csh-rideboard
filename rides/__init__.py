@@ -65,7 +65,7 @@ def index(auth_dict=None):
             db.session.commit()
 
     # Query one more time for the display.
-    events = Ride.query.all()
+    events = Ride.query.order_by(Ride.start_time.asc()).all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
 # Home page with auth
@@ -97,7 +97,7 @@ def index_auth(auth_dict=None):
             db.session.commit()
 
     # Query one more time for the display.
-    events = Ride.query.all()
+    events = Ride.query.order_by(Ride.start_time.asc()).all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict, rider_instance=rider_instance)
 
@@ -236,12 +236,15 @@ def join_ride(car_id, user, auth_dict=None):
     username = auth_dict['uid']
     name = auth_dict['first']+" "+ auth_dict['last']
     car = Car.query.filter(Car.id == car_id).first()
+    event = Ride.query.filter(Ride.id == car.ride_id).first()
     attempted_username = user
     if attempted_username == username:
-        # TODO: Another for loop to loop through all cars in the event.
-        for person in car.riders:
-            if person.username == username:
+        for c in event.cars:
+            if c.username == username:
                 incar = True
+            for person in c.riders:
+                if person.username == username:
+                    incar = True
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
             rider = Rider(username, name, car_id)
             car.current_capacity += 1
@@ -257,7 +260,7 @@ def join_ride(car_id, user, auth_dict=None):
 def delete_car(car_id, auth_dict=None):
     username = auth_dict['uid']
     car = Car.query.filter(Car.id == car_id).first()
-    if car.username == username:
+    if car.username == username and car is not None:
         for peeps in car.riders:
             db.session.delete(peeps)
         db.session.delete(car)
@@ -271,7 +274,7 @@ def delete_car(car_id, auth_dict=None):
 def delete_ride(ride_id, auth_dict=None):
     username = auth_dict['uid']
     ride = Ride.query.filter(Ride.id == ride_id).first()
-    if ride.creator == username:
+    if ride.creator == username and ride is not None:
         for car in ride.cars:
             for peeps in car.riders:
                 db.session.delete(peeps)
@@ -288,7 +291,7 @@ def leave_ride(car_id, rider_username, auth_dict=None):
     username = auth_dict['uid']
     car = Car.query.filter(Car.id == car_id).first()
     rider = Rider.query.filter(Rider.username == rider_username, Rider.car_id == car_id).first()
-    if rider.username == username:
+    if rider.username == username and rider is not None:
         db.session.delete(rider)
         car.current_capacity -= 1
         db.session.add(car)
