@@ -11,7 +11,7 @@ If you would like to develop or run this locally follow the following directions
 * virtualenv
 
 ### Setup
-1. `git clone https://github.com/ag-ayush/rides.git`
+1. `git clone https://github.com/ag-ayush/rideboard.git`
 2. `cd rides/`
 2. Create a python virtual environment and activate it.
   - `pip install virtualenv`
