@@ -2,6 +2,10 @@
 
 RideBoard is CSH service that allows the members to carpool, allowing those that do not have a car to participate in events.
 
+[![Travis](https://travis-ci.org/ag-ayush/rides.svg?branch=master)](https://travis-ci.org/ag-ayush/rides)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ag-ayush/rideboard/blob/master/LICENSE)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/ag-ayush/rideboard/issues)
+
 ## Contributing
 All contributors are welcome! If you would like to contribute:
 
