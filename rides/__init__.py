@@ -138,36 +138,37 @@ def rideform(auth_dict=None):
 @auth.oidc_auth
 @user_auth
 def editrideform(rideid, auth_dict=None):
-    # Get ride that is being edited, TODO: Add if username matches
+    username = auth_dict['uid']
     ride = Ride.query.get(rideid)
-    form = RideForm()
-    if form.validate_on_submit():
-        ride.name = form.name.data
-        ride.address = form.address.data
-        ride.start_time = datetime.datetime(int(form.start_date_time.data.year),
-                                            int(form.start_date_time.data.month),
-                                            int(form.start_date_time.data.day),
-                                            int(form.start_date_time.data.hour),
-                                            int(form.start_date_time.data.minute))
-        ride.end_time = datetime.datetime(int(form.end_date_time.data.year),
-                                          int(form.end_date_time.data.month),
-                                          int(form.end_date_time.data.day),
-                                          int(form.end_date_time.data.hour),
-                                          int(form.end_date_time.data.minute))
-        ride.creator = auth_dict['uid']
-        car = Car.query.filter(Car.ride_id == rideid).filter(Car.name == "Need a Ride").first()
-        car.departure_time = datetime.datetime(int(form.start_date_time.data.year),
-                                            int(form.start_date_time.data.month),
-                                            int(form.start_date_time.data.day),
-                                            int(form.start_date_time.data.hour),
-                                            int(form.start_date_time.data.minute))
-        car.return_time = datetime.datetime(int(form.end_date_time.data.year),
-                                          int(form.end_date_time.data.month),
-                                          int(form.end_date_time.data.day),
-                                          int(form.end_date_time.data.hour),
-                                          int(form.end_date_time.data.minute))
-        db.session.commit()
-        return redirect(url_for('index_auth'))
+    if username == ride.creator and ride is not None:
+        form = RideForm()
+        if form.validate_on_submit():
+            ride.name = form.name.data
+            ride.address = form.address.data
+            ride.start_time = datetime.datetime(int(form.start_date_time.data.year),
+                                                int(form.start_date_time.data.month),
+                                                int(form.start_date_time.data.day),
+                                                int(form.start_date_time.data.hour),
+                                                int(form.start_date_time.data.minute))
+            ride.end_time = datetime.datetime(int(form.end_date_time.data.year),
+                                              int(form.end_date_time.data.month),
+                                              int(form.end_date_time.data.day),
+                                              int(form.end_date_time.data.hour),
+                                              int(form.end_date_time.data.minute))
+            ride.creator = auth_dict['uid']
+            car = Car.query.filter(Car.ride_id == rideid).filter(Car.name == "Need a Ride").first()
+            car.departure_time = datetime.datetime(int(form.start_date_time.data.year),
+                                                int(form.start_date_time.data.month),
+                                                int(form.start_date_time.data.day),
+                                                int(form.start_date_time.data.hour),
+                                                int(form.start_date_time.data.minute))
+            car.return_time = datetime.datetime(int(form.end_date_time.data.year),
+                                              int(form.end_date_time.data.month),
+                                              int(form.end_date_time.data.day),
+                                              int(form.end_date_time.data.hour),
+                                              int(form.end_date_time.data.minute))
+            db.session.commit()
+            return redirect(url_for('index_auth'))
     return render_template('editrideform.html', form=form, ride=ride, auth_dict=auth_dict)
 
 # Car form
@@ -205,26 +206,27 @@ def carform(rideid, auth_dict=None):
 @auth.oidc_auth
 @user_auth
 def editcarform(carid, auth_dict=None):
-    # Get car that is being edited, TODO: Add if username matches
+    username = auth_dict['uid']
     car = Car.query.get(carid)
-    form = CarForm()
-    if form.validate_on_submit():
-        car.username = auth_dict['uid']
-        car.name = auth_dict['first']+" "+ auth_dict['last']
-        car.max_capacity = int(form.max_capacity.data['max_capacity'])
-        car.departure_time = datetime.datetime(int(form.departure_date_time.data.year),
-                                               int(form.departure_date_time.data.month),
-                                               int(form.departure_date_time.data.day),
-                                               int(form.departure_date_time.data.hour),
-                                               int(form.departure_date_time.data.minute))
-        car.return_time = datetime.datetime(int(form.return_date_time.data.year),
-                                            int(form.return_date_time.data.month),
-                                            int(form.return_date_time.data.day),
-                                            int(form.return_date_time.data.hour),
-                                            int(form.return_date_time.data.minute))
-        car.driver_comment = form.comments.data
-        db.session.commit()
-        return redirect(url_for('index_auth'))
+    if username == car.username and car is not None:
+        form = CarForm()
+        if form.validate_on_submit():
+            car.username = auth_dict['uid']
+            car.name = auth_dict['first']+" "+ auth_dict['last']
+            car.max_capacity = int(form.max_capacity.data['max_capacity'])
+            car.departure_time = datetime.datetime(int(form.departure_date_time.data.year),
+                                                   int(form.departure_date_time.data.month),
+                                                   int(form.departure_date_time.data.day),
+                                                   int(form.departure_date_time.data.hour),
+                                                   int(form.departure_date_time.data.minute))
+            car.return_time = datetime.datetime(int(form.return_date_time.data.year),
+                                                int(form.return_date_time.data.month),
+                                                int(form.return_date_time.data.day),
+                                                int(form.return_date_time.data.hour),
+                                                int(form.return_date_time.data.minute))
+            car.driver_comment = form.comments.data
+            db.session.commit()
+            return redirect(url_for('index_auth'))
     return render_template('editcarform.html', form=form, car=car, auth_dict=auth_dict)
 
 # Join a ride
