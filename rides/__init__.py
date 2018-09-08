@@ -44,8 +44,16 @@ def favicon():
 # Home page without authentication.
 @app.route('/')
 def index(auth_dict=None):
-    return redirect(url_for('index_auth'))
+    # If user has logged in before then redirect them to home page.
+    if 'userinfo' in session:
+        return redirect(url_for('index_auth'))
 
+    # Get current EST time.
+    loc_dt = datetime.datetime.now(tz=eastern)
+    st = loc_dt.strftime(fmt)
+
+    events = []
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
 # Home page with auth
 @app.route('/home')

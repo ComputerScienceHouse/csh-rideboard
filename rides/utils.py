@@ -1,12 +1,7 @@
-# Credit to Liam Middlebrook and Ram Zallan
-# https://github.com/liam-middlebrook/gallery
-
-
+import subprocess
 from functools import wraps
-
 from flask import session
 
-import subprocess
 
 INTRO_REALM = "https://sso.csh.rit.edu/auth/realms/intro"
 
@@ -29,7 +24,5 @@ def user_auth(func):
             "commit": commit
         }
         kwargs["auth_dict"] = auth_dict
-
         return func(*args, **kwargs)
-
     return wrapped_function
