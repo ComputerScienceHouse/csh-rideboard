@@ -1,0 +1,19 @@
+{
+  "background_color": "#FFF",
+  "description": "CSH RideBoard",
+  "dir": "auto",
+  "display": "standalone",
+  "lang": "en",
+  "name": "CSH RideBoard",
+  "orientation": "portrait",
+  "short_name": "RideBoard",
+  "start_url": "/home",
+  "theme_color": "#b0197e",
+//  "icons": [
+//    {
+//      "src": "/static/assets/favicon.ico",
+//      "sizes": "512x512",
+//      "type": "image/png"
+//    }
+//  ]
+}

@@ -44,29 +44,8 @@ def favicon():
 # Home page without authentication.
 @app.route('/')
 def index(auth_dict=None):
-    # If user has logged in before then redirect them to home page.
-    if 'userinfo' in session:
-        return redirect(url_for('index_auth'))
+    return redirect(url_for('index_auth'))
 
-    # Get all the events and current EST time.
-    events = Ride.query.all()
-    loc_dt = datetime.datetime.now(tz=eastern)
-    st = loc_dt.strftime(fmt)
-
-    # If any event has expired by 1 hour then delete the event.
-    for event in events:
-        t = datetime.datetime.strftime((event.end_time + datetime.timedelta(hours=1)), '%Y-%m-%d %H:%M')
-        if st > t:
-            for car in event.cars:
-                for peeps in car.riders:
-                    db.session.delete(peeps)
-                db.session.delete(car)
-            db.session.delete(event)
-            db.session.commit()
-
-    # Query one more time for the display.
-    events = Ride.query.order_by(Ride.start_time.asc()).all()
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
 # Home page with auth
 @app.route('/home')
