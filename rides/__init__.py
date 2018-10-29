@@ -41,19 +41,45 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/assets'),
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-# Home page without authentication.
-@app.route('/')
-def index(auth_dict=None):
-    # If user has logged in before then redirect them to home page.
-    if 'userinfo' in session:
-        return redirect(url_for('index_auth'))
-
+@app.route('/demo')
+def demo(auth_dict=None):
     # Get current EST time.
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
+    return render_template('demo.html', timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
-    events = []
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime, auth_dict=auth_dict)
+# Home page without authentication.
+@app.route('/')
+@auth.oidc_auth
+@user_auth
+def index(auth_dict=None):
+    # Get all the events and current EST time.
+    events = Ride.query.all()
+    loc_dt = datetime.datetime.now(tz=eastern)
+    st = loc_dt.strftime(fmt)
+
+    rider_instance = []
+    for rider_instances in Rider.query.filter(Rider.username == auth_dict['uid']).all():
+        rider_instance.append(Car.query.get(rider_instances.car_id).ride_id)
+    for rider_instances in Car.query.all():
+        if rider_instances.username == auth_dict['uid']:
+            rider_instance.append(rider_instances.ride_id)
+
+    # If any event has expired by 1 hour then delete the event.
+    for event in events:
+        t = datetime.datetime.strftime((event.end_time + datetime.timedelta(hours=1)), '%Y-%m-%d %H:%M')
+        if st > t:
+            for car in event.cars:
+                for peeps in car.riders:
+                    db.session.delete(peeps)
+                db.session.delete(car)
+            db.session.delete(event)
+            db.session.commit()
+
+    # Query one more time for the display.
+    events = Ride.query.order_by(Ride.start_time.asc()).all()
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime,
+                                         auth_dict=auth_dict, rider_instance=rider_instance)
 
 # Home page with auth
 @app.route('/home')
