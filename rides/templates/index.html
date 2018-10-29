@@ -1,10 +1,10 @@
 {% extends "layout.html" %} {% block content %}
 <div class="bs-component"> <div class="jumbotron">
-  <h1 class="display-4 mt-4">Events:</h1>
+  <h1 class="display-4 mt-4" align="center">Events</h1>
   <hr class="mb-4">
   {% for event in events %}
     <div class="card mb-3">
-      <h3 class="card-header">{{event.name}}</h3>
+      <h3 class="card-header" align="center">{{event.name}}</h3>
       <div class="card-body">
         <div class="d-flex justify-content-between">
           <div><h6 class="card-text lead float-left"> <strong>Start:</strong> {{datetime.datetime.strftime(event.start_time, '%B %d, %Y at %H:%M')}}</h6></div>

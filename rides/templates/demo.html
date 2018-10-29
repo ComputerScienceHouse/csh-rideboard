@@ -1,0 +1,219 @@
+{% extends "layout.html" %} {% block content %}
+<div class="bs-component"> <div class="jumbotron">
+  <h1 class="display-4 mt-4" align="center">Events</h1>
+  <hr class="mb-4">
+
+    <div class="card mb-3">
+      <h3 class="card-header" align="center">Jay's Diner Dinner</h3>
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div><h6 class="card-text lead float-left"> <strong>Start:</strong> October 29, 2018 at 21:30</h6></div>
+          <div><h6 class="card-text lead float-right"> <strong>End: </strong> October 29, 2018 at 22:30</h6></div>
+        </div>
+        <h6 class="card-text lead my-2"> <strong>Address:</strong> 2612 W Henrietta Rd, Rochester, NY 14623</h6>
+
+          <hr class="my-3">
+          <h5 class="mb-2">
+            <div class="d-flex">
+              <div>Need a Ride <small class="text-muted">(∞)</small></div>
+              <div class="ml-auto">
+                <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
+              </div>
+            </div>
+          </h5>
+          <div class="bs-component"> <div class="table-responsive">
+          <table class="table table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col" class="text-center font-weight-normal">Seats</th>
+                <th scope="col" class="text-center font-weight-normal">Passengers</th>
+                <th scope="col" class="text-center font-weight-normal">Departure</th>
+                <th scope="col" class="text-center font-weight-normal">Return</th>
+                <th scope="col" class="text-center font-weight-normal">Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-light">
+                <td class="text-center font-weight-normal">0/0</td>
+                <td class="text-center font-weight-normal"> </td>
+                <td class="text-center font-weight-normal">October 29, 2018 at 21:30</td>
+                <td class="text-center font-weight-normal">October 29, 2018 at 22:30</td>
+                <td class="text-center font-weight-normal"></td>
+              </tr>
+            </tbody>
+          </table>
+          </div> </div>
+
+          <hr class="my-3">
+          <h5 class="mb-2">
+            <div class="d-flex">
+              <div>Ayush Goel <small class="text-muted">(agoel)</small></div>
+              <div class="ml-auto">
+                <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
+
+
+
+
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                      <a class="btn btn-info btn-sm" align="center" href="/demo" id="edit::car::190">Edit</a>
+                      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteRide190">Delete</button>
+                    </div>
+                    <div class="modal" id="deleteRide190"> <div class="modal-dialog" role="document"> <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Delete Ride</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span></button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="font-normal lead"><small>Are you sure you want to delete your ride?</small></p>
+                      </div>
+                      <div class="modal-footer">
+                        <form method="get" action="/demo" id="delete::car::190"> <button type="submit" class="btn btn-danger">Yes</button></form>
+                        <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No</button>
+                      </div>
+                    </div> </div> </div>
+
+
+              </div>
+            </div>
+          </h5>
+          <div class="bs-component"> <div class="table-responsive">
+          <table class="table table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col" class="text-center font-weight-normal">Seats</th>
+                <th scope="col" class="text-center font-weight-normal">Passengers</th>
+                <th scope="col" class="text-center font-weight-normal">Departure</th>
+                <th scope="col" class="text-center font-weight-normal">Return</th>
+                <th scope="col" class="text-center font-weight-normal">Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-light">
+                <td class="text-center font-weight-normal">0/4</td>
+                <td class="text-center font-weight-normal"> </td>
+                <td class="text-center font-weight-normal">October 29, 2018 at 21:30</td>
+                <td class="text-center font-weight-normal">October 29, 2018 at 22:30</td>
+                <td class="text-center font-weight-normal">No comments.</td>
+              </tr>
+            </tbody>
+          </table>
+          </div> </div>
+
+          <!-- If you already created a ride or are in one, you cannot create one.-->
+
+        <div class="card-footer text-muted">
+          <div class="d-flex">
+            <div> Hosted By: agoel </div>
+            <div class="ml-auto">
+
+                <div class="btn-group" role="group" aria-label="Basic example">
+                  <a class="btn btn-info btn-sm" align="center" href="/demo" id="edit::event::87">Edit Event</a>
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteEvent87">Delete Event</button>
+                </div>
+                <div class="modal" id="deleteEvent87"><div class="modal-dialog" role="document"><div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Delete Event</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Are you sure you want to delete this event?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <form method="get" action="/demo" id="delete::ride::87"> <button type="submit" class="btn btn-danger">Yes</button></form>
+                    <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No</button>
+                  </div>
+                </div></div></div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="my-3">
+
+    <div class="card mb-3">
+      <h3 class="card-header" align="center">4 AM Bagel Run </h3>
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div><h6 class="card-text lead float-left"> <strong>Start:</strong> November 02, 2018 at 04:00</h6></div>
+          <div><h6 class="card-text lead float-right"> <strong>End: </strong> November 02, 2018 at 05:00</h6></div>
+        </div>
+        <h6 class="card-text lead my-2"> <strong>Address:</strong> 1896 Monroe Ave, Rochester, NY 14618</h6>
+
+          <hr class="my-3">
+          <h5 class="mb-2">
+            <div class="d-flex">
+              <div>Need a Ride <small class="text-muted">(∞)</small></div>
+              <div class="ml-auto">
+                <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
+
+
+
+                      <a class="btn btn-primary btn-sm" href="/demo" id="join::191" type="button">Join Ride</a>
+
+
+
+
+
+              </div>
+            </div>
+          </h5>
+          <div class="bs-component"> <div class="table-responsive">
+          <table class="table table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col" class="text-center font-weight-normal">Seats</th>
+                <th scope="col" class="text-center font-weight-normal">Passengers</th>
+                <th scope="col" class="text-center font-weight-normal">Departure</th>
+                <th scope="col" class="text-center font-weight-normal">Return</th>
+                <th scope="col" class="text-center font-weight-normal">Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-light">
+                <td class="text-center font-weight-normal">0/0</td>
+                <td class="text-center font-weight-normal"> </td>
+                <td class="text-center font-weight-normal">November 02, 2018 at 04:00</td>
+                <td class="text-center font-weight-normal">November 02, 2018 at 05:00</td>
+                <td class="text-center font-weight-normal"></td>
+              </tr>
+            </tbody>
+          </table>
+          </div> </div>
+
+          <!-- If you already created a ride or are in one, you cannot create one.-->
+        <hr class="my-3"><form method="get" action="/demo" id="ride"><button class="btn btn-success btn-sm btn-block my-2" type="submit">Create Ride</button></form>
+        <div class="card-footer text-muted">
+          <div class="d-flex">
+            <div> Hosted By: agoel </div>
+            <div class="ml-auto">
+
+                <div class="btn-group" role="group" aria-label="Basic example">
+                  <a class="btn btn-info btn-sm" align="center" href="/demo" id="edit::event::88">Edit Event</a>
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteEvent88">Delete Event</button>
+                </div>
+                <div class="modal" id="deleteEvent88"><div class="modal-dialog" role="document"><div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Delete Event</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Are you sure you want to delete this event?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <form method="get" action="/demo" id="delete::ride::88"> <button type="submit" class="btn btn-danger">Yes</button></form>
+                    <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No</button>
+                  </div>
+                </div></div></div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="my-3">
+
+  <a class="btn btn-primary btn-lg btn-block" align="center" href="/demo" id="new">Create Event</a>
+</div> </div>
+
+{% endblock %}
