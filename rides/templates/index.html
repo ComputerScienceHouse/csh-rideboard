@@ -10,7 +10,7 @@
           <div><h6 class="card-text lead float-left"> <strong>Start:</strong> {{datetime.datetime.strftime(event.start_time, '%B %d, %Y at %H:%M')}}</h6></div>
           <div><h6 class="card-text lead float-right"> <strong>End: </strong> {{datetime.datetime.strftime(event.end_time, '%B %d, %Y at %H:%M')}}</h6></div>
         </div>
-        <h6 class="card-text lead my-2"> <strong>Address:</strong> {{event.address}}</h6>
+        <h6 class="card-text lead my-2"> <strong>Address:</strong> <a href="https://maps.google.com/?q={{event.address}}"> {{event.address}} </a></h6>
         {% for car in event.cars %}
           <hr class="my-3">
           <h5 class="mb-2">
