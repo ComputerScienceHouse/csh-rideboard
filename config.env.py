@@ -11,7 +11,7 @@ SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI')
 SQLALCHEMY_TRACK_MODIFICATIONS = 'False'
 
 # Openshift secret
-SECRET_KEY = env.get("SECRET_KEY", default=''.join(secrets.token_hex(16)))
+SECRET_KEY = env.get("SECRET_KEY", default='61f48bcb-a530')
 
 # OpenID Connect SSO config
 OIDC_ISSUER = env.get('OIDC_ISSUER', 'https://sso.csh.rit.edu/auth/realms/csh')

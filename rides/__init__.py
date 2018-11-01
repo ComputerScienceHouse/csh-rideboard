@@ -74,10 +74,10 @@ def index(auth_dict=None):
                     db.session.delete(peeps)
                 db.session.delete(car)
             db.session.delete(event)
-            db.session.commit()
+            # db.session.commit()
 
     # Query one more time for the display.
-    events = Ride.query.order_by(Ride.start_time.asc()).all()
+    events = Ride.query.order_by(Ride.id.asc()).all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict, rider_instance=rider_instance)
 
@@ -107,10 +107,10 @@ def index_auth(auth_dict=None):
                     db.session.delete(peeps)
                 db.session.delete(car)
             db.session.delete(event)
-            db.session.commit()
+            # db.session.commit()
 
     # Query one more time for the display.
-    events = Ride.query.order_by(Ride.start_time.asc()).all()
+    events = Ride.query.order_by(Ride.id.asc()).all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict, rider_instance=rider_instance)
 
