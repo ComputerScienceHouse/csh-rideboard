@@ -51,8 +51,8 @@ def demo(auth_dict=None):
 
 
 @app.route('/')
-# @auth.oidc_auth
-# @user_auth
+@auth.oidc_auth
+@user_auth
 def index(auth_dict=None):
     # Get all the events and current EST time.
     events = Ride.query.all()
@@ -81,8 +81,8 @@ def index(auth_dict=None):
 
 
 @app.route('/history')
-# @auth.oidc_auth
-# @user_auth
+@auth.oidc_auth
+@user_auth
 def history(auth_dict=None):
     # Get all the events and current EST time.
     events = Ride.query.all()
