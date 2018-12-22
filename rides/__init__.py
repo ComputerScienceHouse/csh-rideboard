@@ -75,7 +75,7 @@ def index(auth_dict=None):
             db.session.commit()
 
     # Query one more time for the display.
-    events = Ride.query.filter(Ride.expired == False).order_by(Ride.id.asc()).all()
+    events = Ride.query.filter(Ride.expired == False).order_by(Ride.id.asc()).all() #pylint: disable=singleton-comparison
     return render_template('index.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict, rider_instance=rider_instance)
 
@@ -88,7 +88,7 @@ def history(auth_dict=None):
     events = Ride.query.all()
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
-    events = Ride.query.filter(Ride.expired == True).order_by(Ride.id.asc()).all()
+    events = Ride.query.filter(Ride.expired == True).order_by(Ride.id.asc()).all() #pylint: disable=singleton-comparison
     return render_template('history.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict)
 
