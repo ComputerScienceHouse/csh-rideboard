@@ -13,6 +13,7 @@ class Ride(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     creator = db.Column(db.String(50), nullable=False)
+    expired = db.Column(db.Boolean, default=False, nullable=False)
     cars = db.relationship('Car', backref='rides', lazy=True)
 
     def __init__(self, name, address, start_time, end_time, creator):

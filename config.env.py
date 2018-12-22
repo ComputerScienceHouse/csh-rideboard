@@ -11,13 +11,13 @@ SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI')
 SQLALCHEMY_TRACK_MODIFICATIONS = 'False'
 
 # Openshift secret
-SECRET_KEY = env.get("SECRET_KEY", default='61f48bcb-a530')
+SECRET_KEY = env.get("SECRET_KEY", default='SECRET-KEY')
 
 # OpenID Connect SSO config
 OIDC_ISSUER = env.get('OIDC_ISSUER', 'https://sso.csh.rit.edu/auth/realms/csh')
 OIDC_CLIENT_CONFIG = {
     'client_id': env.get('OIDC_CLIENT_ID', 'rideboard'),
-    'client_secret': env.get('OIDC_CLIENT_SECRET', ''),
+    'client_secret': env.get('OIDC_CLIENT_SECRET', 'NOT-A-SECRET'),
     'post_logout_redirect_uris': [env.get('OIDC_LOGOUT_REDIRECT_URI', 'https://rideboard.csh.rit.edu/logout')]
 }
 

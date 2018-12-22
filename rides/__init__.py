@@ -13,6 +13,7 @@ from flask_wtf.csrf import CSRFProtect
 # Setting up Flask and csrf token for forms.
 app = Flask(__name__)
 csrf = CSRFProtect(app)
+csrf.init_app(app)
 
 # Get app config from absolute file path
 if os.path.exists(os.path.join(os.getcwd(), "config.py")):
@@ -59,60 +60,58 @@ def index(auth_dict=None):
     st = loc_dt.strftime(fmt)
 
     rider_instance = []
-    for rider_instances in Rider.query.filter(Rider.username == auth_dict['uid']).all():
-        rider_instance.append(Car.query.get(rider_instances.car_id).ride_id)
-    for rider_instances in Car.query.all():
-        if rider_instances.username == auth_dict['uid']:
-            rider_instance.append(rider_instances.ride_id)
+    if auth_dict is not None:
+        for rider_instances in Rider.query.filter(Rider.username == auth_dict['uid']).all():
+            rider_instance.append(Car.query.get(rider_instances.car_id).ride_id)
+        for rider_instances in Car.query.all():
+            if rider_instances.username == auth_dict['uid']:
+                rider_instance.append(rider_instances.ride_id)
 
     # If any event has expired by 1 hour then delete the event.
     for event in events:
         t = datetime.datetime.strftime((event.end_time + datetime.timedelta(hours=1)), '%Y-%m-%d %H:%M')
         if st > t:
-            for car in event.cars:
-                for peeps in car.riders:
-                    db.session.delete(peeps)
-                db.session.delete(car)
-            db.session.delete(event)
-            # db.session.commit()
+            event.expired = True
+            db.session.commit()
 
     # Query one more time for the display.
-    events = Ride.query.order_by(Ride.id.asc()).all()
+    events = Ride.query.filter(Ride.expired == False).order_by(Ride.id.asc()).all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict, rider_instance=rider_instance)
 
 # Home page with auth
-@app.route('/home')
-@auth.oidc_auth
-@user_auth
-def index_auth(auth_dict=None):
-    # Get all the events and current EST time.
-    events = Ride.query.all()
-    loc_dt = datetime.datetime.now(tz=eastern)
-    st = loc_dt.strftime(fmt)
+# @app.route('/home')
+# @auth.oidc_auth
+# @user_auth
+# def index_auth(auth_dict=None):
+#     # Get all the events and current EST time.
+#     events = Ride.query.all()
+#     loc_dt = datetime.datetime.now(tz=eastern)
+#     st = loc_dt.strftime(fmt)
 
-    rider_instance = []
-    for rider_instances in Rider.query.filter(Rider.username == auth_dict['uid']).all():
-        rider_instance.append(Car.query.get(rider_instances.car_id).ride_id)
-    for rider_instances in Car.query.all():
-        if rider_instances.username == auth_dict['uid']:
-            rider_instance.append(rider_instances.ride_id)
+#     rider_instance = []
+#     if auth_dict is not None:
+#         for rider_instances in Rider.query.filter(Rider.username == auth_dict['uid']).all():
+#             rider_instance.append(Car.query.get(rider_instances.car_id).ride_id)
+#         for rider_instances in Car.query.all():
+#             if rider_instances.username == auth_dict['uid']:
+#                 rider_instance.append(rider_instances.ride_id)
 
-    # If any event has expired by 1 hour then delete the event.
-    for event in events:
-        t = datetime.datetime.strftime((event.end_time + datetime.timedelta(hours=1)), '%Y-%m-%d %H:%M')
-        if st > t:
-            for car in event.cars:
-                for peeps in car.riders:
-                    db.session.delete(peeps)
-                db.session.delete(car)
-            db.session.delete(event)
-            # db.session.commit()
+#     # If any event has expired by 1 hour then delete the event.
+#     for event in events:
+#         t = datetime.datetime.strftime((event.end_time + datetime.timedelta(hours=1)), '%Y-%m-%d %H:%M')
+#         if st > t:
+#             for car in event.cars:
+#                 for peeps in car.riders:
+#                     db.session.delete(peeps)
+#                 db.session.delete(car)
+#             db.session.delete(event)
+#             # db.session.commit()
 
-    # Query one more time for the display.
-    events = Ride.query.order_by(Ride.id.asc()).all()
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime,
-                                         auth_dict=auth_dict, rider_instance=rider_instance)
+#     # Query one more time for the display.
+#     events = Ride.query.order_by(Ride.id.asc()).all()
+#     return render_template('index.html', events=events, timestamp=st, datetime=datetime,
+#                                          auth_dict=auth_dict, rider_instance=rider_instance)
 
 # Event Form
 @app.route('/rideform', methods=['GET', 'POST'])
