@@ -51,8 +51,8 @@ def demo(auth_dict=None):
 
 
 @app.route('/')
-@auth.oidc_auth
-@user_auth
+# @auth.oidc_auth
+# @user_auth
 def index(auth_dict=None):
     # Get all the events and current EST time.
     events = Ride.query.all()
@@ -78,6 +78,19 @@ def index(auth_dict=None):
     events = Ride.query.filter(Ride.expired == False).order_by(Ride.id.asc()).all()
     return render_template('index.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict, rider_instance=rider_instance)
+
+
+@app.route('/history')
+# @auth.oidc_auth
+# @user_auth
+def history(auth_dict=None):
+    # Get all the events and current EST time.
+    events = Ride.query.all()
+    loc_dt = datetime.datetime.now(tz=eastern)
+    st = loc_dt.strftime(fmt)
+    events = Ride.query.filter(Ride.expired == True).order_by(Ride.id.asc()).all()
+    return render_template('history.html', events=events, timestamp=st, datetime=datetime,
+                                         auth_dict=auth_dict)
 
 
 # Event Form
@@ -135,6 +148,7 @@ def editrideform(rideid, auth_dict=None):
                                               int(form.end_date_time.data.hour),
                                               int(form.end_date_time.data.minute))
             ride.creator = auth_dict['uid']
+            ride.expired = False
             car = Car.query.filter(Car.ride_id == rideid).filter(Car.name == "Need a Ride").first()
             car.departure_time = datetime.datetime(int(form.start_date_time.data.year),
                                                 int(form.start_date_time.data.month),

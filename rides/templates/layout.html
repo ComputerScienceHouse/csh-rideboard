@@ -26,28 +26,36 @@
 <body class="" style="">
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-      <a class="navbar-brand abs" href="/home">Ride Board</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand abs" href="/">Ride Board</a>
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item navbar-user dropdown">
+            <a class="nav-link" href="/history">History</a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav ml-auto">
           {% if auth_dict != None %}
-            <li class="nav-item navbar-user dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user01">
-                <img src='https://profiles.csh.rit.edu/image/{{ auth_dict["uid"] }}'> {{ auth_dict["first"] }} {{ auth_dict["last"] }}
-                <span class="caret"></span>
-              </a>
-              <div class="dropdown-menu" aria-labelledby="user01">
-                <!-- <div class="dropdown-divider"></div> -->
-                <a class="dropdown-item" href="/logout">Logout</a>
-              </div>
-            </li>
+          <li class="nav-item navbar-user dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user01">
+              <img src='https://profiles.csh.rit.edu/image/{{ auth_dict["uid"] }}'> {{ auth_dict["first"] }} {{ auth_dict["last"]
+              }}
+              <span class="caret"></span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="user01">
+              <!-- <div class="dropdown-divider"></div> -->
+              <a class="dropdown-item" href="/logout">Logout</a>
+            </div>
+          </li>
           {% endif %}
           {% if auth_dict == None %}
-              <form method="get" action="https://rideboard.csh.rit.edu/home"><button class="btn btn-secondary my-2 my-sm-0" type="submit"> Log In </button></form>
-              &nbsp;
-              <form method="get" action="https://froshboard.csh.rit.edu/home"> <button class="btn btn-secondary my-2 my-sm-0" type="submit"> Intro Log In </button></form>
+          <form method="get" action="https://rideboard.csh.rit.edu/home"><button class="btn btn-secondary my-2 my-sm-0" type="submit">
+              Log In </button></form>
+          &nbsp;
+          <form method="get" action="https://froshboard.csh.rit.edu/home"> <button class="btn btn-secondary my-2 my-sm-0" type="submit">
+              Intro Log In </button></form>
           {% endif %}
         </ul>
       </div>
