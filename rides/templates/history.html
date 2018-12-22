@@ -114,11 +114,6 @@
                     </div>
                 </div>
                 {% endfor %}
-                <!-- If you already created a ride or are in one, you cannot create one.-->
-                {% if auth_dict != None %}{% if event.id not in rider_instance %}
-                <hr class="my-3">
-                <form method="get" action="/carform/{{event.id}}" id="ride"><button class="btn btn-success btn-sm btn-block my-2"
-                        type="submit">Create Ride</button></form>{% endif %}{% endif %}
                 <div class="card-footer text-muted">
                     <div class="d-flex">
                         <div> Hosted By: {{event.creator}} </div>
