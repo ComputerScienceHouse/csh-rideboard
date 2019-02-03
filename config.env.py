@@ -15,11 +15,10 @@ SECRET_KEY = env.get("SECRET_KEY", default='SECRET-KEY')
 
 # OpenID Connect SSO config
 OIDC_ISSUER = env.get('OIDC_ISSUER', 'https://sso.csh.rit.edu/auth/realms/csh')
-OIDC_CLIENT_CONFIG = {
-    'client_id': env.get('OIDC_CLIENT_ID', 'rideboard'),
-    'client_secret': env.get('OIDC_CLIENT_SECRET', 'NOT-A-SECRET'),
-    'post_logout_redirect_uris': [env.get('OIDC_LOGOUT_REDIRECT_URI', 'https://rideboard.csh.rit.edu/logout')]
-}
+OIDC_CLIENT_ID = env.get('OIDC_CLIENT_ID', 'rideboard')
+OIDC_CLIENT_SECRET = env.get('OIDC_CLIENT_SECRET', 'NOT-A-SECRET')
+# OIDC_POST_LOGOUT_REDIRECT_URI = env.get('OIDC_LOGOUT_REDIRECT_URI', 'https://rideboard.csh.rit.edu/logout')
+
 
 LDAP_BIND_DN = env.get("LDAP_BIND_DN", default="cn=rides,ou=Apps,dc=csh,dc=rit,dc=edu")
 LDAP_BIND_PASS = env.get("LDAP_BIND_PASS", default=None)

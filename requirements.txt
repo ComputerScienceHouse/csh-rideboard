@@ -7,5 +7,5 @@ Flask-WTF==0.14.2
 psycopg2
 pylint==1.8.3
 SQLAlchemy==1.2.6
-Flask-pyoidc==1.2.0
+Flask-pyoidc
 pytz==2018.3

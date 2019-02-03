@@ -6,6 +6,7 @@ import datetime
 import os
 import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
+from flask_pyoidc.provider_configuration import ProviderConfiguration, ClientMetadata
 from flask import Flask, render_template, send_from_directory, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
@@ -24,8 +25,12 @@ else:
 db = SQLAlchemy(app)
 
 # OIDC Authentication, for CSH member login.
-auth = OIDCAuthentication(app, issuer=app.config["OIDC_ISSUER"],
-client_registration_info=app.config["OIDC_CLIENT_CONFIG"])
+auth = OIDCAuthentication({'default': ProviderConfiguration(issuer=app.config["OIDC_ISSUER"],
+                            client_metadata=ClientMetadata(
+                                app.config["OIDC_CLIENT_ID"],
+                                app.config["OIDC_CLIENT_SECRET"]))}, app)
+auth.init_app(app)
+
 
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
@@ -51,7 +56,7 @@ def demo(auth_dict=None):
 
 
 @app.route('/')
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def index(auth_dict=None):
     # Get all the events and current EST time.
@@ -81,7 +86,7 @@ def index(auth_dict=None):
 
 
 @app.route('/history')
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def history(auth_dict=None):
     # Get all the events and current EST time.
@@ -95,7 +100,7 @@ def history(auth_dict=None):
 
 # Event Form
 @app.route('/rideform', methods=['GET', 'POST'])
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def rideform(auth_dict=None):
     # Time to prepopulate the datetime field
@@ -127,7 +132,7 @@ def rideform(auth_dict=None):
 
 # Edit event form
 @app.route('/edit/rideform/<string:rideid>', methods=['GET', 'POST'])
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def editrideform(rideid, auth_dict=None):
     username = auth_dict['uid']
@@ -166,7 +171,7 @@ def editrideform(rideid, auth_dict=None):
 
 # Car form
 @app.route('/carform/<string:rideid>', methods=['GET', 'POST'])
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def carform(rideid, auth_dict=None):
     form = CarForm()
@@ -196,7 +201,7 @@ def carform(rideid, auth_dict=None):
 
 # Edit car form
 @app.route('/edit/carform/<string:carid>', methods=['GET', 'POST'])
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def editcarform(carid, auth_dict=None):
     username = auth_dict['uid']
@@ -224,7 +229,7 @@ def editcarform(carid, auth_dict=None):
 
 # Join a ride
 @app.route('/join/<string:car_id>/<string:user>', methods=["GET"])
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def join_ride(car_id, user, auth_dict=None):
     incar = False
@@ -250,7 +255,7 @@ def join_ride(car_id, user, auth_dict=None):
 
 # Delete Car
 @app.route('/delete/car/<string:car_id>', methods=["GET"])
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def delete_car(car_id, auth_dict=None):
     username = auth_dict['uid']
@@ -264,7 +269,7 @@ def delete_car(car_id, auth_dict=None):
 
 # Delete Event
 @app.route('/delete/ride/<string:ride_id>', methods=["GET"])
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def delete_ride(ride_id, auth_dict=None):
     username = auth_dict['uid']
@@ -280,7 +285,7 @@ def delete_ride(ride_id, auth_dict=None):
 
 # Leave a ride
 @app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
-@auth.oidc_auth
+@auth.oidc_auth('default')
 @user_auth
 def leave_ride(car_id, rider_username, auth_dict=None):
     username = auth_dict['uid']
