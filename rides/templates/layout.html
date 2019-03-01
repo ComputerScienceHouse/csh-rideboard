@@ -40,7 +40,7 @@
           {% if auth_dict != None %}
           <li class="nav-item navbar-user dropdown">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user01">
-              <img src='https://profiles.csh.rit.edu/image/{{ auth_dict["uid"] }}'> {{ auth_dict["first"] }} {{ auth_dict["last"]
+              <img src='{{ auth_dict["picture"] }}'> {{ auth_dict["first"] }} {{ auth_dict["last"]
               }}
               <span class="caret"></span>
             </a>

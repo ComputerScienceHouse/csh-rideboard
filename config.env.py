@@ -13,12 +13,15 @@ SQLALCHEMY_TRACK_MODIFICATIONS = 'False'
 # Openshift secret
 SECRET_KEY = env.get("SECRET_KEY", default='SECRET-KEY')
 
-# OpenID Connect SSO config
+# OpenID Connect SSO config CSH
 OIDC_ISSUER = env.get('OIDC_ISSUER', 'https://sso.csh.rit.edu/auth/realms/csh')
 OIDC_CLIENT_ID = env.get('OIDC_CLIENT_ID', 'rideboard')
 OIDC_CLIENT_SECRET = env.get('OIDC_CLIENT_SECRET', 'NOT-A-SECRET')
-# OIDC_POST_LOGOUT_REDIRECT_URI = env.get('OIDC_LOGOUT_REDIRECT_URI', 'https://rideboard.csh.rit.edu/logout')
 
+# Google OpenID Connect SSO config
+GOOGLE_ISSUER = env.get('GOOGLE_ISSUER', 'https://accounts.google.com')
+GOOGLE_CLIENT_ID = env.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = env.get('GOOGLE_CLIENT_SECRET', '------')
 
 LDAP_BIND_DN = env.get("LDAP_BIND_DN", default="cn=rides,ou=Apps,dc=csh,dc=rit,dc=edu")
 LDAP_BIND_PASS = env.get("LDAP_BIND_PASS", default=None)
