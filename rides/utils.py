@@ -42,3 +42,6 @@ def google_user_auth(func):
         kwargs["auth_dict"] = auth_dict
         return func(*args, **kwargs)
     return wrapped_function
+
+def latin_to_utf8(string):
+    return str(bytes(string, encoding='latin1'), encoding='utf8')

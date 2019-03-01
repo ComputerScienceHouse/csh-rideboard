@@ -42,7 +42,7 @@ auth.init_app(app)
 # pylint: disable=wrong-import-position
 from rides.models import Ride, Rider, Car
 from rides.forms import RideForm, CarForm
-from .utils import csh_user_auth, google_user_auth
+from .utils import csh_user_auth, google_user_auth, latin_to_utf8
 
 # time setup for the server side time
 eastern = pytz.timezone('US/Eastern')
@@ -122,7 +122,7 @@ def rideform(auth_dict=None):
     st = loc_dt.strftime(fmt)
     form = RideForm()
     if form.validate_on_submit():
-        name = form.name.data
+        name = latin_to_utf8(form.name.data)
         address = form.address.data
         start_time = datetime.datetime(int(form.start_date_time.data.year),
                                        int(form.start_date_time.data.month),
@@ -154,7 +154,7 @@ def editrideform(rideid, auth_dict=None):
     if username == ride.creator and ride is not None:
         form = RideForm()
         if form.validate_on_submit():
-            ride.name = form.name.data
+            ride.name = latin_to_utf8(form.name.data)
             ride.address = form.address.data
             ride.start_time = datetime.datetime(int(form.start_date_time.data.year),
                                                 int(form.start_date_time.data.month),
@@ -192,7 +192,7 @@ def carform(rideid, auth_dict=None):
     ride = Ride.query.get(rideid)
     if form.validate_on_submit():
         username = auth_dict['uid']
-        name = auth_dict['first']+" "+ auth_dict['last']
+        name = latin_to_utf8(auth_dict['first']+" "+ auth_dict['last'])
         current_capacity = 0
         max_capacity = int(form.max_capacity.data['max_capacity'])
         departure_time = datetime.datetime(int(form.departure_date_time.data.year),
@@ -224,7 +224,7 @@ def editcarform(carid, auth_dict=None):
         form = CarForm()
         if form.validate_on_submit():
             car.username = auth_dict['uid']
-            car.name = auth_dict['first']+" "+ auth_dict['last']
+            car.name = latin_to_utf8(auth_dict['first']+" "+ auth_dict['last'])
             car.max_capacity = int(form.max_capacity.data['max_capacity'])
             car.departure_time = datetime.datetime(int(form.departure_date_time.data.year),
                                                    int(form.departure_date_time.data.month),
@@ -248,7 +248,7 @@ def editcarform(carid, auth_dict=None):
 def join_ride(car_id, user, auth_dict=None):
     incar = False
     username = auth_dict['uid']
-    name = auth_dict['first']+" "+ auth_dict['last']
+    name = latin_to_utf8(auth_dict['first']+" "+ auth_dict['last'])
     car = Car.query.filter(Car.id == car_id).first()
     event = Ride.query.filter(Ride.id == car.ride_id).first()
     attempted_username = user
