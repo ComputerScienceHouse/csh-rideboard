@@ -6,8 +6,13 @@
         <hr class="mb-4">
         {% for event in events %}
         <div class="card mb-3">
-            <h3 class="card-header" align="center">{{event.name}}</h3>
-            <div class="card-body">
+            {% if events|length != 1 %}
+                <h3 class="card-header" align="center"><a data-toggle="collapse" href="#event{{ event.id }}" style="color: inherit; text-decoration: none;">{{event.name}}</a></h3>
+                <div class="card-body collapse" id="event{{ event.id }}">
+            {% else %}
+                <h3 class="card-header" align="center">{{event.name}}</h3>
+                <div class="card-body">
+            {% endif %}
                 <div class="d-flex justify-content-between">
                     <div>
                         <h6 class="card-text lead float-left"> <strong>Start:</strong>

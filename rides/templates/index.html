@@ -4,8 +4,13 @@
   <hr class="mb-4">
   {% for event in events %}
     <div class="card mb-3">
-      <h3 class="card-header" align="center">{{event.name}}</h3>
-      <div class="card-body">
+    {% if events|length != 1 %}
+        <h3 class="card-header" align="center"><a data-toggle="collapse" href="#event{{ event.id }}" style="color: inherit; text-decoration: none;">{{event.name}}</a></h3>
+        <div class="card-body collapse" id="event{{ event.id }}">
+    {% else %}
+        <h3 class="card-header" align="center">{{event.name}}</h3>
+        <div class="card-body">
+    {% endif %}
         <div class="d-flex justify-content-between">
           <div><h6 class="card-text lead float-left"> <strong>Start:</strong> {{datetime.datetime.strftime(event.start_time, '%B %d, %Y at %H:%M')}}</h6></div>
           <div><h6 class="card-text lead float-right"> <strong>End: </strong> {{datetime.datetime.strftime(event.end_time, '%B %d, %Y at %H:%M')}}</h6></div>
@@ -14,7 +19,7 @@
         {% for car in event.cars %}
           <hr class="my-3">
           <h5 class="mb-2">
-            <div class="d-flex">
+            <div class="d-flex ">
               <div>{{car.name}} <small class="text-muted">({{car.username}})</small></div>
               <div class="ml-auto">
                 <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
