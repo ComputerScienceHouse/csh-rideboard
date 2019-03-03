@@ -61,14 +61,11 @@ def demo(auth_dict=None):
     st = loc_dt.strftime(fmt)
     return render_template('demo.html', timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
-# @app.route('/')
-# def login(auth_dict=None):
-#     # Get all the events and current EST time.
-#     loc_dt = datetime.datetime.now(tz=eastern)
-#     st = loc_dt.strftime(fmt)
-#     return render_template('login.html', auth_dict=auth_dict)
-
 @app.route('/')
+def login(auth_dict=None):
+    return render_template('login.html', auth_dict=auth_dict)
+
+@app.route('/home')
 @auth.oidc_auth('default')
 @csh_user_auth
 def index(auth_dict=None):
@@ -93,7 +90,7 @@ def index(auth_dict=None):
             db.session.commit()
 
     # Query one more time for the display.
-    events = Event.query.filter(Event.expired == False).order_by(Event.id.asc()).all() #pylint: disable=singleton-comparison
+    events = Event.query.filter(Event.expired == False).order_by(Event.start_time.asc()).all() #pylint: disable=singleton-comparison
     return render_template('index.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict, rider_instance=rider_instance)
 
@@ -114,7 +111,7 @@ def history(auth_dict=None):
     events = Event.query.all()
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
-    events = Event.query.filter(Event.expired == True).order_by(Event.id.asc()).all() #pylint: disable=singleton-comparison
+    events = Event.query.filter(Event.expired == True).order_by(Event.start_time.desc()).all() #pylint: disable=singleton-comparison
     return render_template('history.html', events=events, timestamp=st, datetime=datetime,
                                          auth_dict=auth_dict)
 
