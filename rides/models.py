@@ -4,8 +4,8 @@
 ####################################
 from rides import db
 
-class Ride(db.Model):
-    __tablename__ = 'rides'
+class Event(db.Model):
+    __tablename__ = 'events'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(150), nullable=False)
@@ -14,7 +14,7 @@ class Ride(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)
     creator = db.Column(db.String(50), nullable=False)
     expired = db.Column(db.Boolean, default=False, nullable=False)
-    cars = db.relationship('Car', backref='rides', lazy=True)
+    cars = db.relationship('Car', backref='events', lazy=True)
 
     def __init__(self, name, address, start_time, end_time, creator):
         self.name = name
@@ -37,11 +37,11 @@ class Car(db.Model):
     departure_time = db.Column(db.DateTime, nullable=False)
     return_time = db.Column(db.DateTime, nullable=False)
     driver_comment = db.Column(db.Text)
-    ride_id = db.Column(db.Integer, db.ForeignKey('rides.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     riders = db.relationship('Rider', backref='cars', lazy=True)
 
     def __init__(self, username, name, current_capacity, max_capacity,
-         departure_time, return_time, driver_comment, ride_id):
+         departure_time, return_time, driver_comment, event_id):
         self.username = username
         self.name = name
         self.current_capacity = current_capacity
@@ -49,7 +49,7 @@ class Car(db.Model):
         self.departure_time = departure_time
         self.return_time = return_time
         self.driver_comment = driver_comment
-        self.ride_id = ride_id
+        self.event_id = event_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
