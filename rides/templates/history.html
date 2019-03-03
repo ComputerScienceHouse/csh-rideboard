@@ -125,7 +125,7 @@
                         <div class="ml-auto">
                             {% if event.creator == auth_dict["uid"] %}
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <a class="btn btn-info btn-sm" align="center" href="/edit/rideform/{{event.id}}" id="edit::event::{{event.id}}">Edit
+                                <a class="btn btn-info btn-sm" align="center" href="/edit/eventform/{{event.id}}" id="edit::event::{{event.id}}">Edit
                                     Event</a>
                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteEvent{{event.id}}">Delete
                                     Event</button>
@@ -158,7 +158,7 @@
         </div>
         <hr class="my-3">
         {% endfor %}
-        {% if auth_dict != None %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/rideform" id="new">Create
+        {% if auth_dict != None %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/eventform" id="new">Create
             Event</a>{% endif %}
     </div>
 </div>

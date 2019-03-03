@@ -120,16 +120,16 @@ def history(auth_dict=None):
 
 
 # Event Form
-@app.route('/rideform', methods=['GET', 'POST'])
+@app.route('/eventform', methods=['GET', 'POST'])
 @auth.oidc_auth('default')
 @csh_user_auth
-def rideform(auth_dict=None):
+def eventform(auth_dict=None):
     # Time to prepopulate the datetime field
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
     form = EventForm()
     if form.validate_on_submit():
-        name = latin_to_utf8(form.name.data)
+        name = form.name.data
         address = form.address.data
         start_time = datetime.datetime(int(form.start_date_time.data.year),
                                        int(form.start_date_time.data.month),
@@ -149,19 +149,19 @@ def rideform(auth_dict=None):
         db.session.add(infinity)
         db.session.commit()
         return redirect(url_for('index'))
-    return render_template('rideform.html', form=form, timestamp=st, auth_dict=auth_dict)
+    return render_template('eventform.html', form=form, timestamp=st, auth_dict=auth_dict)
 
 # Edit event form
-@app.route('/edit/rideform/<string:eventid>', methods=['GET', 'POST'])
+@app.route('/edit/eventform/<string:eventid>', methods=['GET', 'POST'])
 @auth.oidc_auth('default')
 @csh_user_auth
-def editrideform(eventid, auth_dict=None):
+def editeventform(eventid, auth_dict=None):
     username = auth_dict['uid']
     event = Event.query.get(eventid)
     if username == event.creator and event is not None:
         form = EventForm()
         if form.validate_on_submit():
-            event.name = latin_to_utf8(form.name.data)
+            event.name = form.name.data
             event.address = form.address.data
             event.start_time = datetime.datetime(int(form.start_date_time.data.year),
                                                 int(form.start_date_time.data.month),
@@ -188,7 +188,7 @@ def editrideform(eventid, auth_dict=None):
                                               int(form.end_date_time.data.minute))
             db.session.commit()
             return redirect(url_for('index'))
-    return render_template('editrideform.html', form=form, eventride=event, auth_dict=auth_dict)
+    return render_template('editeventform.html', form=form, event=event, auth_dict=auth_dict)
 
 # Car form
 @app.route('/carform/<string:eventid>', methods=['GET', 'POST'])
