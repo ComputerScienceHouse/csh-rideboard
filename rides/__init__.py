@@ -61,11 +61,11 @@ def demo(auth_dict=None):
     st = loc_dt.strftime(fmt)
     return render_template('demo.html', timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
-@app.route('/')
-def login(auth_dict=None):
-    return render_template('login.html', auth_dict=auth_dict)
+#@app.route('/')
+#def login(auth_dict=None):
+#    return render_template('login.html', auth_dict=auth_dict)
 
-@app.route('/home')
+@app.route('/')
 @auth.oidc_auth('default')
 @csh_user_auth
 def index(auth_dict=None):
