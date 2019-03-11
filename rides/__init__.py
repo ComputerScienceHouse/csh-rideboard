@@ -108,7 +108,6 @@ def index_google(auth_dict=None):
 @csh_user_auth
 def history(auth_dict=None):
     # Get all the events and current EST time.
-    events = Event.query.all()
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
     events = Event.query.filter(Event.expired == True).order_by(Event.start_time.desc()).all() #pylint: disable=singleton-comparison
