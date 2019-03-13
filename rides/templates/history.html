@@ -36,9 +36,9 @@
                   <small class="text-muted">({{car.username}})</small>
                 </div>
                 <div class="ml-auto">
-                  {% if auth_dict != None %}
+                  {% if current_user.is_authenticated %}
                   {% for person in car.riders %}
-                  {% if person.username == auth_dict["uid"] %}
+                  {% if person.username == current_user.id %}
                   <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
                           data-target="#leaveRide{{car.id}}">Leave
                     Ride
@@ -84,7 +84,7 @@
               <div class="d-flex">
                 <div> Hosted By: {{event.creator}}</div>
                 <div class="ml-auto">
-                  {% if event.creator == auth_dict["uid"] %}
+                  {% if event.creator == current_user.id %}
                   <div class="btn-group" role="group" aria-label="Basic example">
                     <a class="btn btn-info btn-sm" align="center" href="/edit/eventform/{{event.id}}"
                        id="edit::event::{{event.id}}">Edit

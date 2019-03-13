@@ -9,3 +9,4 @@ pylint==1.8.3
 SQLAlchemy==1.2.6
 Flask-pyoidc
 pytz==2018.3
+Flask-login

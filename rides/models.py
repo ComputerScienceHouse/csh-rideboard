@@ -1,8 +1,38 @@
 ####################################
 # File name: models.py             #
-# Author: Fred Rybin               #
+# Author: Ayush Goel & Fred Rybin  #
 ####################################
 from rides import db
+
+class User(db.Model):
+    __tablename__ = 'user'
+
+    id = db.Column(db.String, primary_key=True)
+    firstname = db.Column(db.String, nullable=False)
+    lastname = db.Column(db.String, nullable=False)
+    picture = db.Column(db.String, nullable=False)
+
+    def __init__(self, id, firstname, lastname, picture):
+        self.id = id
+        self.firstname = firstname
+        self.lastname = lastname
+        self.picture = picture
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
 
 class Event(db.Model):
     __tablename__ = 'events'
