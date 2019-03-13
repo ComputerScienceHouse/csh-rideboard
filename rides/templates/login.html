@@ -1,0 +1,23 @@
+{% extends "layout.html" %} {% block content %}
+<div class="bs-component">
+  <div class="jumbotron text-center">
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h5 class="card-title text-center">Sign In</h5>
+            <form method="get" action="/csh-auth">
+              <button class="btn btn-lg btn-block text-uppercase btn-primary" type="submit">
+                <span>Sign in with CSH</span></button>
+            </form>
+            <form method="get" action="/google-auth">
+              <button class="btn btn-lg btn-block text-uppercase btn-danger" type="submit"><span><i
+                  class="fab fa-google"></i> Sign in with Google</span></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

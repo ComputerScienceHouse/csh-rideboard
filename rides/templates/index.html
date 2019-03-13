@@ -31,15 +31,15 @@
                 </div>
                 <div class="ml-auto">
                   <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
-                  {% if auth_dict != None %}
+                  {% if current_user.is_authenticated %}
                   {% if event.id not in rider_instance %}
                   {% if ((car.current_capacity < car.max_capacity) or (car.max_capacity == 0)) %}
-                  <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{auth_dict['uid']}}" id="join::{{car.id}}"
+                  <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{current_user.id}}" id="join::{{car.id}}"
                      type="button">Join Ride</a>
                   {% endif %}
                   {% endif %}
                   {% for person in car.riders %}
-                  {% if person.username == auth_dict["uid"] %}
+                  {% if person.username == current_user.id %}
                   <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
                           data-target="#leaveRide{{car.id}}">Leave Ride
                   </button>
@@ -56,9 +56,8 @@
                         </div>
                         <div class="modal-footer">
                           <!-- TODO: Probably should not be using form and buttons and rather be using input. -->
-                          <!-- <a class="btn btn-primary btn-sm" href="/delete/rider/{{car.id}}/{{auth_dict["uid"]}}" id="delete::rider::{{car.id}}" type="button btn-danger">Yes</a> -->
-                          <form method="get" action="/delete/rider/{{car.id}}/{{auth_dict[" uid
-                          "]}}" id="delete::rider::{{car.id}}">
+                          <!-- <a class="btn btn-primary btn-sm" href="/delete/rider/{{car.id}}/{{current_user.id}}" id="delete::rider::{{car.id}}" type="button btn-danger">Yes</a> -->
+                          <form method="get" action="/delete/rider/{{car.id}}/{{current_user.id}}" id="delete::rider::{{car.id}}">
                           <button type="submit" class="btn btn-danger">Yes</button>
                           </form>
                           <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
@@ -69,7 +68,7 @@
                   </div>
                   {% endif %}
                   {% endfor %}
-                  {% if car.username == auth_dict["uid"] %}
+                  {% if car.username == current_user.id %}
                   <div class="btn-group" role="group" aria-label="Basic example">
                     <a class="btn btn-info btn-sm" align="center" href="/edit/carform/{{car.id}}"
                        id="edit::car::{{car.id}}">Edit</a>
@@ -137,7 +136,7 @@
             </div>
             {% endfor %}
             <!-- If you already created a ride or are in one, you cannot create one.-->
-            {% if auth_dict != None %}{% if event.id not in rider_instance %}
+            {% if current_user.is_authenticated %}{% if event.id not in rider_instance %}
             <hr class="my-3">
             <form method="get" action="/carform/{{event.id}}" id="ride">
               <button class="btn btn-success btn-sm btn-block my-2" type="submit">Create Ride</button>
@@ -147,7 +146,7 @@
               <div class="d-flex">
                 <div> Hosted By: {{event.creator}}</div>
                 <div class="ml-auto">
-                  {% if event.creator == auth_dict["uid"] %}
+                  {% if event.creator == current_user.id %}
                   <div class="btn-group" role="group" aria-label="Basic example">
                     <a class="btn btn-info btn-sm" align="center" href="/edit/eventform/{{event.id}}"
                        id="edit::event::{{event.id}}">Edit Event</a>
@@ -185,7 +184,7 @@
       </div>
       <hr class="my-3">
       {% endfor %}
-      {% if auth_dict != None %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/eventform" id="new">Create
+      {% if current_user.is_authenticated %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/eventform" id="new">Create
       Event</a>{% endif %}
     </div>
   </div>

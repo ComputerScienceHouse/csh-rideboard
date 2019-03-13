@@ -7,9 +7,11 @@ import os
 import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import ProviderConfiguration, ClientMetadata
-from flask import Flask, render_template, send_from_directory, redirect, url_for, session
+from flask import Flask, render_template, send_from_directory, redirect, url_for, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
+from flask_login import login_user, logout_user, login_required, LoginManager, current_user
+from subprocess import check_output
 
 # Setting up Flask and csrf token for forms.
 app = Flask(__name__)
@@ -38,9 +40,17 @@ auth = OIDCAuthentication({'default': CSH_AUTH,
                           app)
 auth.init_app(app)
 
+# Flask-Login Manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+# Commit
+commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').rstrip()
+
 
 # pylint: disable=wrong-import-position
-from rides.models import Event, Rider, Car
+from rides.models import Event, Rider, Car, User
 from rides.forms import EventForm, CarForm
 from .utils import csh_user_auth, google_user_auth, latin_to_utf8
 
@@ -48,11 +58,13 @@ from .utils import csh_user_auth, google_user_auth, latin_to_utf8
 eastern = pytz.timezone('US/Eastern')
 fmt = '%Y-%m-%d %H:%M'
 
+
 # Favicon
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/assets'),
-        'favicon.ico', mimetype='image/vnd.microsoft.icon')
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 
 @app.route('/demo')
 def demo(auth_dict=None):
@@ -61,25 +73,100 @@ def demo(auth_dict=None):
     st = loc_dt.strftime(fmt)
     return render_template('demo.html', timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
-#@app.route('/')
-#def login(auth_dict=None):
-#    return render_template('login.html', auth_dict=auth_dict)
 
+'''
+Log in management
+'''
+
+
+@app.route('/login')
 @app.route('/')
+def login(auth_dict=None):
+    return render_template('login.html', auth_dict=auth_dict)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    q = User.query.get(user_id)
+    if q:
+        return q
+    else:
+        return None
+
+
+@app.route("/logout")
+@auth.oidc_logout
+def _logout():
+    logout_user()
+    return redirect("/", 302)
+
+
+@app.route('/csh-auth')
 @auth.oidc_auth('default')
 @csh_user_auth
-def index(auth_dict=None):
+def csh_auth(auth_dict=None):
+    if auth_dict is None:
+        return redirect(url_for('login'))
+    q = User.query.get(auth_dict['uid'])
+    if q is not None:
+        g.user = q
+        q.firstname = auth_dict['first']
+        q.lastname = auth_dict['last']
+        q.picture = auth_dict['picture']
+    else:
+        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'], auth_dict['picture'])
+        g.user = user
+        db.session.add(user)
+
+    db.session.commit()
+    login_user(g.user)
+    return redirect(url_for('index'))
+
+# TODO: Figure out the deal with commit number.
+# TODO: Potential conflicts between google id and csh id and other ids.
+
+@app.route('/google-auth')
+@auth.oidc_auth('google')
+@google_user_auth
+def google_auth(auth_dict=None):
+    if auth_dict is None:
+        return redirect(url_for('login'))
+    q = User.query.get(auth_dict['uid'])
+    if q is not None:
+        q.firstname = auth_dict['first']
+        q.lastname = auth_dict['last']
+        q.picture = auth_dict['picture']
+        g.user = q
+    else:
+        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'], auth_dict['picture'])
+        g.user = user
+        db.session.add(user)
+
+    db.session.commit()
+    login_user(g.user)
+    return redirect(url_for('index'))
+
+
+'''
+Application
+'''
+
+
+@app.route('/home')
+@login_required
+def index():
     # Get all the events and current EST time.
     events = Event.query.all()
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
 
     rider_instance = []
-    if auth_dict is not None:
-        for rider_instances in Rider.query.filter(Rider.username == auth_dict['uid']).all():
+    if current_user.is_authenticated:
+        # TODO: Likely don't need this for loop, should be a single query.
+        for rider_instances in Rider.query.filter(Rider.username == current_user.id).all():
             rider_instance.append(Car.query.get(rider_instances.car_id).event_id)
         for rider_instances in Car.query.all():
-            if rider_instances.username == auth_dict['uid']:
+            if rider_instances.username == current_user.id:
                 rider_instance.append(rider_instances.event_id)
 
     # If any event has expired by 1 hour then expire the event.
@@ -90,36 +177,28 @@ def index(auth_dict=None):
             db.session.commit()
 
     # Query one more time for the display.
-    events = Event.query.filter(Event.expired == False).order_by(Event.start_time.asc()).all() #pylint: disable=singleton-comparison
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime,
-                                         auth_dict=auth_dict, rider_instance=rider_instance)
+    events = Event.query.filter(Event.expired == False).order_by(
+        Event.start_time.asc()).all()  # pylint: disable=singleton-comparison
+    return render_template('index.html', events=events, timestamp=st, datetime=datetime, rider_instance=rider_instance)
 
-@app.route('/google')
-@auth.oidc_auth('google')
-@google_user_auth
-def index_google(auth_dict=None):
-    # Get all the events and current EST time.
-    loc_dt = datetime.datetime.now(tz=eastern)
-    st = loc_dt.strftime(fmt)
-    return render_template('layout.html', timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
 @app.route('/history')
 @auth.oidc_auth('default')
-@csh_user_auth
-def history(auth_dict=None):
+@login_required
+def history():
     # Get all the events and current EST time.
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
-    events = Event.query.filter(Event.expired == True).order_by(Event.start_time.desc()).all() #pylint: disable=singleton-comparison
-    return render_template('history.html', events=events, timestamp=st, datetime=datetime,
-                                         auth_dict=auth_dict)
+    events = Event.query.filter(Event.expired == True).order_by(
+        Event.start_time.desc()).all()  # pylint: disable=singleton-comparison
+    return render_template('history.html', events=events, timestamp=st, datetime=datetime)
 
 
 # Event Form
 @app.route('/eventform', methods=['GET', 'POST'])
 @auth.oidc_auth('default')
-@csh_user_auth
-def eventform(auth_dict=None):
+@login_required
+def eventform():
     # Time to prepopulate the datetime field
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
@@ -137,7 +216,7 @@ def eventform(auth_dict=None):
                                      int(form.end_date_time.data.day),
                                      int(form.end_date_time.data.hour),
                                      int(form.end_date_time.data.minute))
-        creator = auth_dict['uid']
+        creator = current_user.id
         event = Event(name, address, start_time, end_time, creator)
         db.session.add(event)
         db.session.commit()
@@ -145,14 +224,15 @@ def eventform(auth_dict=None):
         db.session.add(infinity)
         db.session.commit()
         return redirect(url_for('index'))
-    return render_template('eventform.html', form=form, timestamp=st, auth_dict=auth_dict)
+    return render_template('eventform.html', form=form, timestamp=st)
+
 
 # Edit event form
 @app.route('/edit/eventform/<string:eventid>', methods=['GET', 'POST'])
 @auth.oidc_auth('default')
-@csh_user_auth
-def editeventform(eventid, auth_dict=None):
-    username = auth_dict['uid']
+@login_required
+def editeventform(eventid):
+    username = current_user.id
     event = Event.query.get(eventid)
     if username == event.creator and event is not None:
         form = EventForm()
@@ -160,42 +240,43 @@ def editeventform(eventid, auth_dict=None):
             event.name = form.name.data
             event.address = form.address.data
             event.start_time = datetime.datetime(int(form.start_date_time.data.year),
-                                                int(form.start_date_time.data.month),
-                                                int(form.start_date_time.data.day),
-                                                int(form.start_date_time.data.hour),
-                                                int(form.start_date_time.data.minute))
+                                                 int(form.start_date_time.data.month),
+                                                 int(form.start_date_time.data.day),
+                                                 int(form.start_date_time.data.hour),
+                                                 int(form.start_date_time.data.minute))
             event.end_time = datetime.datetime(int(form.end_date_time.data.year),
-                                              int(form.end_date_time.data.month),
-                                              int(form.end_date_time.data.day),
-                                              int(form.end_date_time.data.hour),
-                                              int(form.end_date_time.data.minute))
-            event.creator = auth_dict['uid']
+                                               int(form.end_date_time.data.month),
+                                               int(form.end_date_time.data.day),
+                                               int(form.end_date_time.data.hour),
+                                               int(form.end_date_time.data.minute))
+            event.creator = current_user.id
             event.expired = False
             car = Car.query.filter(Car.event_id == eventid).filter(Car.name == "Need a Ride").first()
             car.departure_time = datetime.datetime(int(form.start_date_time.data.year),
-                                                int(form.start_date_time.data.month),
-                                                int(form.start_date_time.data.day),
-                                                int(form.start_date_time.data.hour),
-                                                int(form.start_date_time.data.minute))
+                                                   int(form.start_date_time.data.month),
+                                                   int(form.start_date_time.data.day),
+                                                   int(form.start_date_time.data.hour),
+                                                   int(form.start_date_time.data.minute))
             car.return_time = datetime.datetime(int(form.end_date_time.data.year),
-                                              int(form.end_date_time.data.month),
-                                              int(form.end_date_time.data.day),
-                                              int(form.end_date_time.data.hour),
-                                              int(form.end_date_time.data.minute))
+                                                int(form.end_date_time.data.month),
+                                                int(form.end_date_time.data.day),
+                                                int(form.end_date_time.data.hour),
+                                                int(form.end_date_time.data.minute))
             db.session.commit()
             return redirect(url_for('index'))
-    return render_template('editeventform.html', form=form, event=event, auth_dict=auth_dict)
+    return render_template('editeventform.html', form=form, event=event)
+
 
 # Car form
 @app.route('/carform/<string:eventid>', methods=['GET', 'POST'])
 @auth.oidc_auth('default')
-@csh_user_auth
-def carform(eventid, auth_dict=None):
+@login_required
+def carform(eventid):
     form = CarForm()
     event = Event.query.get(eventid)
     if form.validate_on_submit():
-        username = auth_dict['uid']
-        name = latin_to_utf8(auth_dict['first']+" "+ auth_dict['last'])
+        username = current_user.id
+        name = latin_to_utf8(current_user.firstname + " " + current_user.lastname)
         current_capacity = 0
         max_capacity = int(form.max_capacity.data['max_capacity'])
         departure_time = datetime.datetime(int(form.departure_date_time.data.year),
@@ -214,20 +295,21 @@ def carform(eventid, auth_dict=None):
         db.session.add(car)
         db.session.commit()
         return redirect(url_for('index'))
-    return render_template('carform.html', form=form, event=event, auth_dict=auth_dict)
+    return render_template('carform.html', form=form, event=event)
+
 
 # Edit car form
 @app.route('/edit/carform/<string:carid>', methods=['GET', 'POST'])
 @auth.oidc_auth('default')
-@csh_user_auth
-def editcarform(carid, auth_dict=None):
-    username = auth_dict['uid']
+@login_required
+def editcarform(carid):
+    username = current_user.id
     car = Car.query.get(carid)
     if username == car.username and car is not None:
         form = CarForm()
         if form.validate_on_submit():
-            car.username = auth_dict['uid']
-            car.name = latin_to_utf8(auth_dict['first']+" "+ auth_dict['last'])
+            car.username = current_user.id
+            car.name = latin_to_utf8(current_user.firstname + " " + current_user.lastname)
             car.max_capacity = int(form.max_capacity.data['max_capacity'])
             car.departure_time = datetime.datetime(int(form.departure_date_time.data.year),
                                                    int(form.departure_date_time.data.month),
@@ -242,18 +324,19 @@ def editcarform(carid, auth_dict=None):
             car.driver_comment = form.comments.data
             db.session.commit()
             return redirect(url_for('index'))
-    return render_template('editcarform.html', form=form, car=car, auth_dict=auth_dict)
+    return render_template('editcarform.html', form=form, car=car)
+
 
 # Join a ride
 @app.route('/join/<string:car_id>/<string:user>', methods=["GET"])
 @auth.oidc_auth('default')
-@csh_user_auth
-def join_ride(car_id, user, auth_dict=None):
+@login_required
+def join_ride(car_id, user):
     incar = False
-    username = auth_dict['uid']
-    name = latin_to_utf8(auth_dict['first']+" "+ auth_dict['last'])
-    car = Car.query.filter(Car.id == car_id).first()
-    event = Event.query.filter(Event.id == car.event_id).first()
+    username = current_user.id
+    name = latin_to_utf8(current_user.firstname + " " + current_user.lastname)
+    car = Car.query.get(car_id)
+    event = Event.query.get(car.event_id)
     attempted_username = user
     if attempted_username == username:
         for c in event.cars:
@@ -270,13 +353,14 @@ def join_ride(car_id, user, auth_dict=None):
             db.session.commit()
     return redirect(url_for('index'))
 
+
 # Delete Car
 @app.route('/delete/car/<string:car_id>', methods=["GET"])
 @auth.oidc_auth('default')
-@csh_user_auth
-def delete_car(car_id, auth_dict=None):
-    username = auth_dict['uid']
-    car = Car.query.filter(Car.id == car_id).first()
+@login_required
+def delete_car(car_id):
+    username = current_user.id
+    car = Car.query.get(car_id)
     if car.username == username and car is not None:
         for peeps in car.riders:
             db.session.delete(peeps)
@@ -284,13 +368,14 @@ def delete_car(car_id, auth_dict=None):
         db.session.commit()
     return redirect(url_for('index'))
 
+
 # Delete Event
 @app.route('/delete/ride/<string:event_id>', methods=["GET"])
 @auth.oidc_auth('default')
-@csh_user_auth
-def delete_ride(event_id, auth_dict=None):
-    username = auth_dict['uid']
-    event = Event.query.filter(Event.id == event_id).first()
+@login_required
+def delete_ride(event_id):
+    username = current_user.id
+    event = Event.query.get(event_id)
     if event.creator == username and event is not None:
         for car in event.cars:
             for peeps in car.riders:
@@ -300,13 +385,14 @@ def delete_ride(event_id, auth_dict=None):
         db.session.commit()
     return redirect(url_for('index'))
 
+
 # Leave a ride
 @app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
 @auth.oidc_auth('default')
-@csh_user_auth
-def leave_ride(car_id, rider_username, auth_dict=None):
-    username = auth_dict['uid']
-    car = Car.query.filter(Car.id == car_id).first()
+@login_required
+def leave_ride(car_id, rider_username):
+    username = current_user.id
+    car = Car.query.get(car_id)
     rider = Rider.query.filter(Rider.username == rider_username, Rider.car_id == car_id).first()
     if rider.username == username and rider is not None:
         db.session.delete(rider)
@@ -314,9 +400,3 @@ def leave_ride(car_id, rider_username, auth_dict=None):
         db.session.add(car)
         db.session.commit()
     return redirect(url_for('index'))
-
-# Log out
-@app.route("/logout")
-@auth.oidc_logout
-def _logout():
-    return redirect("/", 302)
