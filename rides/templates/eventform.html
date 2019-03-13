@@ -24,7 +24,7 @@
                     <div class="input-group-text" id="donothide"><i class="fa fa-calendar"></i></div>
                   </div>
                 </div>
-                {% for error in form.start_date_time.errors %}<div class="alert alert-danger"><div class="alert alert-danger">{{ error }}</div></div>{% endfor %}
+                {% for error in form.start_date_time.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
               </div>
               <div class="col-sm-5">
                 <h5 class="mb-1">{{ form.end_date_time.label }}</h5>
@@ -33,7 +33,7 @@
                     <div class="input-group-text" id="donothide"><i class="fa fa-calendar"></i></div>
                   </div>
                 </div>
-                 {% for error in form.end_date_time.errors %}<div class="alert alert-danger"><div class="alert alert-danger">{{ error }}</div></div>{% endfor %}
+                 {% for error in form.end_date_time.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
               </div>
             </div>
           </fieldset>
