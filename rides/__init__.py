@@ -2,6 +2,7 @@
 # File name: __init__.py           #
 # Author: Ayush Goel & Fred Rybin  #
 ####################################
+from subprocess import check_output
 import datetime
 import os
 import pytz
@@ -11,7 +12,6 @@ from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
-from subprocess import check_output
 
 # Setting up Flask and csrf token for forms.
 app = Flask(__name__)
@@ -74,9 +74,7 @@ def demo(auth_dict=None):
     return render_template('demo.html', timestamp=st, datetime=datetime, auth_dict=auth_dict)
 
 
-'''
-Log in management
-'''
+# LOG IN MANAGEMENT
 
 
 @app.route('/login')
@@ -90,8 +88,7 @@ def load_user(user_id):
     q = User.query.get(user_id)
     if q:
         return q
-    else:
-        return None
+    return None
 
 
 @app.route("/logout")
@@ -147,9 +144,7 @@ def google_auth(auth_dict=None):
     return redirect(url_for('index'))
 
 
-'''
-Application
-'''
+# Application
 
 
 @app.route('/home')
@@ -177,8 +172,7 @@ def index():
             db.session.commit()
 
     # Query one more time for the display.
-    events = Event.query.filter(Event.expired == False).order_by(
-        Event.start_time.asc()).all()  # pylint: disable=singleton-comparison
+    events = Event.query.filter(Event.expired == False).order_by(Event.start_time.asc()).all()  # pylint: disable=singleton-comparison
     return render_template('index.html', events=events, timestamp=st, datetime=datetime, rider_instance=rider_instance)
 
 
@@ -189,8 +183,7 @@ def history():
     # Get all the events and current EST time.
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
-    events = Event.query.filter(Event.expired == True).order_by(
-        Event.start_time.desc()).all()  # pylint: disable=singleton-comparison
+    events = Event.query.filter(Event.expired == True).order_by(Event.start_time.desc()).all()  # pylint: disable=singleton-comparison
     return render_template('history.html', events=events, timestamp=st, datetime=datetime)
 
 
@@ -310,6 +303,7 @@ def editcarform(carid):
         if form.validate_on_submit():
             car.username = current_user.id
             car.name = latin_to_utf8(current_user.firstname + " " + current_user.lastname)
+            # TODO: If new capacity is lower, move people.
             car.max_capacity = int(form.max_capacity.data['max_capacity'])
             car.departure_time = datetime.datetime(int(form.departure_date_time.data.year),
                                                    int(form.departure_date_time.data.month),
@@ -363,6 +357,7 @@ def delete_car(car_id):
     car = Car.query.get(car_id)
     if car.username == username and car is not None:
         for peeps in car.riders:
+            # TODO: Add peeps to need ride.
             db.session.delete(peeps)
         db.session.delete(car)
         db.session.commit()

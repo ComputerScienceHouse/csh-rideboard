@@ -7,7 +7,7 @@ from rides import db
 class User(db.Model):
     __tablename__ = 'user'
 
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)         # TODO: Refactor ID.
     firstname = db.Column(db.String, nullable=False)
     lastname = db.Column(db.String, nullable=False)
     picture = db.Column(db.String, nullable=False)
@@ -24,13 +24,16 @@ class User(db.Model):
     def get_id(self):
         return self.id
 
-    def is_authenticated(self):
+    @staticmethod
+    def is_authenticated():
         return True
 
-    def is_active(self):
+    @staticmethod
+    def is_active():
         return True
 
-    def is_anonymous(self):
+    @staticmethod
+    def is_anonymous():
         return False
 
 

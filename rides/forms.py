@@ -20,8 +20,7 @@ class EventForm(FlaskForm):
         if self.start_date_time.data > self.end_date_time.data:
             self.end_date_time.errors.append('End time must be after start time.')
             return False
-        else:
-            return True
+        return True
 
 
 class SizeForm(FlaskForm):
@@ -46,5 +45,4 @@ class CarForm(FlaskForm):
         if self.departure_date_time.data > self.return_date_time.data:
             self.return_date_time.errors.append('Return time must be after departure time.')
             return False
-        else:
-            return True
+        return True
