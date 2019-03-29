@@ -322,7 +322,7 @@ def editcarform(carid):
 def join_ride(car_id, user):
     incar = False
     username = current_user.id
-    name = latin_to_utf8(current_user.firstname + " " + current_user.lastname)
+    name = current_user.firstname + " " + current_user.lastname
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
     attempted_username = user

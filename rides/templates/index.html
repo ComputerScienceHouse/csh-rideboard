@@ -119,8 +119,7 @@
               <tbody>
               <tr class="table-light">
                 <td class="text-center font-weight-normal">{{ car.current_capacity }}/{{ car.max_capacity }}</td>
-                <td class="text-center font-weight-normal"> {% for rider in car.riders %} {{ rider.name }}
-                  ({{ rider.username }}) {% endfor %}
+                <td class="text-center font-weight-normal"> {% for rider in car.riders %} {{ rider.name }} {% endfor %}
                 </td>
                 <td class="text-center font-weight-normal">{{ datetime.datetime.strftime(car.departure_time, '%B %d,
                       %Y at %H:%M') }}
