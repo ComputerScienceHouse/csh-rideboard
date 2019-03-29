@@ -43,69 +43,8 @@
                           data-target="#leaveRide{{car.id}}">Leave
                     Ride
                   </button>
-                  <div class="modal" id="leaveRide{{car.id}}">
-                    <div class="modal-dialog" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Leave Ride</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                              aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                          <p>Are you sure you want to leave this ride?</p>
-                        </div>
-                        <div class="modal-footer">
-                          <!-- TODO: Probably should not be using form and buttons and rather be using input. -->
-                          <!-- <a class="btn btn-primary btn-sm" href="/delete/rider/{{car.id}}/{{auth_dict["uid"]}}" id="delete::rider::{{car.id}}" type="button btn-danger">Yes</a> -->
-                          <form method="get" action="/delete/rider/{{car.id}}/{{auth_dict[" uid
-                          "]}}"
-                          id="delete::rider::{{car.id}}">
-                          <button type="submit" class="btn btn-danger">Yes</button>
-                          </form>
-                          <button type="button" class="btn btn-success" data-dismiss="modal"
-                                  aria-label="Close">No
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                   {% endif %}
                   {% endfor %}
-                  {% if car.username == auth_dict["uid"] %}
-                  <div class="btn-group" role="group" aria-label="Basic example">
-                    <a class="btn btn-info btn-sm" align="center" href="/edit/carform/{{car.id}}"
-                       id="edit::car::{{car.id}}">Edit</a>
-                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                            data-target="#deleteRide{{car.id}}">Delete
-                    </button>
-                  </div>
-                  <div class="modal" id="deleteRide{{car.id}}">
-                    <div class="modal-dialog" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Delete Ride</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                          <p class="font-normal lead">
-                            <small>Are you sure you want to delete your
-                              ride?
-                            </small>
-                          </p>
-                        </div>
-                        <div class="modal-footer">
-                          <form method="get" action="/delete/car/{{car.id}}" id="delete::car::{{car.id}}">
-                            <button type="submit" class="btn btn-danger">Yes</button>
-                          </form>
-                          <button type="button" class="btn btn-success" data-dismiss="modal"
-                                  aria-label="Close">No
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {% endif %}
                   {% endif %}
                 </div>
               </div>
@@ -186,8 +125,7 @@
       </div>
       <hr class="my-3">
       {% endfor %}
-      {% if auth_dict != None %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/eventform" id="new">Create
-      Event</a>{% endif %}
     </div>
   </div>
+</div>
   {% endblock %}
