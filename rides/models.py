@@ -99,6 +99,7 @@ class Event(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
+
 class Car(db.Model):
     __tablename__ = 'cars'
 
@@ -126,6 +127,7 @@ class Car(db.Model):
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
+
 
 class Rider(db.Model):
     __tablename__ = 'riders'

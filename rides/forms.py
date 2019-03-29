@@ -7,6 +7,11 @@ from wtforms import SubmitField, TextAreaField, StringField, FormField, DateTime
 from wtforms.validators import DataRequired, Length
 
 
+class BucketForm(FlaskForm):
+    name = StringField(('What is the name of the organization/team?'), validators=[DataRequired(), Length(min=1, max=140)])
+    submit = SubmitField(('Submit'))
+
+
 class EventForm(FlaskForm):
     name = StringField(('What is the name of the event?'), validators=[DataRequired(), Length(min=1, max=140)])
     address = StringField(('Where is the event?'), validators=[DataRequired()])
