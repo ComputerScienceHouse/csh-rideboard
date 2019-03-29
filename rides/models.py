@@ -4,6 +4,45 @@
 ####################################
 from rides import db
 
+
+class BucketEvent(db.Model):
+    __tablename__ = 'bucketevent'
+
+    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id'), nullable=False, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False, primary_key=True)
+
+    def __init__(self, bucket_id, event_id):
+        self.event_id = event_id
+        self.bucket_id = bucket_id
+
+
+class UserBucket(db.Model):
+    __tablename__ = 'userbucket'
+
+    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id'), nullable=False, primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False, primary_key=True)
+
+    def __init__(self, bucket_id, user_id):
+        self.user_id = user_id
+        self.bucket_id = bucket_id
+
+
+class Bucket(db.Model):
+    __tablename__ = 'bucket'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(150), nullable=False)
+    owner = db.Column(db.String(50), nullable=False)
+
+    def __init__(self, id, title, owner):
+        self.id = id
+        self.title = title
+        self.owner = owner
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+
 class User(db.Model):
     __tablename__ = 'user'
 
@@ -41,6 +80,7 @@ class Event(db.Model):
     __tablename__ = 'events'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id'), nullable=False)
     name = db.Column(db.String(150), nullable=False)
     address = db.Column(db.Text, nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)

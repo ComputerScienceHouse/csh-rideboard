@@ -50,7 +50,7 @@ commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').r
 
 
 # pylint: disable=wrong-import-position
-from rides.models import Event, Rider, Car, User
+from rides.models import Event, Rider, Car, User, Bucket, BucketEvent, UserBucket
 from rides.forms import EventForm, CarForm
 from .utils import csh_user_auth, google_user_auth, latin_to_utf8
 
@@ -77,18 +77,18 @@ def demo(auth_dict=None):
 # LOG IN MANAGEMENT
 
 
-@app.route('/login')
-@app.route('/')
-def login(auth_dict=None):
-    return render_template('login.html', auth_dict=auth_dict)
-
-
 @login_manager.user_loader
 def load_user(user_id):
     q = User.query.get(user_id)
     if q:
         return q
     return None
+
+
+@app.route('/login')
+@app.route('/')
+def login(auth_dict=None):
+    return render_template('login.html', auth_dict=auth_dict)
 
 
 @app.route("/logout")
