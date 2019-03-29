@@ -177,7 +177,6 @@ def index():
 
 
 @app.route('/history')
-@auth.oidc_auth('default')
 @login_required
 def history():
     # Get all the events and current EST time.
@@ -189,7 +188,6 @@ def history():
 
 # Event Form
 @app.route('/eventform', methods=['GET', 'POST'])
-@auth.oidc_auth('default')
 @login_required
 def eventform():
     # Time to prepopulate the datetime field
@@ -222,7 +220,6 @@ def eventform():
 
 # Edit event form
 @app.route('/edit/eventform/<string:eventid>', methods=['GET', 'POST'])
-@auth.oidc_auth('default')
 @login_required
 def editeventform(eventid):
     username = current_user.id
@@ -262,7 +259,6 @@ def editeventform(eventid):
 
 # Car form
 @app.route('/carform/<string:eventid>', methods=['GET', 'POST'])
-@auth.oidc_auth('default')
 @login_required
 def carform(eventid):
     form = CarForm()
@@ -293,7 +289,6 @@ def carform(eventid):
 
 # Edit car form
 @app.route('/edit/carform/<string:carid>', methods=['GET', 'POST'])
-@auth.oidc_auth('default')
 @login_required
 def editcarform(carid):
     username = current_user.id
@@ -322,13 +317,12 @@ def editcarform(carid):
 
 
 # Join a ride
-@app.route('/join/<string:car_id>/<string:user>', methods=["GET"])
-@auth.oidc_auth('default')
+@app.route('/join/<string:car_id>/<user>', methods=["GET"])
 @login_required
 def join_ride(car_id, user):
     incar = False
     username = current_user.id
-    name = latin_to_utf8(current_user.firstname + " " + current_user.lastname)
+    name = current_user.firstname + " " + current_user.lastname
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
     attempted_username = user
@@ -350,7 +344,6 @@ def join_ride(car_id, user):
 
 # Delete Car
 @app.route('/delete/car/<string:car_id>', methods=["GET"])
-@auth.oidc_auth('default')
 @login_required
 def delete_car(car_id):
     username = current_user.id
@@ -366,7 +359,6 @@ def delete_car(car_id):
 
 # Delete Event
 @app.route('/delete/ride/<string:event_id>', methods=["GET"])
-@auth.oidc_auth('default')
 @login_required
 def delete_ride(event_id):
     username = current_user.id
@@ -383,7 +375,6 @@ def delete_ride(event_id):
 
 # Leave a ride
 @app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
-@auth.oidc_auth('default')
 @login_required
 def leave_ride(car_id, rider_username):
     username = current_user.id
@@ -395,3 +386,9 @@ def leave_ride(car_id, rider_username):
         db.session.add(car)
         db.session.commit()
     return redirect(url_for('index'))
+
+# Log out
+@app.route("/logout")
+@auth.oidc_logout
+def _logout():
+    return redirect("/", 302)
