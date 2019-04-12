@@ -34,7 +34,8 @@ CSH_AUTH = ProviderConfiguration(issuer=app.config["OIDC_ISSUER"],
 GOOGLE_AUTH = ProviderConfiguration(issuer=app.config["GOOGLE_ISSUER"],
                                     client_metadata=ClientMetadata(
                                         app.config["GOOGLE_CLIENT_ID"],
-                                        app.config["GOOGLE_CLIENT_SECRET"]))
+                                        app.config["GOOGLE_CLIENT_SECRET"]), 
+                                    auth_request_params={'scope': ['email', 'profile', 'openid']})
 auth = OIDCAuthentication({'default': CSH_AUTH,
                            'google': GOOGLE_AUTH},
                           app)
