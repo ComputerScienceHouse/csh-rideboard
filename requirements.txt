@@ -1,5 +1,5 @@
 alembic==0.9.9
-Flask==1.0
+Flask==0.12.3
 Flask-Migrate==2.1.1
 Flask-Script==2.0.6
 Flask-SQLAlchemy==2.3.2
