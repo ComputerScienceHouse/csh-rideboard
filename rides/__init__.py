@@ -34,7 +34,8 @@ CSH_AUTH = ProviderConfiguration(issuer=app.config["OIDC_ISSUER"],
 GOOGLE_AUTH = ProviderConfiguration(issuer=app.config["GOOGLE_ISSUER"],
                                     client_metadata=ClientMetadata(
                                         app.config["GOOGLE_CLIENT_ID"],
-                                        app.config["GOOGLE_CLIENT_SECRET"]))
+                                        app.config["GOOGLE_CLIENT_SECRET"]), 
+                                    auth_request_params={'scope': ['email', 'profile', 'openid']})
 auth = OIDCAuthentication({'default': CSH_AUTH,
                            'google': GOOGLE_AUTH},
                           app)
@@ -52,7 +53,7 @@ commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').r
 # pylint: disable=wrong-import-position
 from rides.models import Event, Rider, Car, User, Bucket, BucketEvent, UserBucket
 from rides.forms import EventForm, CarForm
-from .utils import csh_user_auth, google_user_auth, latin_to_utf8
+from .utils import csh_user_auth, google_user_auth
 
 # time setup for the server side time
 eastern = pytz.timezone('US/Eastern')
@@ -265,7 +266,7 @@ def carform(eventid):
     event = Event.query.get(eventid)
     if form.validate_on_submit():
         username = current_user.id
-        name = latin_to_utf8(current_user.firstname + " " + current_user.lastname)
+        name = current_user.firstname + " " + current_user.lastname
         current_capacity = 0
         max_capacity = int(form.max_capacity.data['max_capacity'])
         departure_time = datetime.datetime(int(form.departure_date_time.data.year),
@@ -297,7 +298,7 @@ def editcarform(carid):
         form = CarForm()
         if form.validate_on_submit():
             car.username = current_user.id
-            car.name = latin_to_utf8(current_user.firstname + " " + current_user.lastname)
+            car.name = current_user.firstname + " " + current_user.lastname
             # TODO: If new capacity is lower, move people.
             car.max_capacity = int(form.max_capacity.data['max_capacity'])
             car.departure_time = datetime.datetime(int(form.departure_date_time.data.year),
