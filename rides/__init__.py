@@ -8,7 +8,7 @@ import os
 import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import ProviderConfiguration, ClientMetadata
-from flask import Flask, render_template, send_from_directory, redirect, url_for, g
+from flask import Flask, render_template, send_from_directory, redirect, url_for, g, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
@@ -51,7 +51,7 @@ commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').r
 
 
 # pylint: disable=wrong-import-position
-from rides.models import Event, Rider, Car, User, Bucket, BucketEvent, UserBucket
+from rides.models import Event, Rider, Car, User, Bucket, UserBucket
 from rides.forms import EventForm, CarForm
 from .utils import csh_user_auth, google_user_auth
 
@@ -147,12 +147,36 @@ def google_auth(auth_dict=None):
 
 # Application
 
+def if_valid_user_bucket_get_bucket(bucketid):
+    valid = UserBucket.query.filter_by(bucket_id=bucketid, user_id=current_user.id).all()
+    print(valid)
+    if not valid:
+        return abort(404) # TODO: Change to proper error of you are not in the org
+    else:
+        return Bucket.query.filter_by(id=bucketid).first()
 
+
+@app.route('/')
 @app.route('/home')
 @login_required
 def index():
+    # Get all orgs current user is part of
+    org_ids = db.session.query(UserBucket.bucket_id).filter_by(user_id=current_user.id).all()
+    orgs = map(db.session.query(Bucket).get, org_ids)
+    return render_template('index.html', orgs=orgs)
+
+
+# TODO: Links should be hex values of bucketid
+
+
+@app.route('/organization/<string:bucketid>')
+@app.route('/organization/<string:bucketid>/events')
+@login_required
+def events(bucketid):
+    org = if_valid_user_bucket_get_bucket(bucketid)
+
     # Get all the events and current EST time.
-    events = Event.query.all()
+    events = Event.query.filter_by(bucket_id=bucketid).all()
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
 
@@ -173,18 +197,20 @@ def index():
             db.session.commit()
 
     # Query one more time for the display.
-    events = Event.query.filter(Event.expired == False).order_by(Event.start_time.asc()).all()  # pylint: disable=singleton-comparison
-    return render_template('index.html', events=events, timestamp=st, datetime=datetime, rider_instance=rider_instance)
+    events = Event.query.filter_by(bucket_id=bucketid, expired=False).order_by(Event.start_time.asc()).all()  # pylint: disable=singleton-comparison
+    return render_template('events.html', events=events, timestamp=st, datetime=datetime, rider_instance=rider_instance, org=org)
 
 
-@app.route('/history')
+@app.route('/organization/<string:bucketid>/history')
 @login_required
-def history():
+def history(bucketid):
+    org = if_valid_user_bucket_get_bucket(bucketid)
+
     # Get all the events and current EST time.
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
-    events = Event.query.filter(Event.expired == True).order_by(Event.start_time.desc()).all()  # pylint: disable=singleton-comparison
-    return render_template('history.html', events=events, timestamp=st, datetime=datetime)
+    events = Event.query.filter_by(bucket_id=bucketid, expired=True).order_by(Event.start_time.desc()).all()  # pylint: disable=singleton-comparison
+    return render_template('history.html', events=events, timestamp=st, datetime=datetime, org=org)
 
 
 # Event Form
@@ -389,7 +415,11 @@ def leave_ride(car_id, rider_username):
     return redirect(url_for('index'))
 
 # Log out
-@app.route("/logout")
-@auth.oidc_logout
-def _logout():
-    return redirect("/", 302)
+# @app.route("/logout")
+# @auth.oidc_logout
+# def _logout():
+#     return redirect("/", 302)
+
+@app.errorhandler(404)
+def page_not_found(error):
+   return render_template('404.html', title = '404'), 404

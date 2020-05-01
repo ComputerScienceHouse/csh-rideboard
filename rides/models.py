@@ -3,17 +3,8 @@
 # Author: Ayush Goel & Fred Rybin  #
 ####################################
 from rides import db
-
-
-class BucketEvent(db.Model):
-    __tablename__ = 'bucketevent'
-
-    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id'), nullable=False, primary_key=True)
-    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False, primary_key=True)
-
-    def __init__(self, bucket_id, event_id):
-        self.event_id = event_id
-        self.bucket_id = bucket_id
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
 
 
 class UserBucket(db.Model):
@@ -32,7 +23,9 @@ class Bucket(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(150), nullable=False)
+    token = db.Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True, nullable=False)
     owner = db.Column(db.String(50), nullable=False)
+    sharing = db.Column(db.Boolean, default=False, nullable=False)
 
     def __init__(self, id, title, owner):
         self.id = id
