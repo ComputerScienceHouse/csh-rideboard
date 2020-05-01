@@ -2,7 +2,6 @@ rides-env
 **/__pycache__/
 .vscode
 .idea/
-migrations/
 
 # Secrets
 config.sh
