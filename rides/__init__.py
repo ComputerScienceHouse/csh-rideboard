@@ -87,7 +87,6 @@ def load_user(user_id):
 
 
 @app.route('/login')
-@app.route('/')
 def login(auth_dict=None):
     return render_template('login.html', auth_dict=auth_dict)
 
@@ -164,9 +163,6 @@ def index():
     org_ids = db.session.query(UserBucket.bucket_id).filter_by(user_id=current_user.id).all()
     orgs = map(db.session.query(Bucket).get, org_ids)
     return render_template('index.html', orgs=orgs)
-
-
-# TODO: Links should be hex values of bucketid
 
 
 @app.route('/organization/<string:bucketid>')
