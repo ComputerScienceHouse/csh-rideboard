@@ -21,7 +21,7 @@ All contributors are welcome! If you would like to contribute:
   - `virtualenv rides-env`
   - `source rides-env/bin/activate`
   - `pip install -r requirements.txt`
-5. You will need everything in < ... >. You can create your own if you are hosting your own application or ask me for these if you would like to contribute to CSH.
+5. You will need everything in < ... >. You can create your own if you are hosting your own application or ask me for these if you would like to contribute to CSH. Please put this in `config.sh`
 ```
 export SERVER_NAME=127.0.0.1:8080
 export IP=localhost
@@ -31,11 +31,6 @@ export OIDC_CLIENT_SECRET=<OIDC Secret>
 export GOOGLE_CLIENT_ID=<Google Client ID>
 export GOOGLE_CLIENT_SECRET=<Google Client Secret>
 ```
-6. If you are running from outside of CSH, you will want to have `client.ovpn` and `client.pass` where the pass is the username/password for authenticating ovpn.
-7. For with VPN: `docker build --pull --rm -f "Dockerfile" -t rideboard:ubuntu "." --build-arg VPN=true`, remove the build-arg for without VPN.
-8.
-6. To run the application:
-  - Set debug mode: `export FLASK_ENV=development`
-  - Export application: `export FLASK_APP=app.py`
-  - Run: `flask run`
-7. Now you can make your changes. Make sure the changes made work and that your code passes pylint (run `pylint rides/`). Once you do that you can make your pullrequest.
+6. Create and run with docker: `docker build --pull --rm -f "Dockerfile" -t rideboard:ubuntu "."` followed by `docker run -d -p 8080:8080 rideboard:ubuntu`
+7. Run the startup.sh script to run locally.
+8. Now you can make your changes. Make sure the changes made work and that your code passes pylint (run `pylint rides/`). Once you do that you can make your pullrequest.
