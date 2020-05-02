@@ -3,6 +3,22 @@
   <div class="jumbotron">
     <h1 class="display-4 mt-4" align="center">{{ org.title }}</h1>
     <p class="lead" align="center">An organization created by {{ org.owner }}.</p>
+    <!-- if sharing is on -->
+    {% if org.sharing == True %}
+    <div class="input-group input-group-sm">
+      <div class="input-group-prepend">
+        <i class="fa fa-share-alt"> Invite Members: </i>
+      </div>
+      <input type="text" class="form-control" value="/invite/{{ org.token }}" id="inviteLink" readonly="readonly">
+      <div class="input-group-append">
+        <button class="btn btn-secondary" onclick="function copyTextValue() { var copyText = document.getElementById('inviteLink'); copyText.select(); copyText.setSelectionRange(0, 99999); document.execCommand('copy'); alert('Copied the text: ' + copyText.value); } copyTextValue()">Copy text</button>
+      </div>
+      <a class="d-none" align="center" href="/invite/{{ org.token }}" id="inviteLinkhref"></a>
+      <script>
+        document.getElementById("inviteLink").value = document.getElementById("inviteLinkhref").href;
+      </script>
+    </div>
+    {% endif %}
     <hr class="mb-4">
     {% for event in events %}
     <div class="card mb-3">
@@ -191,7 +207,7 @@
 </div>
 <hr class="my-3">
 {% endfor %}
-{% if current_user.is_authenticated %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/eventform"
+{% if current_user.is_authenticated %}<a class="btn btn-primary btn-lg btn-block" align="center" href="/organization/{{ org.id }}/eventform"
   id="new">Create
   Event</a>{% endif %}
 </div>

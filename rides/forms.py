@@ -3,12 +3,13 @@
 # Author: Fred Rybin & Ayush Goel  #
 ####################################
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, TextAreaField, StringField, FormField, DateTimeField, SelectField, Form
+from wtforms import SubmitField, TextAreaField, StringField, FormField, DateTimeField, SelectField, Form, BooleanField
 from wtforms.validators import DataRequired, Length
 
 
-class BucketForm(FlaskForm):
+class TeamForm(FlaskForm):
     name = StringField(('What is the name of the organization/team?'), validators=[DataRequired(), Length(min=1, max=140)])
+    sharing = BooleanField(("Enable Sharing?"))
     submit = SubmitField(('Submit'))
 
 

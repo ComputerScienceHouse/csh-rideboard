@@ -49,6 +49,11 @@
           <li class="nav-item navbar-user dropdown">
             <a class="nav-link" href="/organization/{{ org.id }}/history">History</a>
           </li>
+          {% if org.owner == current_user.id %}
+          <li class="nav-item navbar-user dropdown">
+            <a class="nav-link" href="/organization/{{ org.id }}/admin">Admin</a>
+          </li>
+          {% endif %}
         </ul>
         {% endif %}
 

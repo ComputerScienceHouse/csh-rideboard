@@ -12,6 +12,8 @@ from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
+from functools import wraps
+
 
 # Setting up Flask and csrf token for forms.
 app = Flask(__name__)
@@ -52,7 +54,7 @@ commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').r
 
 # pylint: disable=wrong-import-position
 from rides.models import Event, Rider, Car, User, Bucket, UserBucket
-from rides.forms import EventForm, CarForm
+from rides.forms import EventForm, CarForm, TeamForm
 from .utils import csh_user_auth, google_user_auth
 
 # time setup for the server side time
@@ -146,13 +148,15 @@ def google_auth(auth_dict=None):
 
 # Application
 
-def if_valid_user_bucket_get_bucket(bucketid):
-    valid = UserBucket.query.filter_by(bucket_id=bucketid, user_id=current_user.id).all()
-    print(valid)
-    if not valid:
-        return abort(404) # TODO: Change to proper error of you are not in the org
-    else:
-        return Bucket.query.filter_by(id=bucketid).first()
+def user_in_bucket(fn):
+    @wraps(fn)
+    def decorated_view(*args, **kwargs):
+        bucketid = kwargs['bucketid']
+        valid = UserBucket.query.filter_by(bucket_id=bucketid, user_id=current_user.id).all()
+        if not valid:
+            abort(404)
+        return fn(*args, **kwargs)
+    return decorated_view
 
 
 @app.route('/')
@@ -167,9 +171,10 @@ def index():
 
 @app.route('/organization/<string:bucketid>')
 @app.route('/organization/<string:bucketid>/events')
+@user_in_bucket
 @login_required
 def events(bucketid):
-    org = if_valid_user_bucket_get_bucket(bucketid)
+    org = Bucket.query.filter_by(id=bucketid).first()
 
     # Get all the events and current EST time.
     events = Event.query.filter_by(bucket_id=bucketid).all()
@@ -198,9 +203,10 @@ def events(bucketid):
 
 
 @app.route('/organization/<string:bucketid>/history')
+@user_in_bucket
 @login_required
 def history(bucketid):
-    org = if_valid_user_bucket_get_bucket(bucketid)
+    org = Bucket.query.filter_by(id=bucketid).first()
 
     # Get all the events and current EST time.
     loc_dt = datetime.datetime.now(tz=eastern)
@@ -209,10 +215,105 @@ def history(bucketid):
     return render_template('history.html', events=events, timestamp=st, datetime=datetime, org=org)
 
 
-# Event Form
-@app.route('/eventform', methods=['GET', 'POST'])
+# Team Form
+@app.route('/teamform', methods=['GET', 'POST'])
 @login_required
-def eventform():
+def teamform():
+    form = TeamForm()
+    if form.validate_on_submit():
+        title = form.name.data
+        sharing = form.sharing.data
+        creator = current_user.id
+        team = Bucket(title, creator, sharing)
+        db.session.add(team)
+        db.session.commit()
+        ub = UserBucket(team.id, creator)
+        db.session.add(ub)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('teamform.html', form=form)
+
+
+# Team Admin Page
+@app.route('/organization/<string:bucketid>/admin', methods=['GET', 'POST'])
+@login_required
+def teamadmin(bucketid):
+    org = Bucket.query.filter_by(id=bucketid).first()
+    if org is not None and current_user.id != org.owner:
+        return redirect(url_for('index'))
+    member_ids = db.session.query(UserBucket.user_id).filter_by(bucket_id=bucketid).all()
+    members = map(db.session.query(User).get, member_ids)
+    return render_template('admin.html', org=org, members=members)
+
+
+@app.route('/edit/teamform/<string:bucketid>', methods=["GET", "POST"])
+@login_required
+def editteamform(bucketid):
+    org = Bucket.query.filter_by(id=bucketid).first()
+    if org is not None and current_user.id != org.owner:
+        return redirect(url_for('index'))
+    form = TeamForm()
+    if form.validate_on_submit():
+        title = form.name.data
+        sharing = form.sharing.data
+        creator = current_user.id
+        org.title = form.name.data
+        org.sharing = form.sharing.data
+        db.session.commit()
+        return redirect(url_for('teamadmin', bucketid=org.id))
+    return render_template('editteamform.html', form=form, org=org)
+
+
+@app.route('/delete/team/<string:bucketid>', methods=["GET"])
+@login_required
+def deleteteam(bucketid):
+    org = Bucket.query.filter_by(id=bucketid).first()
+    if org is not None and current_user.id != org.owner:
+        return redirect(url_for('index'))
+    db.session.delete(org)
+    db.session.commit()
+    return redirect(url_for('index'))
+
+
+@app.route('/delete/member/<string:bucketid>/<string:member_id>', methods=["GET"])
+@login_required
+def removemember(bucketid, member_id):
+    org = Bucket.query.filter_by(id=bucketid).first()
+    if org is not None and current_user.id != org.owner:
+        return redirect(url_for('index'))
+    mem_org = UserBucket.query.get((bucketid, member_id))
+    db.session.delete(mem_org)
+    db.session.commit()
+    return redirect(url_for('teamadmin', bucketid=bucketid))
+
+
+@app.route('/transfer/<string:bucketid>/<string:member_id>', methods=["GET"])
+@login_required
+def transferownership(bucketid, member_id):
+    org = Bucket.query.filter_by(id=bucketid).first()
+    if org is not None and current_user.id != org.owner:
+        return redirect(url_for('index'))
+    org.owner = member_id
+    db.session.commit()
+    return redirect(url_for('events', bucketid=bucketid))
+
+
+@app.route('/invite/<uuid:token>', methods=["GET"])
+@login_required
+def acceptInvite(token):
+    org = Bucket.query.filter_by(token=token).first()
+    if org is not None and org.sharing:
+        ub = UserBucket(org.id, current_user.id)
+        db.session.add(ub)
+        db.session.commit()
+    return redirect(url_for('index'))
+
+
+# Event Form
+@app.route('/organization/<string:bucketid>/eventform', methods=['GET', 'POST'])
+@user_in_bucket
+@login_required
+def eventform(bucketid):
     # Time to prepopulate the datetime field
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
@@ -231,13 +332,13 @@ def eventform():
                                      int(form.end_date_time.data.hour),
                                      int(form.end_date_time.data.minute))
         creator = current_user.id
-        event = Event(name, address, start_time, end_time, creator)
+        event = Event(name, address, start_time, end_time, creator, bucketid)
         db.session.add(event)
         db.session.commit()
         infinity = Car('∞', 'Need a Ride', 0, 0, start_time, end_time, "", event.id)
         db.session.add(infinity)
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('events', bucketid=bucketid))
     return render_template('eventform.html', form=form, timestamp=st)
 
 
@@ -247,7 +348,7 @@ def eventform():
 def editeventform(eventid):
     username = current_user.id
     event = Event.query.get(eventid)
-    if username == event.creator and event is not None:
+    if event is not None and username == event.creator:
         form = EventForm()
         if form.validate_on_submit():
             event.name = form.name.data
@@ -276,8 +377,10 @@ def editeventform(eventid):
                                                 int(form.end_date_time.data.hour),
                                                 int(form.end_date_time.data.minute))
             db.session.commit()
-            return redirect(url_for('index'))
-    return render_template('editeventform.html', form=form, event=event)
+            return redirect(url_for('events', bucketid=event.bucket_id))
+        return render_template('editeventform.html', form=form, event=event)
+    else:
+        return redirect(url_for('index'))
 
 
 # Car form
@@ -306,7 +409,7 @@ def carform(eventid):
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, event_id)
         db.session.add(car)
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('events', bucketid=event.bucket_id))
     return render_template('carform.html', form=form, event=event)
 
 
@@ -316,7 +419,8 @@ def carform(eventid):
 def editcarform(carid):
     username = current_user.id
     car = Car.query.get(carid)
-    if username == car.username and car is not None:
+    event = Event.query.get(car.event_id)
+    if car is not None and username == car.username:
         form = CarForm()
         if form.validate_on_submit():
             car.username = current_user.id
@@ -335,7 +439,7 @@ def editcarform(carid):
                                                 int(form.return_date_time.data.minute))
             car.driver_comment = form.comments.data
             db.session.commit()
-            return redirect(url_for('index'))
+            return redirect(url_for('events', bucketid=event.bucket_id))
     return render_template('editcarform.html', form=form, car=car)
 
 
@@ -362,7 +466,7 @@ def join_ride(car_id, user):
             db.session.add(rider)
             db.session.add(car)
             db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('events', bucketid=event.bucket_id))
 
 
 # Delete Car
@@ -371,29 +475,24 @@ def join_ride(car_id, user):
 def delete_car(car_id):
     username = current_user.id
     car = Car.query.get(car_id)
-    if car.username == username and car is not None:
-        for peeps in car.riders:
-            # TODO: Add peeps to need ride.
-            db.session.delete(peeps)
+    event = Event.query.get(car.event_id)
+    if car is not None and car.username == username:
+        # TODO: Add peeps to need ride.
         db.session.delete(car)
         db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('events', bucketid=event.bucket_id))
 
 
 # Delete Event
 @app.route('/delete/ride/<string:event_id>', methods=["GET"])
 @login_required
-def delete_ride(event_id):
+def delete_event(event_id):
     username = current_user.id
     event = Event.query.get(event_id)
-    if event.creator == username and event is not None:
-        for car in event.cars:
-            for peeps in car.riders:
-                db.session.delete(peeps)
-            db.session.delete(car)
+    if event is not None and event.creator == username:
         db.session.delete(event)
         db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('events', bucketid=event.bucket_id))
 
 
 # Leave a ride
@@ -402,13 +501,27 @@ def delete_ride(event_id):
 def leave_ride(car_id, rider_username):
     username = current_user.id
     car = Car.query.get(car_id)
+    event = Event.query.get(car.event_id)
     rider = Rider.query.filter(Rider.username == rider_username, Rider.car_id == car_id).first()
     if rider.username == username and rider is not None:
         db.session.delete(rider)
         car.current_capacity -= 1
         db.session.add(car)
         db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('events', bucketid=event.bucket_id))
+
+
+@app.route('/delete/member/<string:bucketid>', methods=["GET"])
+@login_required
+def leaveteam(bucketid):
+    org = Bucket.query.filter_by(id=bucketid).first()
+    if org is not None and current_user.id == org.owner:
+        return redirect(url_for('index'))
+    mem_org = UserBucket.query.get((bucketid, current_user.id))
+    print(mem_org)
+    db.session.delete(mem_org)
+    db.session.commit()
+    return redirect(url_for('teamadmin', bucketid=bucketid))
 
 # Log out
 # @app.route("/logout")

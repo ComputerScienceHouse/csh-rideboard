@@ -1,6 +1,6 @@
 ####################################
 # File name: models.py             #
-# Author: Ayush Goel & Fred Rybin  #
+# Author: Ayush Goel               #
 ####################################
 from rides import db
 from sqlalchemy.dialects.postgresql import UUID
@@ -10,7 +10,7 @@ import uuid
 class UserBucket(db.Model):
     __tablename__ = 'userbucket'
 
-    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id'), nullable=False, primary_key=True)
+    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id', ondelete='CASCADE'), nullable=False, primary_key=True)
     user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False, primary_key=True)
 
     def __init__(self, bucket_id, user_id):
@@ -24,13 +24,13 @@ class Bucket(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(150), nullable=False)
     token = db.Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True, nullable=False)
-    owner = db.Column(db.String(50), nullable=False)
+    owner = db.Column(db.String(50), db.ForeignKey('user.id'), nullable=False)
     sharing = db.Column(db.Boolean, default=False, nullable=False)
 
-    def __init__(self, id, title, owner):
-        self.id = id
+    def __init__(self, title, owner, sharing=False):
         self.title = title
         self.owner = owner
+        self.sharing = sharing
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -73,7 +73,7 @@ class Event(db.Model):
     __tablename__ = 'events'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id'), nullable=False)
+    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id', ondelete='CASCADE'), nullable=False)
     name = db.Column(db.String(150), nullable=False)
     address = db.Column(db.Text, nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
@@ -82,12 +82,13 @@ class Event(db.Model):
     expired = db.Column(db.Boolean, default=False, nullable=False)
     cars = db.relationship('Car', backref='events', lazy=True)
 
-    def __init__(self, name, address, start_time, end_time, creator):
+    def __init__(self, name, address, start_time, end_time, creator, bucket_id):
         self.name = name
         self.address = address
         self.start_time = start_time
         self.end_time = end_time
         self.creator = creator
+        self.bucket_id = bucket_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -104,7 +105,7 @@ class Car(db.Model):
     departure_time = db.Column(db.DateTime, nullable=False)
     return_time = db.Column(db.DateTime, nullable=False)
     driver_comment = db.Column(db.Text)
-    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id', ondelete='CASCADE'), nullable=False)
     riders = db.relationship('Rider', backref='cars', lazy=True)
 
     def __init__(self, username, name, current_capacity, max_capacity,
@@ -123,12 +124,13 @@ class Car(db.Model):
 
 
 class Rider(db.Model):
+    # TODO: This should just be a car.id and user.id table.
     __tablename__ = 'riders'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(80), nullable=False)
     name = db.Column(db.String(50), nullable=False)
-    car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
+    car_id = db.Column(db.Integer, db.ForeignKey('cars.id', ondelete='CASCADE'), nullable=False)
 
     def __init__(self, username, name, car_id):
         self.username = username
