@@ -7,19 +7,19 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
 
-class UserBucket(db.Model):
-    __tablename__ = 'userbucket'
+class UserTeam(db.Model):
+    __tablename__ = 'userteam'
 
-    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id', ondelete='CASCADE'), nullable=False, primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id', ondelete='CASCADE'), nullable=False, primary_key=True)
     user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False, primary_key=True)
 
-    def __init__(self, bucket_id, user_id):
+    def __init__(self, team_id, user_id):
         self.user_id = user_id
-        self.bucket_id = bucket_id
+        self.team_id = team_id
 
 
-class Bucket(db.Model):
-    __tablename__ = 'bucket'
+class Team(db.Model):
+    __tablename__ = 'team'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(150), nullable=False)
@@ -73,7 +73,7 @@ class Event(db.Model):
     __tablename__ = 'events'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id', ondelete='CASCADE'), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id', ondelete='CASCADE'), nullable=False)
     name = db.Column(db.String(150), nullable=False)
     address = db.Column(db.Text, nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
@@ -82,13 +82,13 @@ class Event(db.Model):
     expired = db.Column(db.Boolean, default=False, nullable=False)
     cars = db.relationship('Car', backref='events', lazy=True)
 
-    def __init__(self, name, address, start_time, end_time, creator, bucket_id):
+    def __init__(self, name, address, start_time, end_time, creator, team_id):
         self.name = name
         self.address = address
         self.start_time = start_time
         self.end_time = end_time
         self.creator = creator
-        self.bucket_id = bucket_id
+        self.team_id = team_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
