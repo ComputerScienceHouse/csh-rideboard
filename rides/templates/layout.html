@@ -40,18 +40,18 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
-        {% if org is defined %}
+        {% if team is defined %}
         <!-- TODO: Not sure if this is the best way to enable these-->
         <ul class="navbar-nav mr-auto">
           <li class="nav-item navbar-user dropdown">
-            <a class="nav-link" href="/team/{{ org.id }}/events">Events</a>
+            <a class="nav-link" href="/team/{{ team.id }}/events">Events</a>
           </li>
           <li class="nav-item navbar-user dropdown">
-            <a class="nav-link" href="/team/{{ org.id }}/history">History</a>
+            <a class="nav-link" href="/team/{{ team.id }}/history">History</a>
           </li>
-          {% if org.owner == current_user.id %}
+          {% if team.owner == current_user.id %}
           <li class="nav-item navbar-user dropdown">
-            <a class="nav-link" href="/team/{{ org.id }}/admin">Admin</a>
+            <a class="nav-link" href="/team/{{ team.id }}/admin">Admin</a>
           </li>
           {% endif %}
         </ul>

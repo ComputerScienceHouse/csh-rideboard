@@ -164,10 +164,10 @@ def user_in_team(fn):
 @app.route('/home/')
 @login_required
 def index():
-    # Get all orgs current user is part of
-    org_ids = db.session.query(UserTeam.team_id).filter_by(user_id=current_user.id).all()
-    orgs = map(db.session.query(Team).get, org_ids)
-    return render_template('index.html', orgs=orgs)
+    # Get all teams current user is part of
+    team_ids = db.session.query(UserTeam.team_id).filter_by(user_id=current_user.id).all()
+    teams = map(db.session.query(Team).get, team_ids)
+    return render_template('index.html', teams=teams)
 
 
 @app.route('/team/<string:teamid>')
@@ -175,7 +175,7 @@ def index():
 @user_in_team
 @login_required
 def events(teamid):
-    org = Team.query.filter_by(id=teamid).first()
+    team = Team.query.filter_by(id=teamid).first()
 
     # Get all the events and current EST time.
     events = Event.query.filter_by(team_id=teamid).all()
@@ -200,20 +200,20 @@ def events(teamid):
 
     # Query one more time for the display.
     events = Event.query.filter_by(team_id=teamid, expired=False).order_by(Event.start_time.asc()).all()  # pylint: disable=singleton-comparison
-    return render_template('events.html', events=events, timestamp=st, datetime=datetime, rider_instance=rider_instance, org=org)
+    return render_template('events.html', events=events, timestamp=st, datetime=datetime, rider_instance=rider_instance, team=team)
 
 
 @app.route('/team/<string:teamid>/history')
 @user_in_team
 @login_required
 def history(teamid):
-    org = Team.query.filter_by(id=teamid).first()
+    team = Team.query.filter_by(id=teamid).first()
 
     # Get all the events and current EST time.
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
     events = Event.query.filter_by(team_id=teamid, expired=True).order_by(Event.start_time.desc()).all()  # pylint: disable=singleton-comparison
-    return render_template('history.html', events=events, timestamp=st, datetime=datetime, org=org)
+    return render_template('history.html', events=events, timestamp=st, datetime=datetime, team=team)
 
 
 # Team Form
@@ -239,39 +239,39 @@ def teamform():
 @app.route('/team/<string:teamid>/admin', methods=['GET', 'POST'])
 @login_required
 def teamadmin(teamid):
-    org = Team.query.filter_by(id=teamid).first()
-    if org is not None and current_user.id != org.owner:
+    team = Team.query.filter_by(id=teamid).first()
+    if team is not None and current_user.id != team.owner:
         return redirect(url_for('index'))
     member_ids = db.session.query(UserTeam.user_id).filter_by(team_id=teamid).all()
     members = map(db.session.query(User).get, member_ids)
-    return render_template('admin.html', org=org, members=members)
+    return render_template('admin.html', team=team, members=members)
 
 
 @app.route('/edit/teamform/<string:teamid>', methods=["GET", "POST"])
 @login_required
 def editteamform(teamid):
-    org = Team.query.filter_by(id=teamid).first()
-    if org is not None and current_user.id != org.owner:
+    team = Team.query.filter_by(id=teamid).first()
+    if team is not None and current_user.id != team.owner:
         return redirect(url_for('index'))
     form = TeamForm()
     if form.validate_on_submit():
         title = form.name.data
         sharing = form.sharing.data
         creator = current_user.id
-        org.title = form.name.data
-        org.sharing = form.sharing.data
+        team.title = form.name.data
+        team.sharing = form.sharing.data
         db.session.commit()
-        return redirect(url_for('teamadmin', teamid=org.id))
-    return render_template('editteamform.html', form=form, org=org)
+        return redirect(url_for('teamadmin', teamid=team.id))
+    return render_template('editteamform.html', form=form, team=team)
 
 
 @app.route('/delete/team/<string:teamid>', methods=["GET"])
 @login_required
 def deleteteam(teamid):
-    org = Team.query.filter_by(id=teamid).first()
-    if org is not None and current_user.id != org.owner:
+    team = Team.query.filter_by(id=teamid).first()
+    if team is not None and current_user.id != team.owner:
         return redirect(url_for('index'))
-    db.session.delete(org)
+    db.session.delete(team)
     db.session.commit()
     return redirect(url_for('index'))
 
@@ -279,11 +279,11 @@ def deleteteam(teamid):
 @app.route('/delete/member/<string:teamid>/<string:member_id>', methods=["GET"])
 @login_required
 def removemember(teamid, member_id):
-    org = Team.query.filter_by(id=teamid).first()
-    if org is not None and current_user.id != org.owner:
+    team = Team.query.filter_by(id=teamid).first()
+    if team is not None and current_user.id != team.owner:
         return redirect(url_for('index'))
-    mem_org = UserTeam.query.get((teamid, member_id))
-    db.session.delete(mem_org)
+    mem_team = UserTeam.query.get((teamid, member_id))
+    db.session.delete(mem_team)
     db.session.commit()
     return redirect(url_for('teamadmin', teamid=teamid))
 
@@ -291,10 +291,10 @@ def removemember(teamid, member_id):
 @app.route('/transfer/<string:teamid>/<string:member_id>', methods=["GET"])
 @login_required
 def transferownership(teamid, member_id):
-    org = Team.query.filter_by(id=teamid).first()
-    if org is not None and current_user.id != org.owner:
+    team = Team.query.filter_by(id=teamid).first()
+    if team is not None and current_user.id != team.owner:
         return redirect(url_for('index'))
-    org.owner = member_id
+    team.owner = member_id
     db.session.commit()
     return redirect(url_for('events', teamid=teamid))
 
@@ -302,9 +302,9 @@ def transferownership(teamid, member_id):
 @app.route('/invite/<uuid:token>', methods=["GET"])
 @login_required
 def acceptInvite(token):
-    org = Team.query.filter_by(token=token).first()
-    if org is not None and org.sharing:
-        ub = UserTeam(org.id, current_user.id)
+    team = Team.query.filter_by(token=token).first()
+    if team is not None and team.sharing:
+        ub = UserTeam(team.id, current_user.id)
         db.session.add(ub)
         db.session.commit()
     return redirect(url_for('index'))
@@ -515,12 +515,12 @@ def leave_ride(car_id, rider_username):
 @app.route('/delete/member/<string:teamid>', methods=["GET"])
 @login_required
 def leaveteam(teamid):
-    org = Team.query.filter_by(id=teamid).first()
-    if org is not None and current_user.id == org.owner:
+    team = Team.query.filter_by(id=teamid).first()
+    if team is not None and current_user.id == team.owner:
         return redirect(url_for('index'))
-    mem_org = UserTeam.query.get((teamid, current_user.id))
-    print(mem_org)
-    db.session.delete(mem_org)
+    mem_team = UserTeam.query.get((teamid, current_user.id))
+    print(mem_team)
+    db.session.delete(mem_team)
     db.session.commit()
     return redirect(url_for('teamadmin', teamid=teamid))
 

@@ -10,11 +10,11 @@
           <div class="form-group">
             <h5 class="mb-1">{{ form.name.label }}</h5> {{ form.name(class="form-control", id="name") }}
             {% for error in form.name.errors %} <div class="alert alert-danger">{{ error }}</div>{% endfor %}
-            <script>$("#name").val("{{org.name}}");</script>
+            <script>$("#name").val("{{team.name}}");</script>
           </div>
           <div class="form-group">
             <h5 class="mb-1">{{ form.sharing.label }}</h5> {{ form.sharing(class="form-control", id="sharing") }}
-            <script>$("#sharing").val("{{org.sharing}}");</script>
+            <script>$("#sharing").val("{{team.sharing}}");</script>
             {% for error in form.sharing.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
           </div>
           {{ form.submit(class="btn btn-primary btn-sm btn-block")}}

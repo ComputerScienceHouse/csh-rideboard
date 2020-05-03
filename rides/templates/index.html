@@ -3,15 +3,15 @@
   <div class="jumbotron">
     <h1 class="display-4 mt-4" align="center">Teams</h1>
     <hr class="mb-4">
-    {% for org in orgs %}
+    {% for team in teams %}
     <div class="btn-group d-flex justify-content-center" role="group" displ>
-      <a class="btn btn-secondary btn-lg flex-grow-1" href="/team/{{ org.id }}/events">{{ org.title }} </a>
-      {% if current_user.id != org.owner %}
-      <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#leaveTeam{{org.id}}">Leave Team </button>
+      <a class="btn btn-secondary btn-lg flex-grow-1" href="/team/{{ team.id }}/events">{{ team.title }} </a>
+      {% if current_user.id != team.owner %}
+      <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#leaveTeam{{team.id}}">Leave Team </button>
       {% endif %}
     </div>
-    {% if current_user.id != org.owner %}
-    <div class="modal" id="leaveTeam{{org.id}}">
+    {% if current_user.id != team.owner %}
+    <div class="modal" id="leaveTeam{{team.id}}">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -23,7 +23,7 @@
             <p>Are you sure you want to keave this team?</p>
           </div>
           <div class="modal-footer">
-            <form method="get" action="/delete/member/{{ org.id }}" id="leave::team::{{org.id}}">
+            <form method="get" action="/delete/member/{{ team.id }}" id="leave::team::{{team.id}}">
               <button type="submit" class="btn btn-danger">Yes</button>
             </form>
             <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
