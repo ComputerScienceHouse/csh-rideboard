@@ -53,7 +53,7 @@ commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').r
 
 
 # pylint: disable=wrong-import-position
-from rides.models import Event, Rider, Car, User, Team, UserTeam
+from rides.models import Event, Passenger, Car, User, Team, UserTeam
 from rides.forms import EventForm, CarForm, TeamForm
 from .utils import csh_user_auth, google_user_auth
 
@@ -182,14 +182,14 @@ def events(teamid):
     loc_dt = datetime.datetime.now(tz=eastern)
     st = loc_dt.strftime(fmt)
 
-    rider_instance = []
+    passenger_instance = []
     if current_user.is_authenticated:
-        # TODO: Likely don't need this for loop, should be a single query.
-        for rider_instances in Rider.query.filter(Rider.username == current_user.id).all():
-            rider_instance.append(Car.query.get(rider_instances.car_id).event_id)
-        for rider_instances in Car.query.all():
-            if rider_instances.username == current_user.id:
-                rider_instance.append(rider_instances.event_id)
+        passenger_events = [value for value, in db.session.query(Car.event_id).join(Passenger, Passenger.car_id==Car.id).filter(Passenger.username == current_user.id).all()]
+        if passenger_events is not None:
+            passenger_instance.extend(passenger_events)
+        driver_events = [value for value, in db.session.query(Car.event_id).filter(Car.username==current_user.id).all()]
+        if driver_events is not None:
+            passenger_instance.extend(driver_events)
 
     # If any event has expired by 1 hour then expire the event.
     for event in events:
@@ -200,7 +200,7 @@ def events(teamid):
 
     # Query one more time for the display.
     events = Event.query.filter_by(team_id=teamid, expired=False).order_by(Event.start_time.asc()).all()  # pylint: disable=singleton-comparison
-    return render_template('events.html', events=events, timestamp=st, datetime=datetime, rider_instance=rider_instance, team=team)
+    return render_template('events.html', events=events, timestamp=st, datetime=datetime, passenger_instance=passenger_instance, team=team)
 
 
 @app.route('/team/<string:teamid>/history')
@@ -444,10 +444,10 @@ def editcarform(carid):
     return render_template('editcarform.html', form=form, car=car)
 
 
-# Join a ride
+# Join a car
 @app.route('/join/<string:car_id>/<user>', methods=["GET"])
 @login_required
-def join_ride(car_id, user):
+def join_car(car_id, user):
     incar = False
     username = current_user.id
     name = current_user.firstname + " " + current_user.lastname
@@ -458,13 +458,13 @@ def join_ride(car_id, user):
         for c in event.cars:
             if c.username == username:
                 incar = True
-            for person in c.riders:
+            for person in c.passengers:
                 if person.username == username:
                     incar = True
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider(username, name, car_id)
+            passenger = Passenger(username, name, car_id)
             car.current_capacity += 1
-            db.session.add(rider)
+            db.session.add(passenger)
             db.session.add(car)
             db.session.commit()
     return redirect(url_for('events', teamid=event.team_id))
@@ -478,14 +478,14 @@ def delete_car(car_id):
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
     if car is not None and car.username == username:
-        # TODO: Add peeps to need ride.
+        # TODO: Add peeps to need find a car
         db.session.delete(car)
         db.session.commit()
     return redirect(url_for('events', teamid=event.team_id))
 
 
 # Delete Event
-@app.route('/delete/ride/<string:event_id>', methods=["GET"])
+@app.route('/delete/passenger/<string:event_id>', methods=["GET"])
 @login_required
 def delete_event(event_id):
     username = current_user.id
@@ -496,16 +496,16 @@ def delete_event(event_id):
     return redirect(url_for('events', teamid=event.team_id))
 
 
-# Leave a ride
-@app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
+# Leave a car
+@app.route('/delete/passenger/<string:car_id>/<string:passenger_username>', methods=["GET"])
 @login_required
-def leave_ride(car_id, rider_username):
+def leave_car(car_id, passenger_username):
     username = current_user.id
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
-    rider = Rider.query.filter(Rider.username == rider_username, Rider.car_id == car_id).first()
-    if rider.username == username and rider is not None:
-        db.session.delete(rider)
+    passenger = Passenger.query.filter(Passenger.username == passenger_username, Passenger.car_id == car_id).first()
+    if passenger.username == username and passenger is not None:
+        db.session.delete(passenger)
         car.current_capacity -= 1
         db.session.add(car)
         db.session.commit()
@@ -519,7 +519,6 @@ def leaveteam(teamid):
     if team is not None and current_user.id == team.owner:
         return redirect(url_for('index'))
     mem_team = UserTeam.query.get((teamid, current_user.id))
-    print(mem_team)
     db.session.delete(mem_team)
     db.session.commit()
     return redirect(url_for('teamadmin', teamid=teamid))

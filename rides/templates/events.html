@@ -53,13 +53,13 @@
               <div class="ml-auto">
                 <!-- If you are not in ANY car in ALL cars in the EVENT, then you can join.-->
                 {% if current_user.is_authenticated %}
-                {% if event.id not in rider_instance %}
+                {% if event.id not in passenger_instance %}
                 {% if ((car.current_capacity < car.max_capacity) or (car.max_capacity == 0)) %}
                 <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{current_user.id}}" id="join::{{car.id}}"
                   type="button">Join Ride</a>
                 {% endif %}
                 {% endif %}
-                {% for person in car.riders %}
+                {% for person in car.passengers %}
                 {% if person.username == current_user.id %}
                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
                   data-target="#leaveRide{{car.id}}">Leave Ride
@@ -73,13 +73,13 @@
                             aria-hidden="true">&times;</span></button>
                       </div>
                       <div class="modal-body">
-                        <p>Are you sure you want to leave this ride?</p>
+                        <p>Are you sure you want to leave this car?</p>
                       </div>
                       <div class="modal-footer">
                         <!-- TODO: Probably should not be using form and buttons and rather be using input. -->
-                        <!-- <a class="btn btn-primary btn-sm" href="/delete/rider/{{car.id}}/{{current_user.id}}" id="delete::rider::{{car.id}}" type="button btn-danger">Yes</a> -->
-                        <form method="get" action="/delete/rider/{{car.id}}/{{current_user.id}}"
-                          id="delete::rider::{{car.id}}">
+                        <!-- <a class="btn btn-primary btn-sm" href="/delete/passenger/{{car.id}}/{{current_user.id}}" id="delete::passenger::{{car.id}}" type="button btn-danger">Yes</a> -->
+                        <form method="get" action="/delete/passenger/{{car.id}}/{{current_user.id}}"
+                          id="delete::passenger::{{car.id}}">
                           <button type="submit" class="btn btn-danger">Yes</button>
                         </form>
                         <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
@@ -94,20 +94,20 @@
                     <a class="btn btn-info btn-sm" align="center" href="/edit/carform/{{ car.id }}"
                       id="edit::car::{{ car.id }}">Edit</a>
                     <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                      data-target="#deleteRide{{ car.id }}">Delete
+                      data-target="#deleteCar{{ car.id }}">Delete
                     </button>
                   </div>
-                  <div class="modal" id="deleteRide{{ car.id }}">
+                  <div class="modal" id="deleteCar{{ car.id }}">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h5 class="modal-title">Delete Ride</h5>
+                          <h5 class="modal-title">Delete Car</h5>
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                               aria-hidden="true">&times;</span></button>
                         </div>
                         <div class="modal-body">
                           <p class="font-normal lead">
-                            <small>Are you sure you want to delete your ride?</small>
+                            <small>Are you sure you want to delete your car?</small>
                           </p>
                         </div>
                         <div class="modal-footer">
@@ -140,7 +140,7 @@
                 <tbody>
                   <tr class="table-light">
                     <td class="text-center font-weight-normal">{{ car.current_capacity }}/{{ car.max_capacity }}</td>
-                    <td class="text-center font-weight-normal"> {% for rider in car.riders %} {{ rider.name }};
+                    <td class="text-center font-weight-normal"> {% for passenger in car.passengers %} {{ passenger.name }};
                       {% endfor %}
                     </td>
                     <td class="text-center font-weight-normal">{{ datetime.datetime.strftime(car.departure_time, '%B %d,
@@ -156,10 +156,10 @@
             </div>
           </div>
           {% endfor %}
-          <!-- If you already created a ride or are in one, you cannot create one.-->
-          {% if current_user.is_authenticated %}{% if event.id not in rider_instance %}
+          <!-- If you already created a car or are in one, you cannot create one.-->
+          {% if current_user.is_authenticated %}{% if event.id not in passenger_instance %}
           <hr class="my-3">
-          <form method="get" action="/carform/{{event.id}}" id="ride">
+          <form method="get" action="/carform/{{event.id}}" id="passenger">
             <button class="btn btn-success btn-sm btn-block my-2" type="submit">Create Ride</button>
           </form>
           {% endif %}{% endif %}
@@ -187,7 +187,7 @@
                         <p>Are you sure you want to delete this event?</p>
                       </div>
                       <div class="modal-footer">
-                        <form method="get" action="/delete/ride/{{event.id}}" id="delete::ride::{{event.id}}">
+                        <form method="get" action="/delete/passenger/{{event.id}}" id="delete::passenger::{{event.id}}">
                           <button type="submit" class="btn btn-danger">Yes</button>
                         </form>
                         <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
