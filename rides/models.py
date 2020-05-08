@@ -1,11 +1,30 @@
 ####################################
-# File name: models_db.py             #
+# File name: models_db.py          #
 # Author: Ayush Goel               #
 ####################################
 import uuid
+from sqlalchemy import UniqueConstraint
 
 from rides import db
 from sqlalchemy.dialects.postgresql import UUID
+
+
+class APIKey(db.Model):
+    __tablename__ = 'APIKey'
+
+    id = db.Column(db.Integer, primary_key=True)
+    hash = db.Column(db.String(64), unique=True)
+    owner = db.Column(db.String(64))
+    reason = db.Column(db.String(128))
+    __table_args__ = (UniqueConstraint('owner', 'reason', name='unique_key'),)
+
+    def __init__(self, owner, reason):
+        self.hash = uuid.uuid4().hex
+        self.owner = owner
+        self.reason = reason
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
 
 
 class UserTeam(db.Model):
@@ -15,11 +34,12 @@ class UserTeam(db.Model):
         'team.id', ondelete='CASCADE'), nullable=False, primary_key=True)
     user_id = db.Column(db.String, db.ForeignKey(
         'user.id'), nullable=False, primary_key=True)
-    # is_admin
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     def __init__(self, team_id, user_id):
         self.user_id = user_id
         self.team_id = team_id
+        self.is_admin = False
 
 
 class User(db.Model):
@@ -59,17 +79,18 @@ class Team(db.Model):
     __tablename__ = 'team'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(150), nullable=False)
-    # description
+    title = db.Column(db.String(64), nullable=False)
+    description = db.Column(db.String(256), nullable=False)
     token = db.Column(UUID(as_uuid=True), default=uuid.uuid4,
                       unique=True, nullable=False)
-    owner = db.Column(db.String(50), db.ForeignKey('user.id'), nullable=False)
+    owner = db.Column(db.String(64), db.ForeignKey('user.id'), nullable=False)
     sharing = db.Column(db.Boolean, default=False, nullable=False)
     members = db.relationship("User", secondary=UserTeam.__tablename__,
                               backref=db.backref('teams'), lazy='dynamic')
 
-    def __init__(self, title, owner, sharing=False):
+    def __init__(self, title, description, owner, sharing=False):
         self.title = title
+        self.description = description
         self.owner = owner
         self.sharing = sharing
 
@@ -82,8 +103,8 @@ class Passenger(db.Model):
     __tablename__ = 'passengers'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(80), nullable=False)
-    name = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(64), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
     car_id = db.Column(db.Integer, db.ForeignKey(
         'cars.id', ondelete='CASCADE'), nullable=False)
 
@@ -100,8 +121,8 @@ class Car(db.Model):
     __tablename__ = 'cars'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(80), db.ForeignKey('user.id'), nullable=False) # TODO: Make foreign key to User
-    name = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(64), db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
     current_capacity = db.Column(db.Integer, nullable=False)
     max_capacity = db.Column(db.Integer, nullable=False)
     departure_time = db.Column(db.DateTime, nullable=False)
@@ -133,11 +154,11 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     team_id = db.Column(db.Integer, db.ForeignKey(
         'team.id', ondelete='CASCADE'), nullable=False)
-    name = db.Column(db.String(150), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
     address = db.Column(db.Text, nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
-    creator = db.Column(db.String(50), nullable=False)
+    creator = db.Column(db.String(64), nullable=False)
     expired = db.Column(db.Boolean, default=False, nullable=False)
     cars = db.relationship("Car", cascade="all,delete", lazy='dynamic')
 
