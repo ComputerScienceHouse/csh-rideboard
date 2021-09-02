@@ -12,6 +12,17 @@ from flask import Flask, render_template, send_from_directory, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
+# Slack Bot Imports
+
+import logging
+import os
+# Import WebClient from Python SDK (github.com/slackapi/python-slack-sdk)
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+
+
+
+
 
 # Setting up Flask and csrf token for forms.
 app = Flask(__name__)
@@ -39,6 +50,11 @@ GOOGLE_AUTH = ProviderConfiguration(issuer=app.config["GOOGLE_ISSUER"],
 auth = OIDCAuthentication({'default': CSH_AUTH,
                            'google': GOOGLE_AUTH},
                           app)
+
+client = WebClient(token=app.config["SLACK_BOT_TOKEN"])
+logger = logging.getLogger(__name__)
+csh_username_id='Xf2DGHKJG5'
+
 auth.init_app(app)
 
 # Flask-Login Manager
@@ -282,6 +298,7 @@ def carform(eventid):
         driver_comment = form.comments.data
         event_id = eventid
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, event_id)
+        notify_opening( event_id, name, car.id )
         db.session.add(car)
         db.session.commit()
         return redirect(url_for('index'))
@@ -384,6 +401,18 @@ def leave_ride(car_id, rider_username):
     if rider.username == username and rider is not None:
         db.session.delete(rider)
         car.current_capacity -= 1
+        notify_opening( car.event_id, car.name, car_id )
         db.session.add(car)
         db.session.commit()
     return redirect(url_for('index'))
+
+
+# Slack Bot
+def notify_opening(event_id, driver_name, car_id):
+        event = Event.query.get(event_id)
+        need_ride = event.cars.query.filter(Car.name == 'Need a Ride').first().query.all()
+        for rider in need_ride:
+            if client.chat_postMessage(channel=rider.contact,text="Greetings! There is a ride available for " + event.name + "! Driver of the available car is " + driver_name +". Go to https://rideboard.csh.rit.edu/join/"+ car_id +"/" + rider.username + "to claim your spot!")["ok"] == 'false':
+                #EMAIL THE rider.contact
+                pass
+                
