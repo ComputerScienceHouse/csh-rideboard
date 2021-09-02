@@ -1,0 +1,13 @@
+{% extends "extend/email.html" %}
+
+{% block body %}
+    <div class="container main">
+        <h2>Hello {{ rider }},</h2>
+        <h3>There is an available ride for {{ event }}!</h3>
+        <p>Driver: {{ driver }}</p>
+        <p>If you wish to join this ride, please go to <a href={{ url }}>{{ url }}</a></p>
+        <p>Ensure that you were added to the ride, if not please hit the "Join Ride" button!</p>
+        <p>IF YOU USE A CSH LOGIN, YOU CAN HAVE RIDEBOARD MESSAGE YOU ON SLACK INSTEAD OF EMAIL!</p>
+        <P>Connect your Slack by going to <a href='https://eac.csh.rit.edu'>https://eac.csh.rit.edu</a></P>
+    </div>
+{% endblock %}

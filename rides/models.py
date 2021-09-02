@@ -11,14 +11,16 @@ class User(db.Model):
     firstname = db.Column(db.String, nullable=False)
     lastname = db.Column(db.String, nullable=False)
     picture = db.Column(db.String, nullable=False)
-    contact = db.Column(db.String, nullable=False) # ADD TO MYSQL
+    slack = db.Column(db.String, nullable=False) # ADD TO MYSQL
+    email = db.Column(db.String, nullable=False) # ADD TO MYSQL
 
-    def __init__(self, id, firstname, lastname, picture, contact):
+    def __init__(self, id, firstname, lastname, picture, slack, email):
         self.id = id
         self.firstname = firstname
         self.lastname = lastname
         self.picture = picture
-        self.contact = contact
+        self.slack = slack
+        self.email = email
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -96,13 +98,15 @@ class Rider(db.Model):
     username = db.Column(db.String(80), nullable=False)
     name = db.Column(db.String(50), nullable=False)
     car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
-    contact = db.Column(db.String, nullable=False) # ADD TO MYSQL
+    slack = db.Column(db.String, nullable=False) # ADD TO MYSQL
+    email = db.Column(db.String, nullable=False) # ADD TO MYSQL
 
-    def __init__(self, username, name, contact, car_id):
+    def __init__(self, username, name, car_id, slack, email):
         self.username = username
         self.name = name
         self.car_id = car_id
-        self.contact = contact
+        self.slack = slack
+        self.email = email
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

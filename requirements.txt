@@ -10,4 +10,5 @@ Flask-pyoidc==3.2.0
 pytz==2018.3
 Flask-login
 psycopg2-binary
-slack-sdk
+slack_sdk
+Flask-Mail

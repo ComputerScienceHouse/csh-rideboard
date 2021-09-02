@@ -9,11 +9,14 @@ def csh_user_auth(func):
         last = str(session["userinfo"].get("family_name", ""))
         first = str(session["userinfo"].get("given_name", ""))
         picture = "https://profiles.csh.rit.edu/image/" + uid
+        slack = str(session["userinfo"].get("slackuid",""))
+        email = str(session["userinfo"].get("email",""))
         auth_dict = {
             "first": first,
             "last": last,
             "uid": uid,
-            "picture": picture
+            "picture": picture,
+            "slack": slack
         }
         kwargs["auth_dict"] = auth_dict
         return func(*args, **kwargs)
@@ -27,11 +30,14 @@ def google_user_auth(func):
         last = str(session["userinfo"].get("family_name", ""))
         first = str(session["userinfo"].get("given_name", ""))
         picture = str(session["userinfo"].get("picture", ""))
+        email = str(session["userinfo"].get("email",""))
         auth_dict = {
             "first": first,
             "last": last,
             "uid": uid,
-            "picture": picture
+            "picture": picture,
+            "slack" : 'N/A',
+            "email" : email
         }
         kwargs["auth_dict"] = auth_dict
         return func(*args, **kwargs)

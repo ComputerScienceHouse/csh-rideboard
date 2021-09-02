@@ -1,10 +1,11 @@
 import secrets
 from os import environ as env
+from distutils.util import strtobool
 
 # Flask config
 IP = env.get('IP', '0.0.0.0')
 PORT = env.get('PORT', 8080)
-SERVER_NAME = env.get('SERVER_NAME', 'rideboard.csh.rit.edu')
+SERVER_NAME = env.get('SERVER_NAME', '127.0.0.1:5000')
 
 # DB Info
 SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI')
@@ -26,4 +27,12 @@ GOOGLE_CLIENT_SECRET = env.get('GOOGLE_CLIENT_SECRET', '---')
 LDAP_BIND_DN = env.get("LDAP_BIND_DN", default="cn=rides,ou=Apps,dc=csh,dc=rit,dc=edu")
 LDAP_BIND_PASS = env.get("LDAP_BIND_PASS", default=None)
 
+# Slack Config
 SLACK_TOKEN = env.get('SLACK_TOKEN','---')
+
+# Mail Config
+MAIL_PROD = strtobool(env.get("PACKET_MAIL_PROD", "False"))
+MAIL_SERVER = env.get("PACKET_MAIL_SERVER", "thoth.csh.rit.edu")
+MAIL_USERNAME = env.get("PACKET_MAIL_USERNAME", "rideboard@csh.rit.edu")
+MAIL_PASSWORD = env.get("PACKET_MAIL_PASSWORD", None)
+MAIL_USE_TLS = strtobool(env.get("PACKET_MAIL_TLS", "True"))

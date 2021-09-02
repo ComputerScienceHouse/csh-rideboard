@@ -1,0 +1,12 @@
+Hello {{ rider }},
+
+There is an available ride for {{ event }}!
+
+Driver: {{ driver }}
+
+If you wish to join this ride, please go to {{ url }}
+
+Ensure that you were added to the ride, if not please hit the "Join Ride" button!
+
+IF YOU USE A CSH LOGIN, YOU CAN HAVE RIDEBOARD MESSAGE YOU ON SLACK INSTEAD OF EMAIL!
+Connect your Slack by going to https://eac.csh.rit.edu

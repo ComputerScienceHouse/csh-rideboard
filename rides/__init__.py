@@ -14,14 +14,6 @@ from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
 # Slack Bot Imports
 
-import logging
-import os
-# Import WebClient from Python SDK (github.com/slackapi/python-slack-sdk)
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
-
-
-
 
 
 # Setting up Flask and csrf token for forms.
@@ -50,10 +42,6 @@ GOOGLE_AUTH = ProviderConfiguration(issuer=app.config["GOOGLE_ISSUER"],
 auth = OIDCAuthentication({'default': CSH_AUTH,
                            'google': GOOGLE_AUTH},
                           app)
-
-client = WebClient(token=app.config["SLACK_BOT_TOKEN"])
-logger = logging.getLogger(__name__)
-csh_username_id='Xf2DGHKJG5'
 
 auth.init_app(app)
 
@@ -123,12 +111,16 @@ def csh_auth(auth_dict=None):
         return redirect(url_for('login'))
     q = User.query.get(auth_dict['uid'])
     if q is not None:
-        g.user = q
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
+        if q.slack == '':
+            q.slack = auth_dict['slack']
+        if q.email == '':
+            q.email = auth_dict['email']
+        g.user = q
     else:
-        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'], auth_dict['picture'])
+        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'], auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
         g.user = user
         db.session.add(user)
 
@@ -150,9 +142,11 @@ def google_auth(auth_dict=None):
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
+        if q.email == '':
+            q.email = auth_dict['email']
         g.user = q
     else:
-        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'], auth_dict['picture'])
+        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'], auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
         g.user = user
         db.session.add(user)
 
@@ -341,6 +335,7 @@ def join_ride(car_id, user):
     incar = False
     username = current_user.id
     name = current_user.firstname + " " + current_user.lastname
+    contact = current_user.contact
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
     attempted_username = user
@@ -352,7 +347,7 @@ def join_ride(car_id, user):
                 if person.username == username:
                     incar = True
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider(username, name, car_id)
+            rider = Rider( username, name, car_id, contact )
             car.current_capacity += 1
             db.session.add(rider)
             db.session.add(car)
@@ -406,13 +401,27 @@ def leave_ride(car_id, rider_username):
         db.session.commit()
     return redirect(url_for('index'))
 
+import logging
+import os
+# Import WebClient from Python SDK (github.com/slackapi/python-slack-sdk)
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+#from rides.mail import send_opening_mail
+
+client = WebClient(token=app.config["SLACK_TOKEN"])
+logger = logging.getLogger(__name__)
+csh_username_id='Xf2DGHKJG5'
 
 # Slack Bot
 def notify_opening(event_id, driver_name, car_id):
         event = Event.query.get(event_id)
+        event_name = event.name
         need_ride = event.cars.query.filter(Car.name == 'Need a Ride').first().query.all()
         for rider in need_ride:
-            if client.chat_postMessage(channel=rider.contact,text="Greetings! There is a ride available for " + event.name + "! Driver of the available car is " + driver_name +". Go to https://rideboard.csh.rit.edu/join/"+ car_id +"/" + rider.username + "to claim your spot!")["ok"] == 'false':
-                #EMAIL THE rider.contact
+            name = rider.name
+            url = "https://rideboard.csh.rit.edu/join/"+ car_id +"/" + rider.username
+            if client.chat_postMessage(channel=rider.slack,text="Hello " + name + ",\n\nThere is a ride available for " + event_name + "!\nDriver of the available car is " + driver_name +".\nGo to " + url + " to claim your spot!")["ok"] == 'false':
                 pass
+                #EMAIL THE rider.contact
+                #send_opening_mail( rider.email, name, event_name, driver_name, url)
                 
