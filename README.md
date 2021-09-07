@@ -19,18 +19,25 @@ All contributors are welcome! If you would like to contribute:
 2. `cd rides/`
 2. Create a python virtual environment, activate it and install requirements.
   - `virtualenv rides-venv`
+  - `cd ..`
   - `source rides-venv/bin/activate`
   - `pip install -r requirements.txt`
-5. You will need the _LDAP DN_, _LDAP PW_, _MySQL Databse_, and _OIDC Secret_. You can create your own if you are hosting your own application or ask me for these if you would like to contribute to CSH.
+5. You will need many credentials to run  _LDAP DN_, _LDAP PW_, _MySQL Databse_, and _OIDC Secret_. You can create your own if you are hosting your own application or ask me for these if you would like to contribute to CSH. I'd recommend making a config.sh to automatically do the exports you need. It is in the .gitignore so it will not go to the remote repository.
 ```
-export SERVER_NAME=127.0.0.1:8080
-export IP=127.0.0.1
-export PORT=8080
-export SQLALCHEMY_DATABASE_URI=postgresql://<LDAP DN>:<LDAP PW>@<MySQL Database>
-export OIDC_CLIENT_SECRET=<OIDC Secret>
+export SERVER_NAME=127.0.0.1:8080 # Port 5000 sometimes works better in personal development
+export IP=127.0.0.1 # Standard IP
+export PORT=8080 # Port 5000 sometimes works better in personal development
+export SQLALCHEMY_DATABASE_URI=mysql+pymysql://<LDAP DN>:<LDAP PW>@<MySQL IP:Port>/<MySQL Schema> # ESSENTIAL to run service
+export OIDC_CLIENT_SECRET=<OIDC Secret> # Needed to log in through CSH
+export GOOGLE_CLIENT_ID=<Google ID> # Needed to log in through Google
+export GOOGLE_CLIENT_SECRET=<Google Secret> # See Above
+export SLACK_TOKEN=<Slack Token> # Needed for Slack Notification System
+export MAIL_SERVER=<Mail Server> # Needed for Email Notification System
+export MAIL_USERNAME=<Username>@<Domain> # See Above
+export MAIL_PASSWORD=<Password> # See Above
 ```
 6. To run the application:
   - Set debug mode: `export FLASK_ENV=development`
   - Export application: `export FLASK_APP=app.py`
   - Run: `flask run`
-7. Now you can make your changes. Make sure the changes made work and that your code passes pylint (run `pylint rides/`). Once you do that you can make your pullrequest.
+7. Now you can make your changes. Make sure the changes made work and that your code passes pylint (run `pylint rides/`). Once you do that you can make your pull request.

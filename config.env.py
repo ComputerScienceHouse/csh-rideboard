@@ -1,18 +1,14 @@
-import secrets
 from os import environ as env
 from distutils.util import strtobool
 
 # Flask config
 IP = env.get('IP', '0.0.0.0')
 PORT = env.get('PORT', 8080)
-SERVER_NAME = env.get('SERVER_NAME', '127.0.0.1:5000')
+SERVER_NAME = env.get('SERVER_NAME', '127.0.0.1:8080')
 
 # DB Info
 SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI')
 SQLALCHEMY_TRACK_MODIFICATIONS = 'False'
-
-# Openshift secret
-SECRET_KEY = env.get("SECRET_KEY", default='SECRET-KEY')
 
 # OpenID Connect SSO config CSH
 OIDC_ISSUER = env.get('OIDC_ISSUER', 'https://sso.csh.rit.edu/auth/realms/csh')
@@ -31,8 +27,6 @@ LDAP_BIND_PASS = env.get("LDAP_BIND_PASS", default=None)
 SLACK_TOKEN = env.get('SLACK_TOKEN','---')
 
 # Mail Config
-MAIL_PROD = strtobool(env.get("PACKET_MAIL_PROD", "False"))
-MAIL_SERVER = env.get("PACKET_MAIL_SERVER", "thoth.csh.rit.edu")
-MAIL_USERNAME = env.get("PACKET_MAIL_USERNAME", "rideboard@csh.rit.edu")
-MAIL_PASSWORD = env.get("PACKET_MAIL_PASSWORD", None)
-MAIL_USE_TLS = strtobool(env.get("PACKET_MAIL_TLS", "True"))
+MAIL_SERVER = env.get("MAIL_SERVER", "thoth.csh.rit.edu")
+MAIL_USERNAME = env.get("MAIL_USERNAME", "rideboard@csh.rit.edu")
+MAIL_PASSWORD = env.get("MAIL_PASSWORD", None)

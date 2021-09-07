@@ -16,9 +16,8 @@ from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
 import pymysql
 import requests
-# Slack Bot Imports
-
-
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 # Setting up Flask and csrf token for forms.
 app = Flask(__name__)
@@ -31,6 +30,7 @@ if os.path.exists(os.path.join(os.getcwd(), "config.py")):
 else:
     app.config.from_pyfile(os.path.join(os.getcwd(), "config.env.py"))
 
+# Establish SQL Database
 db = SQLAlchemy(app)
 
 # OIDC Authentication
@@ -57,8 +57,6 @@ login_manager.login_view = 'login'
 # Commit
 commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').rstrip()
 
-
-# pylint: disable=wrong-import-position
 from rides.models import Event, Rider, Car, User
 from rides.forms import EventForm, CarForm
 from .utils import csh_user_auth, google_user_auth
@@ -67,6 +65,9 @@ from .utils import csh_user_auth, google_user_auth
 eastern = pytz.timezone('US/Eastern')
 fmt = '%Y-%m-%d %H:%M'
 
+# Notification System Setup
+client = WebClient(token=app.config["SLACK_TOKEN"])
+mail = Mail(app)
 
 # Favicon
 @app.route('/favicon.ico')
@@ -74,7 +75,7 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/assets'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-
+# Demo page, not neded for use
 @app.route('/demo')
 def demo(auth_dict=None):
     # Get current EST time.
@@ -84,8 +85,6 @@ def demo(auth_dict=None):
 
 
 # LOG IN MANAGEMENT
-
-
 @app.route('/login')
 @app.route('/')
 def login(auth_dict=None):
@@ -118,6 +117,7 @@ def csh_auth(auth_dict=None):
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
+        # Adds email/slack if not already implemented post-addition to Rideboard
         if q.slack == 'N/A':
             q.slack = auth_dict['slack']
         if q.email == 'N/A':
@@ -146,6 +146,7 @@ def google_auth(auth_dict=None):
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
+        # Adds email/slack if not already implemented post-addition to Rideboard
         if q.slack == 'N/A':
             q.slack = 'N/A'
         if q.email == 'N/A':
@@ -408,12 +409,10 @@ def leave_ride(car_id, rider_username):
         db.session.commit()
     return redirect(url_for('index'))
 
-# Automatically leave Needs a Ride and join given ride
+# Automatically leave a ride and join different ride, used for Needs a Ride Notifications
 @app.route('/autojoin/<string:leave_id>/<string:join_id>/<string:user>', methods=['GET'])
 @login_required
 def autojoin(leave_id, join_id, user):
-    #leave_ride( leave_id, user )
-    #join_ride( join_id, user )
     # LEAVE
     username = current_user.id
     car = Car.query.get(leave_id)
@@ -448,16 +447,7 @@ def autojoin(leave_id, join_id, user):
             db.session.commit()
     return redirect(url_for('index'))
 
-import os
-# Import WebClient from Python SDK (github.com/slackapi/python-slack-sdk)
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
-#from rides.mail import send_opening_mail
-
-client = WebClient(token=app.config["SLACK_TOKEN"])
-mail = Mail(app)
-
-# Slack Bot
+# Notify user of opening in event, if slack fails go to email
 def notify_opening(event_id, driver_name, car_id):
         event = Event.query.get(event_id)
         event_name = event.name
@@ -466,27 +456,20 @@ def notify_opening(event_id, driver_name, car_id):
         for rider in need_ride:
             if rider is not None:
                 name = rider.name
-                #url = "https://rideboard.csh.rit.edu/autojoin/" + str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
-                url = "http://127.0.0.1:5000/autojoin/" + str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
+                url = "https://rideboard.csh.rit.edu/autojoin/" + str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
                 try:
                     client.chat_postMessage(channel=rider.slack,text="Hello " + name + ",\n\nThere is a ride available for " + event_name + "!\nDriver of the available car is " + driver_name +".\nGo to " + url + " to claim your spot!")
-                    #pass
-                    #EMAIL THE rider.contact
                 except:
-                    send_opening_mail( rider.email, name, event_name, driver_name, url)
-                    print("Mail Sent")
+                    send_opening_mail( rider.email, name, event_name, driver_name, url )
 
-
+# Send email to user that there is an opening
 def send_opening_mail(email, rider_name, event_name, driver_name, url ) -> None:
-    if app.config['MAIL_PROD']:
-        recipients = ['<' + email + '>']
-        msg = Message(subject='Ride Opening For ' + event_name,
-                      sender=app.config.get('MAIL_USERNAME'),
-                      recipients=recipients)
-
-        template = 'mail/opening'
-        msg.body = render_template(template + '.txt', rider = rider_name, event = event_name, driver = driver_name, url = url)
-        msg.html = render_template(template + '.html', rider = rider_name, event = event_name, driver = driver_name, url = url)
-        #app.logger.info('Sending mail to ' + recipients[0])
-        mail.send(msg)
+    recipients = ['<' + email + '>']
+    msg = Message(subject='Ride Opening For ' + event_name,
+                  sender=app.config.get('MAIL_USERNAME'),
+                  recipients=recipients)
+    template = 'mail/opening'
+    msg.body = render_template(template + '.txt', rider = rider_name, event = event_name, driver = driver_name, url = url)
+    msg.html = render_template(template + '.html', rider = rider_name, event = event_name, driver = driver_name, url = url)
+    mail.send(msg)
                 
