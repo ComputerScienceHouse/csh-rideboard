@@ -5,13 +5,17 @@
 from subprocess import check_output
 import datetime
 import os
+from typing import TypedDict
+from flask_mail import Mail, Message
 import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import ProviderConfiguration, ClientMetadata
-from flask import Flask, render_template, send_from_directory, redirect, url_for, g
+from flask import Flask, render_template, send_from_directory, redirect, url_for, g, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
+import pymysql
+import requests
 # Slack Bot Imports
 
 
@@ -114,9 +118,9 @@ def csh_auth(auth_dict=None):
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
-        if q.slack == '':
+        if q.slack == 'N/A':
             q.slack = auth_dict['slack']
-        if q.email == '':
+        if q.email == 'N/A':
             q.email = auth_dict['email']
         g.user = q
     else:
@@ -142,7 +146,9 @@ def google_auth(auth_dict=None):
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
-        if q.email == '':
+        if q.slack == 'N/A':
+            q.slack = 'N/A'
+        if q.email == 'N/A':
             q.email = auth_dict['email']
         g.user = q
     else:
@@ -292,9 +298,9 @@ def carform(eventid):
         driver_comment = form.comments.data
         event_id = eventid
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, event_id)
-        notify_opening( event_id, name, car.id )
         db.session.add(car)
         db.session.commit()
+        notify_opening( event_id, name, Car.query.filter(Car.username == username, Car.event_id == event_id).first().id )
         return redirect(url_for('index'))
     return render_template('carform.html', form=form, event=event)
 
@@ -335,7 +341,8 @@ def join_ride(car_id, user):
     incar = False
     username = current_user.id
     name = current_user.firstname + " " + current_user.lastname
-    contact = current_user.contact
+    slack = current_user.slack
+    email = current_user.email
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
     attempted_username = user
@@ -347,7 +354,7 @@ def join_ride(car_id, user):
                 if person.username == username:
                     incar = True
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider( username, name, car_id, contact )
+            rider = Rider( username, name, car_id, slack, email )
             car.current_capacity += 1
             db.session.add(rider)
             db.session.add(car)
@@ -401,7 +408,46 @@ def leave_ride(car_id, rider_username):
         db.session.commit()
     return redirect(url_for('index'))
 
-import logging
+# Automatically leave Needs a Ride and join given ride
+@app.route('/autojoin/<string:leave_id>/<string:join_id>/<string:user>', methods=['GET'])
+@login_required
+def autojoin(leave_id, join_id, user):
+    #leave_ride( leave_id, user )
+    #join_ride( join_id, user )
+    # LEAVE
+    username = current_user.id
+    car = Car.query.get(leave_id)
+    rider = Rider.query.filter(Rider.username == user, Rider.car_id == leave_id).first()
+    if rider.username == username and rider is not None:
+        db.session.delete(rider)
+        car.current_capacity -= 1
+        notify_opening( car.event_id, car.name, leave_id )
+        db.session.add(car)
+        db.session.commit()
+    # JOIN
+    incar = False
+    #username = current_user.id
+    name = current_user.firstname + " " + current_user.lastname
+    slack = current_user.slack
+    email = current_user.email
+    car = Car.query.get(join_id)
+    event = Event.query.get(car.event_id)
+    attempted_username = user
+    if attempted_username == username:
+        for c in event.cars:
+            if c.username == username:
+                incar = True
+            for person in c.riders:
+                if person.username == username:
+                    incar = True
+        if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
+            rider = Rider( username, name, join_id, slack, email )
+            car.current_capacity += 1
+            db.session.add(rider)
+            db.session.add(car)
+            db.session.commit()
+    return redirect(url_for('index'))
+
 import os
 # Import WebClient from Python SDK (github.com/slackapi/python-slack-sdk)
 from slack_sdk import WebClient
@@ -409,19 +455,38 @@ from slack_sdk.errors import SlackApiError
 #from rides.mail import send_opening_mail
 
 client = WebClient(token=app.config["SLACK_TOKEN"])
-logger = logging.getLogger(__name__)
-csh_username_id='Xf2DGHKJG5'
+mail = Mail(app)
 
 # Slack Bot
 def notify_opening(event_id, driver_name, car_id):
         event = Event.query.get(event_id)
         event_name = event.name
-        need_ride = event.cars.query.filter(Car.name == 'Need a Ride').first().query.all()
+        need_ride_car = Car.query.filter( Car.event_id == event_id and Car.username == '∞' ).first()
+        need_ride = Rider.query.filter( Rider.car_id == need_ride_car.id ).all()
         for rider in need_ride:
-            name = rider.name
-            url = "https://rideboard.csh.rit.edu/join/"+ car_id +"/" + rider.username
-            if client.chat_postMessage(channel=rider.slack,text="Hello " + name + ",\n\nThere is a ride available for " + event_name + "!\nDriver of the available car is " + driver_name +".\nGo to " + url + " to claim your spot!")["ok"] == 'false':
-                pass
-                #EMAIL THE rider.contact
-                #send_opening_mail( rider.email, name, event_name, driver_name, url)
+            if rider is not None:
+                name = rider.name
+                #url = "https://rideboard.csh.rit.edu/autojoin/" + str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
+                url = "http://127.0.0.1:5000/autojoin/" + str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
+                try:
+                    client.chat_postMessage(channel=rider.slack,text="Hello " + name + ",\n\nThere is a ride available for " + event_name + "!\nDriver of the available car is " + driver_name +".\nGo to " + url + " to claim your spot!")
+                    #pass
+                    #EMAIL THE rider.contact
+                except:
+                    send_opening_mail( rider.email, name, event_name, driver_name, url)
+                    print("Mail Sent")
+
+
+def send_opening_mail(email, rider_name, event_name, driver_name, url ) -> None:
+    if app.config['MAIL_PROD']:
+        recipients = ['<' + email + '>']
+        msg = Message(subject='Ride Opening For ' + event_name,
+                      sender=app.config.get('MAIL_USERNAME'),
+                      recipients=recipients)
+
+        template = 'mail/opening'
+        msg.body = render_template(template + '.txt', rider = rider_name, event = event_name, driver = driver_name, url = url)
+        msg.html = render_template(template + '.html', rider = rider_name, event = event_name, driver = driver_name, url = url)
+        #app.logger.info('Sending mail to ' + recipients[0])
+        mail.send(msg)
                 

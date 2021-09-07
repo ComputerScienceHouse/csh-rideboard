@@ -76,7 +76,6 @@ class Car(db.Model):
     driver_comment = db.Column(db.Text)
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     riders = db.relationship('Rider', backref='cars', lazy=True)
-
     def __init__(self, username, name, current_capacity, max_capacity,
          departure_time, return_time, driver_comment, event_id):
         self.username = username
@@ -90,7 +89,7 @@ class Car(db.Model):
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
-
+        
 class Rider(db.Model):
     __tablename__ = 'riders'
 
