@@ -41,7 +41,7 @@ CSH_AUTH = ProviderConfiguration(issuer=app.config["OIDC_ISSUER"],
 GOOGLE_AUTH = ProviderConfiguration(issuer=app.config["GOOGLE_ISSUER"],
                                     client_metadata=ClientMetadata(
                                         app.config["GOOGLE_CLIENT_ID"],
-                                        app.config["GOOGLE_CLIENT_SECRET"]), 
+                                        app.config["GOOGLE_CLIENT_SECRET"]),
                                     auth_request_params={'scope': ['email', 'profile', 'openid']})
 auth = OIDCAuthentication({'default': CSH_AUTH,
                            'google': GOOGLE_AUTH},
@@ -57,6 +57,7 @@ login_manager.login_view = 'login'
 # Commit
 commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').rstrip()
 
+# pylint: disable=wrong-import-position
 from rides.models import Event, Rider, Car, User
 from rides.forms import EventForm, CarForm
 from .utils import csh_user_auth, google_user_auth
@@ -124,7 +125,8 @@ def csh_auth(auth_dict=None):
             q.email = auth_dict['email']
         g.user = q
     else:
-        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'], auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
+        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
+            auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
         g.user = user
         db.session.add(user)
 
@@ -153,7 +155,8 @@ def google_auth(auth_dict=None):
             q.email = auth_dict['email']
         g.user = q
     else:
-        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'], auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
+        user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
+            auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
         g.user = user
         db.session.add(user)
 
@@ -301,7 +304,8 @@ def carform(eventid):
         car = Car(username, name, current_capacity, max_capacity, departure_time, return_time, driver_comment, event_id)
         db.session.add(car)
         db.session.commit()
-        notify_opening( event_id, name, Car.query.filter(Car.username == username, Car.event_id == event_id).first().id )
+        car_id = Car.query.filter(Car.username == username, Car.event_id == event_id).first().id
+        notify_opening( event_id, name, car_id )
         return redirect(url_for('index'))
     return render_template('carform.html', form=form, event=event)
 
@@ -449,18 +453,22 @@ def autojoin(leave_id, join_id, user):
 
 # Notify user of opening in event, if slack fails go to email
 def notify_opening(event_id, driver_name, car_id):
-        event = Event.query.get(event_id)
-        event_name = event.name
-        need_ride_car = Car.query.filter( Car.event_id == event_id and Car.username == '∞' ).first()
-        need_ride = Rider.query.filter( Rider.car_id == need_ride_car.id ).all()
-        for rider in need_ride:
-            if rider is not None:
-                name = rider.name
-                url = "https://rideboard.csh.rit.edu/autojoin/" + str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
-                try:
-                    client.chat_postMessage(channel=rider.slack,text="Hello " + name + ",\n\nThere is a ride available for " + event_name + "!\nDriver of the available car is " + driver_name +".\nGo to " + url + " to claim your spot!")
-                except:
-                    send_opening_mail( rider.email, name, event_name, driver_name, url )
+    event = Event.query.get(event_id)
+    event_name = event.name
+    need_ride_car = Car.query.filter( Car.event_id == event_id and Car.username == '∞' ).first()
+    need_ride = Rider.query.filter( Rider.car_id == need_ride_car.id ).all()
+    for rider in need_ride:
+        if rider is not None:
+            name = rider.name
+            url = "https://rideboard.csh.rit.edu/autojoin/"
+            url += str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
+            try:
+                client.chat_postMessage(channel=rider.slack,text="Hello " + name +
+                    ",\n\nThere is a ride available for " + event_name +
+                    "!\nDriver of the available car is " + driver_name +
+                    ".\nGo to " + url + " to claim your spot!")
+            except:
+                send_opening_mail( rider.email, name, event_name, driver_name, url )
 
 # Send email to user that there is an opening
 def send_opening_mail(email, rider_name, event_name, driver_name, url ) -> None:
@@ -469,7 +477,9 @@ def send_opening_mail(email, rider_name, event_name, driver_name, url ) -> None:
                   sender=app.config.get('MAIL_USERNAME'),
                   recipients=recipients)
     template = 'mail/opening'
-    msg.body = render_template(template + '.txt', rider = rider_name, event = event_name, driver = driver_name, url = url)
-    msg.html = render_template(template + '.html', rider = rider_name, event = event_name, driver = driver_name, url = url)
+    msg.body = render_template(template + '.txt', rider = rider_name,
+        event = event_name, driver = driver_name, url = url)
+    msg.html = render_template(template + '.html', rider = rider_name,
+        event = event_name, driver = driver_name, url = url)
     mail.send(msg)
                 

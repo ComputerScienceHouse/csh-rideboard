@@ -16,7 +16,8 @@ def csh_user_auth(func):
             "last": last,
             "uid": uid,
             "picture": picture,
-            "slack": slack
+            "slack": slack,
+            "email": email
         }
         kwargs["auth_dict"] = auth_dict
         return func(*args, **kwargs)
