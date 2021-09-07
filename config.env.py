@@ -10,6 +10,9 @@ SERVER_NAME = env.get('SERVER_NAME', '127.0.0.1:8080')
 SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI')
 SQLALCHEMY_TRACK_MODIFICATIONS = 'False'
 
+# Openshift secret
+SECRET_KEY = env.get("SECRET_KEY", default='SECRET-KEY')
+
 # OpenID Connect SSO config CSH
 OIDC_ISSUER = env.get('OIDC_ISSUER', 'https://sso.csh.rit.edu/auth/realms/csh')
 OIDC_CLIENT_ID = env.get('OIDC_CLIENT_ID', 'rideboard')
@@ -30,3 +33,4 @@ SLACK_TOKEN = env.get('SLACK_TOKEN','---')
 MAIL_SERVER = env.get("MAIL_SERVER", "thoth.csh.rit.edu")
 MAIL_USERNAME = env.get("MAIL_USERNAME", "rideboard@csh.rit.edu")
 MAIL_PASSWORD = env.get("MAIL_PASSWORD", None)
+MAIL_USE_TLS = True
