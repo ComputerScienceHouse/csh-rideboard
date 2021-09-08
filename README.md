@@ -22,7 +22,7 @@ All contributors are welcome! If you would like to contribute:
   - `cd ..`
   - `source rides-venv/bin/activate`
   - `pip install -r requirements.txt`
-5. You will need many credentials to run  _LDAP DN_, _LDAP PW_, _MySQL Databse_, and _OIDC Secret_. You can create your own if you are hosting your own application or ask me for these if you would like to contribute to CSH. I'd recommend making a config.sh to automatically do the exports you need. It is in the .gitignore so it will not go to the remote repository.
+5. You will need many credentials to run, see the exports below. You can create your own if you are hosting your own application or ask an rtps for these if you would like to contribute to CSH. I'd recommend making a config.sh to automatically do the exports you need. It is in the .gitignore so it will not go to the remote repository.
 ```
 export SERVER_NAME=127.0.0.1:8080 # Port 5000 sometimes works better in personal development
 export IP=127.0.0.1 # Standard IP
