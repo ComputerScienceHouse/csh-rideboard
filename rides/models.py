@@ -15,8 +15,8 @@ class User(db.Model):
     slack = db.Column(db.String, nullable=False) # ADD TO MYSQL
     email = db.Column(db.String, nullable=False) # ADD TO MYSQL
 
-    def __init__(self, id, firstname, lastname, picture, slack, email):
-        self.id = id
+    def __init__(self, uid, firstname, lastname, picture, slack, email):
+        self.id = uid
         self.firstname = firstname
         self.lastname = lastname
         self.picture = picture

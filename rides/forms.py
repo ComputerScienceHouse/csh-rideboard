@@ -14,8 +14,8 @@ class EventForm(FlaskForm):
     end_date_time = DateTimeField(label="End", validators=[DataRequired()], format='%Y-%m-%d %H:%M')
     submit = SubmitField(('Submit'))
 
-    def validate(self):
-        if not Form.validate(self):
+    def validate(self, extra_validators=None):
+        if not Form.validate(self, extra_validators=extra_validators):
             return False
         if self.start_date_time.data > self.end_date_time.data:
             self.end_date_time.errors.append('End time must be after start time.')
@@ -39,8 +39,8 @@ class CarForm(FlaskForm):
     comments = TextAreaField("Any Comments?")
     submit = SubmitField(('Submit'))
 
-    def validate(self):
-        if not Form.validate(self):
+    def validate(self, extra_validators=None):
+        if not Form.validate(self, extra_validators=extra_validators):
             return False
         if self.departure_date_time.data > self.return_date_time.data:
             self.return_date_time.errors.append('Return time must be after departure time.')

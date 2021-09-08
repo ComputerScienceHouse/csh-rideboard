@@ -118,11 +118,11 @@ def csh_auth(auth_dict=None):
         q.picture = auth_dict['picture']
         q.slack = auth_dict['slack']
         q.email = auth_dict['email']
-        g.user = q
+        g.user = q # pylint: disable=assigning-non-slot
     else:
         user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
             auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
-        g.user = user
+        g.user = user # pylint: disable=assigning-non-slot
         db.session.add(user)
 
     db.session.commit()
@@ -144,11 +144,11 @@ def google_auth(auth_dict=None):
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
         q.email = auth_dict['email']
-        g.user = q
+        g.user = q # pylint: disable=assigning-non-slot
     else:
         user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
             auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
-        g.user = user
+        g.user = user # pylint: disable=assigning-non-slot
         db.session.add(user)
 
     db.session.commit()
