@@ -11,12 +11,10 @@ from flask_mail import Mail, Message
 import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import ProviderConfiguration, ClientMetadata
-from flask import Flask, render_template, send_from_directory, redirect, url_for, g, request, session
+from flask import Flask, render_template, send_from_directory, redirect, url_for, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
-import pymysql
-import requests
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
@@ -337,7 +335,6 @@ def editcarform(carid):
 @app.route('/join/<string:car_id>/<user>', methods=["GET"])
 @login_required
 def join_ride(car_id, user):
-    incar = False
     username = current_user.id
     name = current_user.firstname + " " + current_user.lastname
     slack = current_user.slack
@@ -347,11 +344,7 @@ def join_ride(car_id, user):
     attempted_username = user
     if attempted_username == username:
         for c in event.cars:
-            if c.username == username:
-                incar = True
-            for person in c.riders:
-                if person.username == username:
-                    incar = True
+            incar = ( c.username == username ) or ( username in c.riders )
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
             rider = Rider( username, name, car_id, slack, email )
             car.current_capacity += 1
@@ -421,7 +414,6 @@ def autojoin(leave_id, join_id, user):
         db.session.add(car)
         db.session.commit()
     # JOIN
-    incar = False
     #username = current_user.id
     name = current_user.firstname + " " + current_user.lastname
     slack = current_user.slack
@@ -431,11 +423,7 @@ def autojoin(leave_id, join_id, user):
     attempted_username = user
     if attempted_username == username:
         for c in event.cars:
-            if c.username == username:
-                incar = True
-            for person in c.riders:
-                if person.username == username:
-                    incar = True
+            incar = ( c.username == username ) or ( username in c.riders )
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
             rider = Rider( username, name, join_id, slack, email )
             car.current_capacity += 1
@@ -460,7 +448,7 @@ def notify_opening(event_id, driver_name, car_id):
                     ",\n\nThere is a ride available for " + event_name +
                     "!\nDriver of the available car is " + driver_name +
                     ".\nGo to " + url + " to claim your spot!")
-            except:
+            except SlackApiError:
                 send_opening_mail( rider.email, name, event_name, driver_name, url )
 
 # Send email to user that there is an opening

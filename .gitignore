@@ -6,3 +6,5 @@ __pycache__
 .idea/
 venv/
 config.sh
+config.py
+.gitignore.swp

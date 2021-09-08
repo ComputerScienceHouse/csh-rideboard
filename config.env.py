@@ -4,7 +4,7 @@ from distutils.util import strtobool
 # Flask config
 IP = env.get('IP', '0.0.0.0')
 PORT = env.get('PORT', 8080)
-SERVER_NAME = env.get('SERVER_NAME', '127.0.0.1:8080')
+SERVER_NAME = env.get('SERVER_NAME', 'rideboard.csh.rit.edu')
 
 # DB Info
 SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI')

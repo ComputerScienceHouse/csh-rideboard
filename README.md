@@ -16,10 +16,9 @@ All contributors are welcome! If you would like to contribute:
 
 ### Setup
 1. Fork this repo and clone it locally by running `git clone https://github.com/<your_username>/rideboard.git`
-2. `cd rides/`
+2. `cd csh-rideboard/`
 2. Create a python virtual environment, activate it and install requirements.
   - `virtualenv rides-venv`
-  - `cd ..`
   - `source rides-venv/bin/activate`
   - `pip install -r requirements.txt`
 5. You will need many credentials to run, see the exports below. You can create your own if you are hosting your own application or ask an rtps for these if you would like to contribute to CSH. I'd recommend making a config.sh to automatically do the exports you need. It is in the .gitignore so it will not go to the remote repository.
