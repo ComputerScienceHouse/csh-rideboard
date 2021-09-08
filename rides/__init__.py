@@ -6,7 +6,6 @@
 from subprocess import check_output
 import datetime
 import os
-from typing import TypedDict
 from flask_mail import Mail, Message
 import pytz
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
