@@ -1,6 +1,7 @@
 ####################################
 # File name: __init__.py           #
 # Author: Ayush Goel & Fred Rybin  #
+# Contributors: Joe Abbate         #
 ####################################
 from subprocess import check_output
 import datetime
@@ -118,11 +119,8 @@ def csh_auth(auth_dict=None):
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
-        # Adds email/slack if not already implemented post-addition to Rideboard
-        if q.slack == 'N/A':
-            q.slack = auth_dict['slack']
-        if q.email == 'N/A':
-            q.email = auth_dict['email']
+        q.slack = auth_dict['slack']
+        q.email = auth_dict['email']
         g.user = q
     else:
         user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
@@ -148,11 +146,7 @@ def google_auth(auth_dict=None):
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
-        # Adds email/slack if not already implemented post-addition to Rideboard
-        if q.slack == 'N/A':
-            q.slack = 'N/A'
-        if q.email == 'N/A':
-            q.email = auth_dict['email']
+        q.email = auth_dict['email']
         g.user = q
     else:
         user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
@@ -424,7 +418,6 @@ def autojoin(leave_id, join_id, user):
     if rider.username == username and rider is not None:
         db.session.delete(rider)
         car.current_capacity -= 1
-        notify_opening( car.event_id, car.name, leave_id )
         db.session.add(car)
         db.session.commit()
     # JOIN

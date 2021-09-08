@@ -1,6 +1,7 @@
 ####################################
 # File name: models.py             #
 # Author: Ayush Goel & Fred Rybin  #
+# Contributors: Joe Abbate         #
 ####################################
 from rides import db
 
