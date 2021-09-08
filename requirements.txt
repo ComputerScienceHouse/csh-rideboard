@@ -12,4 +12,3 @@ Flask-login
 psycopg2-binary
 slack_sdk
 Flask-Mail
-pymysql
