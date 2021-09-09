@@ -1,5 +1,4 @@
 from os import environ as env
-from distutils.util import strtobool
 
 # Flask config
 IP = env.get('IP', '0.0.0.0')
@@ -34,3 +33,12 @@ MAIL_SERVER = env.get("MAIL_SERVER", "thoth.csh.rit.edu")
 MAIL_USERNAME = env.get("MAIL_USERNAME", "rideboard@csh.rit.edu")
 MAIL_PASSWORD = env.get("MAIL_PASSWORD", None)
 MAIL_USE_TLS = True
+
+
+
+
+
+
+
+
+
