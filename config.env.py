@@ -33,12 +33,3 @@ MAIL_SERVER = env.get("MAIL_SERVER", "thoth.csh.rit.edu")
 MAIL_USERNAME = env.get("MAIL_USERNAME", "rideboard@csh.rit.edu")
 MAIL_PASSWORD = env.get("MAIL_PASSWORD", None)
 MAIL_USE_TLS = True
-
-
-
-
-
-
-
-
-
