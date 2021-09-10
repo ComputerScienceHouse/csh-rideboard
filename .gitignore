@@ -7,4 +7,4 @@ __pycache__
 venv/
 config.sh
 config.py
-.gitignore.swp
+
