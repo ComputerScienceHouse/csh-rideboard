@@ -7,7 +7,9 @@
         <p>Driver: {{ driver }}</p>
         <p>If you wish to join this ride, please go to <a href={{ url }}>{{ url }}</a></p>
         <p>Ensure that you were added to the ride, if not please hit the "Join Ride" button!</p>
-        <p>IF YOU USE A CSH LOGIN, YOU CAN HAVE RIDEBOARD MESSAGE YOU ON SLACK INSTEAD OF EMAIL!</p>
-        <P>Connect your Slack by going to <a href='https://eac.csh.rit.edu'>https://eac.csh.rit.edu</a></P>
+        {% if acc_type == "CSH" %}
+        <p>YOU CAN HAVE RIDEBOARD MESSAGE YOU ON SLACK INSTEAD OF EMAIL!</p>
+        <p>Connect your Slack by going to <a href='https://eac.csh.rit.edu'>https://eac.csh.rit.edu</a></p>
+        {% endif %}
     </div>
 {% endblock %}

@@ -118,10 +118,11 @@ def csh_auth(auth_dict=None):
         q.picture = auth_dict['picture']
         q.slack = auth_dict['slack']
         q.email = auth_dict['email']
+        q.email = "CSH"
         g.user = q # pylint: disable=assigning-non-slot
     else:
         user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
-            auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
+            auth_dict['picture'], auth_dict['slack'], auth_dict['email'], "CSH")
         g.user = user # pylint: disable=assigning-non-slot
         db.session.add(user)
 
@@ -143,11 +144,13 @@ def google_auth(auth_dict=None):
         q.firstname = auth_dict['first']
         q.lastname = auth_dict['last']
         q.picture = auth_dict['picture']
+        q.slack = auth_dict['slack']
         q.email = auth_dict['email']
+        q.type = "Google"
         g.user = q # pylint: disable=assigning-non-slot
     else:
         user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
-            auth_dict['picture'], auth_dict['slack'], auth_dict['email'])
+            auth_dict['picture'], auth_dict['slack'], auth_dict['email'], "Google")
         g.user = user # pylint: disable=assigning-non-slot
         db.session.add(user)
 
@@ -338,6 +341,7 @@ def join_ride(car_id, user):
     name = current_user.firstname + " " + current_user.lastname
     slack = current_user.slack
     email = current_user.email
+    type = current_user.type
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
     attempted_username = user
@@ -345,7 +349,7 @@ def join_ride(car_id, user):
         for c in event.cars:
             incar = ( c.username == username ) or ( username in c.riders )
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider( username, name, car_id, slack, email )
+            rider = Rider( username, name, car_id, slack, email, type )
             car.current_capacity += 1
             db.session.add(rider)
             db.session.add(car)
@@ -417,6 +421,7 @@ def autojoin(leave_id, join_id, user):
     name = current_user.firstname + " " + current_user.lastname
     slack = current_user.slack
     email = current_user.email
+    type = current_user.type
     car = Car.query.get(join_id)
     event = Event.query.get(car.event_id)
     attempted_username = user
@@ -424,7 +429,7 @@ def autojoin(leave_id, join_id, user):
         for c in event.cars:
             incar = ( c.username == username ) or ( username in c.riders )
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider( username, name, join_id, slack, email )
+            rider = Rider( username, name, join_id, slack, email, type )
             car.current_capacity += 1
             db.session.add(rider)
             db.session.add(car)
@@ -448,18 +453,18 @@ def notify_opening(event_id, driver_name, car_id):
                     "!\nDriver of the available car is " + driver_name +
                     ".\nGo to " + url + " to claim your spot!")
             except SlackApiError:
-                send_opening_mail( rider.email, name, event_name, driver_name, url )
+                send_opening_mail( rider.email, name, event_name, driver_name, url, rider.acc_type )
 
 # Send email to user that there is an opening
-def send_opening_mail(email, rider_name, event_name, driver_name, url ) -> None:
+def send_opening_mail(email, rider_name, event_name, driver_name, url, acc_type ) -> None:
     recipients = [rider_name + '<' + email + '>']
     msg = Message(subject='Ride Opening For ' + event_name,
                   sender=app.config.get('MAIL_USERNAME'),
                   recipients=recipients)
     template = 'mail/opening'
     msg.body = render_template(template + '.txt', rider = rider_name,
-        event = event_name, driver = driver_name, url = url)
+        event = event_name, driver = driver_name, url = url, acc_type = acc_type )
     msg.html = render_template(template + '.html', rider = rider_name,
-        event = event_name, driver = driver_name, url = url)
+        event = event_name, driver = driver_name, url = url, acc_type = acc_type )
     mail.send(msg)
             
