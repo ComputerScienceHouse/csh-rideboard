@@ -341,7 +341,7 @@ def join_ride(car_id, user):
     name = current_user.firstname + " " + current_user.lastname
     slack = current_user.slack
     email = current_user.email
-    type = current_user.type
+    type = current_user.acc_type
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
     attempted_username = user
@@ -421,7 +421,7 @@ def autojoin(leave_id, join_id, user):
     name = current_user.firstname + " " + current_user.lastname
     slack = current_user.slack
     email = current_user.email
-    type = current_user.type
+    type = current_user.acc_type
     car = Car.query.get(join_id)
     event = Event.query.get(car.event_id)
     attempted_username = user
