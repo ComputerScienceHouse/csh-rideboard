@@ -452,7 +452,7 @@ def notify_opening(event_id, driver_name, car_id):
 
 # Send email to user that there is an opening
 def send_opening_mail(email, rider_name, event_name, driver_name, url ) -> None:
-    recipients = ['<' + email + '>']
+    recipients = [rider_name + '<' + email + '>']
     msg = Message(subject='Ride Opening For ' + event_name,
                   sender=app.config.get('MAIL_USERNAME'),
                   recipients=recipients)

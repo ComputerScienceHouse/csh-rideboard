@@ -38,7 +38,7 @@ def google_user_auth(func):
             "last": last,
             "uid": uid,
             "picture": picture,
-            "slack" : 'N/A',
+            "slack" : None,
             "email" : email
         }
         kwargs["auth_dict"] = auth_dict
