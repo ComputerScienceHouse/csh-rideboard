@@ -349,7 +349,7 @@ def join_ride(car_id, user):
         for c in event.cars:
             incar = ( c.username == username ) or ( username in c.riders )
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider( username, name, car_id, slack, email, type )
+            rider = Rider( username, name, car_id, slack, email, acc_type )
             car.current_capacity += 1
             db.session.add(rider)
             db.session.add(car)
@@ -429,7 +429,7 @@ def autojoin(leave_id, join_id, user):
         for c in event.cars:
             incar = ( c.username == username ) or ( username in c.riders )
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider( username, name, join_id, slack, email, type )
+            rider = Rider( username, name, join_id, slack, email, acc_type )
             car.current_capacity += 1
             db.session.add(rider)
             db.session.add(car)
