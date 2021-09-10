@@ -26,7 +26,7 @@ All contributors are welcome! If you would like to contribute:
 export SERVER_NAME=127.0.0.1:8080 # Port 5000 sometimes works better in personal development
 export IP=127.0.0.1 # Standard IP
 export PORT=8080 # Port 5000 sometimes works better in personal development
-export SQLALCHEMY_DATABASE_URI=postgresql//<LDAP DN>:<LDAP PW>@<IP:Port>/<Database> # ESSENTIAL to run service
+export SQLALCHEMY_DATABASE_URI=postgresql://<LDAP DN>:<LDAP PW>@<IP:Port>/<Database> # ESSENTIAL to run service
 export OIDC_CLIENT_SECRET=<OIDC Secret> # Needed to log in through CSH
 export GOOGLE_CLIENT_ID=<Google ID> # Needed to log in through Google
 export GOOGLE_CLIENT_SECRET=<Google Secret> # See Above
