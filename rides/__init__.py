@@ -462,4 +462,4 @@ def send_opening_mail(email, rider_name, event_name, driver_name, url ) -> None:
     msg.html = render_template(template + '.html', rider = rider_name,
         event = event_name, driver = driver_name, url = url)
     mail.send(msg)
-                
+            
