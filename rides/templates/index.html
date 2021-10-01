@@ -6,9 +6,12 @@
       {% for event in events %}
         <div class="card mb-3">
         {% if events|length != 1 %}
-          <h3 class="card-header" align="center"><a data-toggle="collapse" href="#event{{ event.id }}"
-                                                    style="color: inherit; text-decoration: none;">{{ event.name }}</a>
-          </h3>
+          <a data-toggle="collapse" href="#event{{ event.id }}"
+             id="opener-event{{ event.id }}"
+             class="card-opener"
+             style="color: inherit; text-decoration: none;">
+            <h3 class="card-header" align="center">{{ event.name }}</h3>
+          </a>
           <div class="collapse" id="event{{ event.id }}">
           <div class="card-body">
         {% else %}
