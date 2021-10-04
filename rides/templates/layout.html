@@ -77,6 +77,18 @@
       ({{commit}})</a></p>
   </div>
 </footer>
+<script>
+  // Allow linking directly to events
+  $("a.card-opener").click(function() {
+    // Add our location, since toggle library preventDefault's for some reason...
+    location.href = $(this).attr("href");
+  });
+  var eventId = location.hash.substring(1);
+  var opener = document.getElementById("opener-" + eventId);
+  if (opener) {
+    opener.click();
+  }
+</script>
 </body>
 
 </html>
