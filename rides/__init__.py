@@ -280,8 +280,12 @@ def editeventform(eventid):
 def carform(eventid):
     form = CarForm()
     event = Event.query.get(eventid)
+    username = current_user.id
+    for c in event.cars:
+        rider_names = [ person.username for person in c.riders ]
+        if ( c.username == username ) or ( username in rider_names ):
+            return redirect(url_for('index'))
     if form.validate_on_submit():
-        username = current_user.id
         name = current_user.firstname + " " + current_user.lastname
         current_capacity = 0
         max_capacity = int(form.max_capacity.data['max_capacity'])
