@@ -336,11 +336,11 @@ def editcarform(carid):
 
 
 # Join a ride
-@app.route('/join/<string:car_id>/<user>', methods=["POST"])
+@app.route('/join/<string:car_id>/<user>', methods=["GET"])
 @login_required
 def join_ride(car_id, user):
     username = current_user.id
-    name = current_user.firstname + " " + current_user.lastname
+    name = f"{current_user.firstname} {current_user.lastname}"
     slack = current_user.slack
     email = current_user.email
     acc_type = current_user.acc_type
@@ -363,7 +363,7 @@ def join_ride(car_id, user):
 
 
 # Delete Car
-@app.route('/delete/car/<string:car_id>', methods=["POST"])
+@app.route('/delete/car/<string:car_id>', methods=["GET"])
 @login_required
 def delete_car(car_id):
     username = current_user.id
@@ -378,7 +378,7 @@ def delete_car(car_id):
 
 
 # Delete Event
-@app.route('/delete/ride/<string:event_id>', methods=["POST"])
+@app.route('/delete/ride/<string:event_id>', methods=["GET"])
 @login_required
 def delete_ride(event_id):
     username = current_user.id
@@ -394,7 +394,7 @@ def delete_ride(event_id):
 
 
 # Leave a ride
-@app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["POST"])
+@app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
 @login_required
 def leave_ride(car_id, rider_username):
     username = current_user.id
@@ -409,7 +409,7 @@ def leave_ride(car_id, rider_username):
     return redirect(url_for('index'))
 
 # Automatically leave a ride and join different ride, used for Needs a Ride Notifications
-@app.route('/autojoin/<string:leave_id>/<string:join_id>/<string:user>', methods=['POST'])
+@app.route('/autojoin/<string:leave_id>/<string:join_id>/<string:user>', methods=['GET'])
 @login_required
 def autojoin(leave_id, join_id, user):
     # LEAVE
@@ -423,7 +423,7 @@ def autojoin(leave_id, join_id, user):
         db.session.commit()
     # JOIN
     #username = current_user.id
-    name = current_user.firstname + " " + current_user.lastname
+    name = f"{current_user.firstname} {current_user.lastname}"
     slack = current_user.slack
     email = current_user.email
     acc_type = current_user.acc_type
@@ -453,13 +453,14 @@ def notify_opening(event_id, driver_name, car_id):
     for rider in need_ride:
         if rider is not None:
             name = rider.name
-            url = app.config['SERVER_NAME']+"/autojoin/"
-            url += str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
+            url = f"http://{app.config['SERVER_NAME']}/autojoin/"
+            url += f"{need_ride_car.id}/{car_id}/{rider.username}"
             try:
-                client.chat_postMessage(channel=rider.slack,text="Hello " + name +
-                    ",\n\nThere is a ride available for " + event_name +
-                    "!\nDriver of the available car is " + driver_name +
-                    ".\nGo to " + url + " to claim your spot!")
+                client.chat_postMessage(channel = rider.slack, text = 
+                    f"Hello {name},\n\n" +
+                    f"There is a ride available for {event_name}!\n" +
+                    f"Driver of the available car is {driver_name}.\n" +
+                    f"Go to {url} to claim your spot!" )
             except SlackApiError:
                 send_opening_mail( rider.email, name, event_name, driver_name, url, rider.acc_type )
 
