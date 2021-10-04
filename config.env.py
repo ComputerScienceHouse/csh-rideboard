@@ -19,14 +19,14 @@ OIDC_CLIENT_SECRET = env.get('OIDC_CLIENT_SECRET', 'NOT-A-SECRET')
 
 # Google OpenID Connect SSO config
 GOOGLE_ISSUER = env.get('GOOGLE_ISSUER', 'https://accounts.google.com')
-GOOGLE_CLIENT_ID = env.get('GOOGLE_CLIENT_ID', '---')
-GOOGLE_CLIENT_SECRET = env.get('GOOGLE_CLIENT_SECRET', '---')
+GOOGLE_CLIENT_ID = env.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = env.get('GOOGLE_CLIENT_SECRET', '')
 
 LDAP_BIND_DN = env.get("LDAP_BIND_DN", default="cn=rides,ou=Apps,dc=csh,dc=rit,dc=edu")
 LDAP_BIND_PASS = env.get("LDAP_BIND_PASS", default=None)
 
 # Slack Config
-SLACK_TOKEN = env.get('SLACK_TOKEN','---')
+SLACK_TOKEN = env.get('SLACK_TOKEN','')
 
 # Mail Config
 MAIL_SERVER = env.get("MAIL_SERVER", "thoth.csh.rit.edu")

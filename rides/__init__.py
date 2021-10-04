@@ -68,6 +68,8 @@ fmt = '%Y-%m-%d %H:%M'
 client = WebClient(token=app.config["SLACK_TOKEN"])
 mail = Mail(app)
 
+inf = '∞'
+
 # Favicon
 @app.route('/favicon.ico')
 def favicon():
@@ -118,7 +120,7 @@ def csh_auth(auth_dict=None):
         q.picture = auth_dict['picture']
         q.slack = auth_dict['slack']
         q.email = auth_dict['email']
-        q.email = "CSH"
+        q.type = "CSH"
         g.user = q # pylint: disable=assigning-non-slot
     else:
         user = User(auth_dict['uid'], auth_dict['first'], auth_dict['last'],
@@ -226,7 +228,7 @@ def eventform():
         event = Event(name, address, start_time, end_time, creator)
         db.session.add(event)
         db.session.commit()
-        infinity = Car('∞', 'Need a Ride', 0, 0, start_time, end_time, "", event.id)
+        infinity = Car(inf, 'Need a Ride', 0, 0, start_time, end_time, "", event.id)
         db.session.add(infinity)
         db.session.commit()
         return redirect(url_for('index'))
@@ -334,7 +336,7 @@ def editcarform(carid):
 
 
 # Join a ride
-@app.route('/join/<string:car_id>/<user>', methods=["GET"])
+@app.route('/join/<string:car_id>/<user>', methods=["POST"])
 @login_required
 def join_ride(car_id, user):
     username = current_user.id
@@ -347,7 +349,10 @@ def join_ride(car_id, user):
     attempted_username = user
     if attempted_username == username:
         for c in event.cars:
-            incar = ( c.username == username ) or ( username in c.riders )
+            rider_names = [ person.username for person in c.riders ]
+            incar = ( c.username == username ) or ( username in rider_names )
+            if incar:
+                break
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
             rider = Rider( username, name, car_id, slack, email, acc_type )
             car.current_capacity += 1
@@ -358,7 +363,7 @@ def join_ride(car_id, user):
 
 
 # Delete Car
-@app.route('/delete/car/<string:car_id>', methods=["GET"])
+@app.route('/delete/car/<string:car_id>', methods=["POST"])
 @login_required
 def delete_car(car_id):
     username = current_user.id
@@ -373,7 +378,7 @@ def delete_car(car_id):
 
 
 # Delete Event
-@app.route('/delete/ride/<string:event_id>', methods=["GET"])
+@app.route('/delete/ride/<string:event_id>', methods=["POST"])
 @login_required
 def delete_ride(event_id):
     username = current_user.id
@@ -389,7 +394,7 @@ def delete_ride(event_id):
 
 
 # Leave a ride
-@app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
+@app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["POST"])
 @login_required
 def leave_ride(car_id, rider_username):
     username = current_user.id
@@ -404,7 +409,7 @@ def leave_ride(car_id, rider_username):
     return redirect(url_for('index'))
 
 # Automatically leave a ride and join different ride, used for Needs a Ride Notifications
-@app.route('/autojoin/<string:leave_id>/<string:join_id>/<string:user>', methods=['GET'])
+@app.route('/autojoin/<string:leave_id>/<string:join_id>/<string:user>', methods=['POST'])
 @login_required
 def autojoin(leave_id, join_id, user):
     # LEAVE
@@ -427,7 +432,10 @@ def autojoin(leave_id, join_id, user):
     attempted_username = user
     if attempted_username == username:
         for c in event.cars:
-            incar = ( c.username == username ) or ( username in c.riders )
+            rider_names = [ person.username for person in c.riders ]
+            incar = ( c.username == username ) or ( username in rider_names )
+            if incar:
+                break
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
             rider = Rider( username, name, join_id, slack, email, acc_type )
             car.current_capacity += 1
@@ -440,12 +448,12 @@ def autojoin(leave_id, join_id, user):
 def notify_opening(event_id, driver_name, car_id):
     event = Event.query.get(event_id)
     event_name = event.name
-    need_ride_car = Car.query.filter( Car.event_id == event_id and Car.username == '∞' ).first()
+    need_ride_car = Car.query.filter( Car.event_id == event_id and Car.username == inf ).first()
     need_ride = Rider.query.filter( Rider.car_id == need_ride_car.id ).all()
     for rider in need_ride:
         if rider is not None:
             name = rider.name
-            url = "https://rideboard.csh.rit.edu/autojoin/"
+            url = app.config['SERVER_NAME']+"/autojoin/"
             url += str(need_ride_car.id) + "/" + str(car_id)  + "/" + rider.username
             try:
                 client.chat_postMessage(channel=rider.slack,text="Hello " + name +

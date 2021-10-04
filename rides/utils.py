@@ -5,7 +5,6 @@ from flask import session
 def csh_user_auth(func):
     @wraps(func)
     def wrapped_function(*args, **kwargs):
-        print(session["userinfo"])
         uid = str(session["userinfo"].get("preferred_username", ""))
         last = str(session["userinfo"].get("family_name", ""))
         first = str(session["userinfo"].get("given_name", ""))
