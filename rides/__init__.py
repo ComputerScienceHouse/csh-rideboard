@@ -344,10 +344,6 @@ def editcarform(carid):
 @login_required
 def join_ride(car_id, user):
     username = current_user.id
-    name = f"{current_user.firstname} {current_user.lastname}"
-    slack = current_user.slack
-    email = current_user.email
-    acc_type = current_user.acc_type
     car = Car.query.get(car_id)
     event = Event.query.get(car.event_id)
     attempted_username = user
@@ -358,7 +354,7 @@ def join_ride(car_id, user):
             if incar:
                 break
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider( username, name, car_id, slack, email, acc_type )
+            rider = Rider( username, car_id )
             car.current_capacity += 1
             db.session.add(rider)
             db.session.add(car)
@@ -373,9 +369,9 @@ def delete_car(car_id):
     username = current_user.id
     car = Car.query.get(car_id)
     if car.username == username and car is not None:
-        for peeps in car.riders:
-            # TODO: Add peeps to need ride.
-            db.session.delete(peeps)
+        for rider in car.riders:
+            need_ride = Car.query.filter( Car.event_id == car.event_id, Car.name == "Need a ride" ).first()
+            rider.car_id = need_ride.id
         db.session.delete(car)
         db.session.commit()
     return redirect(url_for('index'))
@@ -407,7 +403,8 @@ def leave_ride(car_id, rider_username):
     if rider.username == username and rider is not None:
         db.session.delete(rider)
         car.current_capacity -= 1
-        notify_opening( car.event_id, car.name, car_id )
+        if not car.name == "Need a Ride":
+            notify_opening( car.event_id, car.name, car_id )
         db.session.add(car)
         db.session.commit()
     return redirect(url_for('index'))
@@ -441,7 +438,7 @@ def autojoin(leave_id, join_id, user):
             if incar:
                 break
         if (car.current_capacity < car.max_capacity or car.max_capacity == 0) and not incar:
-            rider = Rider( username, name, join_id, slack, email, acc_type )
+            rider = Rider( username, name, join_id )
             car.current_capacity += 1
             db.session.add(rider)
             db.session.add(car)
@@ -456,17 +453,17 @@ def notify_opening(event_id, driver_name, car_id):
     need_ride = Rider.query.filter( Rider.car_id == need_ride_car.id ).all()
     for rider in need_ride:
         if rider is not None:
-            name = rider.name
+            name = f"{rider.user.firstname} {rider.user.lastname}"
             url = f"http://{app.config['SERVER_NAME']}/autojoin/"
             url += f"{need_ride_car.id}/{car_id}/{rider.username}"
             try:
-                client.chat_postMessage(channel = rider.slack, text = 
+                client.chat_postMessage(channel = rider.user.slack, text = 
                     f"Hello {name},\n\n" +
                     f"There is a ride available for {event_name}!\n" +
                     f"Driver of the available car is {driver_name}.\n" +
                     f"Go to {url} to claim your spot!" )
             except SlackApiError:
-                send_opening_mail( rider.email, name, event_name, driver_name, url, rider.acc_type )
+                send_opening_mail( rider.user.email, name, event_name, driver_name, url, rider.user.acc_type )
 
 # Send email to user that there is an opening
 def send_opening_mail(email, rider_name, event_name, driver_name, url, acc_type ) -> None:

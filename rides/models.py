@@ -15,6 +15,7 @@ class User(db.Model):
     slack = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     acc_type = db.Column(db.String, nullable=False)
+    riders = db.relationship('Rider', back_populates='user')
 
     def __init__(self, uid, firstname, lastname, picture, slack, email, acc_type):
         self.id = uid
@@ -97,20 +98,14 @@ class Rider(db.Model):
     __tablename__ = 'riders'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(80), nullable=False)
-    name = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(80), db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship("User", back_populates="riders")
     car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
-    slack = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, nullable=False)
-    acc_type = db.Column(db.String, nullable=False)
 
-    def __init__(self, username, name, car_id, slack, email, acc_type):
+    def __init__(self, username, car_id):
         self.username = username
-        self.name = name
         self.car_id = car_id
-        self.slack = slack
-        self.email = email
-        self.acc_type = acc_type
+
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
