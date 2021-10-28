@@ -25,3 +25,7 @@ GOOGLE_CLIENT_SECRET = env.get('GOOGLE_CLIENT_SECRET', '------')
 
 LDAP_BIND_DN = env.get("LDAP_BIND_DN", default="cn=rides,ou=Apps,dc=csh,dc=rit,dc=edu")
 LDAP_BIND_PASS = env.get("LDAP_BIND_PASS", default=None)
+
+# Google moment
+PREFERRED_URL_SCHEME = env.get('PREFERRED_URL_SCHEME',
+                               'https' if 'csh.rit.edu' in SERVER_NAME else 'http')
