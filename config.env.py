@@ -29,3 +29,7 @@ LDAP_BIND_PASS = env.get("LDAP_BIND_PASS", default=None)
 # Google moment
 PREFERRED_URL_SCHEME = env.get('PREFERRED_URL_SCHEME',
                                'https' if 'csh.rit.edu' in SERVER_NAME else 'http')
+
+PINGS_JOIN_ROUTE = env.get("PINGS_JOIN_ROUTE", "")
+PINGS_LEAVE_ROUTE = env.get("PINGS_LEAVE_ROUTE", "")
+PINGS_TOKEN = env.get("PINGS_TOKEN", "")
