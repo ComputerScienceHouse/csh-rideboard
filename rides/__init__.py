@@ -34,7 +34,7 @@ CSH_AUTH = ProviderConfiguration(issuer=app.config["OIDC_ISSUER"],
 GOOGLE_AUTH = ProviderConfiguration(issuer=app.config["GOOGLE_ISSUER"],
                                     client_metadata=ClientMetadata(
                                         app.config["GOOGLE_CLIENT_ID"],
-                                        app.config["GOOGLE_CLIENT_SECRET"]), 
+                                        app.config["GOOGLE_CLIENT_SECRET"]),
                                     auth_request_params={'scope': ['email', 'profile', 'openid']})
 auth = OIDCAuthentication({'default': CSH_AUTH,
                            'google': GOOGLE_AUTH},
@@ -343,6 +343,7 @@ def join_ride(car_id, user):
             db.session.commit()
             u = User.query.get(username)
             user_str = f"{u.firstname} {u.lastname}"
+            # if the first character if the username is a digit, it is not a csh user
             if not u[0].isdigit():
                 user_str += f"(@{username})"
             send_join(car.username, user_str, car.name)
@@ -394,6 +395,7 @@ def leave_ride(car_id, rider_username):
         db.session.commit()
         u = User.query.get(username)
         user_str = f"{u.firstname} {u.lastname}"
+        # if the first character if the username is a digit, it is not a csh user
         if not u[0].isdigit():
             user_str += f"(@{username})"
         send_leave(car.username, user_str, car.name)
