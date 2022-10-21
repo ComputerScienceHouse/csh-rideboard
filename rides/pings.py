@@ -2,10 +2,11 @@ import requests
 from rides import app
 
 def send_join(to, join, ride):
-    pings_enabled = app.config.get["PINGS_ENABLED"]
+    if not app.config.get["PINGS_ENABLED"]:
+        return
     pings_join_route = app.config.get["PINGS_JOIN_ROUTE_UUID"]
     pings_token = app.config.get["PINGS_TOKEN"]
-    if pings_join_route is None or pings_join_route == "" or pings_token is None or pings_token == "" or not pings_enabled:
+    if not pings_join_route or not pings_token:
         print("Pings is not configured")
         return
     try:
@@ -24,10 +25,11 @@ def send_join(to, join, ride):
         print(e)
 
 def send_leave(to, leave, ride):
-    pings_enabled = app.config.get["PINGS_ENABLED"]
+    if not app.config.get["PINGS_ENABLED"]:
+        return
     pings_leave_route = app.config.get["PINGS_LEAVE_ROUTE_UUID"]
     pings_token = app.config.get("PINGS_TOKEN")
-    if pings_leave_route is None or pings_leave_route == "" or pings_token is None or pings_token == "" or not pings_enabled:
+    if not pings_leave_route or not pings_token:
         print("Pings is not configured")
         return
     try:
