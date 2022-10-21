@@ -34,7 +34,7 @@ CSH_AUTH = ProviderConfiguration(issuer=app.config["OIDC_ISSUER"],
 GOOGLE_AUTH = ProviderConfiguration(issuer=app.config["GOOGLE_ISSUER"],
                                     client_metadata=ClientMetadata(
                                         app.config["GOOGLE_CLIENT_ID"],
-                                        app.config["GOOGLE_CLIENT_SECRET"]), 
+                                        app.config["GOOGLE_CLIENT_SECRET"]),
                                     auth_request_params={'scope': ['email', 'profile', 'openid']})
 auth = OIDCAuthentication({'default': CSH_AUTH,
                            'google': GOOGLE_AUTH},
@@ -54,6 +54,7 @@ commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').r
 from rides.models import Event, Rider, Car, User
 from rides.forms import EventForm, CarForm
 from .utils import csh_user_auth, google_user_auth
+from .pings import send_join, send_leave
 
 # time setup for the server side time
 eastern = pytz.timezone('US/Eastern')
@@ -340,6 +341,12 @@ def join_ride(car_id, user):
             db.session.add(rider)
             db.session.add(car)
             db.session.commit()
+            u = User.query.get(username)
+            user_str = f"{u.firstname} {u.lastname}"
+            # if the first character if the username is a digit, it is not a csh user
+            if not u[0].isdigit():
+                user_str += f" (@{username})"
+            send_join(car.username, user_str, car.name)
     return redirect(url_for('index'))
 
 
@@ -386,4 +393,10 @@ def leave_ride(car_id, rider_username):
         car.current_capacity -= 1
         db.session.add(car)
         db.session.commit()
+        u = User.query.get(username)
+        user_str = f"{u.firstname} {u.lastname}"
+        # if the first character if the username is a digit, it is not a csh user
+        if not u[0].isdigit():
+            user_str += f" (@{username})"
+        send_leave(car.username, user_str, car.name)
     return redirect(url_for('index'))
