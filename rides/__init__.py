@@ -344,7 +344,7 @@ def join_ride(car_id, user):
             u = User.query.get(username)
             user_str = f"{u.firstname} {u.lastname}"
             # if the first character if the username is a digit, it is not a csh user
-            if not u[0].isdigit():
+            if not u.id[0].isdigit():
                 user_str += f" (@{username})"
             send_join(car.username, user_str, car.name)
     return redirect(url_for('index'))
@@ -396,7 +396,7 @@ def leave_ride(car_id, rider_username):
         u = User.query.get(username)
         user_str = f"{u.firstname} {u.lastname}"
         # if the first character if the username is a digit, it is not a csh user
-        if not u[0].isdigit():
+        if not u.id[0].isdigit():
             user_str += f" (@{username})"
         send_leave(car.username, user_str, car.name)
     return redirect(url_for('index'))
