@@ -28,7 +28,7 @@ def send_leave(to, leave, ride):
     if not app.config["PINGS_ENABLED"]:
         return
     pings_leave_route = app.config["PINGS_LEAVE_ROUTE_UUID"]
-    pings_token = app.config[]"PINGS_TOKEN"]
+    pings_token = app.config["PINGS_TOKEN"]
     if not pings_leave_route or not pings_token:
         print("Pings is not configured")
         return
