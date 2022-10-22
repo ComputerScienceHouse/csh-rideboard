@@ -319,7 +319,7 @@ def editcarform(carid):
 
 
 # Join a ride
-@app.route('/join/<string:car_id>/<user>', methods=["GET"])
+@app.route('/join/<string:car_id>/<user>', methods=["POST"])
 @login_required
 def join_ride(car_id, user):
     incar = False
@@ -351,7 +351,7 @@ def join_ride(car_id, user):
 
 
 # Delete Car
-@app.route('/delete/car/<string:car_id>', methods=["GET"])
+@app.route('/delete/car/<string:car_id>', methods=["POST"])
 @login_required
 def delete_car(car_id):
     username = current_user.id
@@ -366,7 +366,7 @@ def delete_car(car_id):
 
 
 # Delete Event
-@app.route('/delete/ride/<string:event_id>', methods=["GET"])
+@app.route('/delete/ride/<string:event_id>', methods=["POST"])
 @login_required
 def delete_ride(event_id):
     username = current_user.id
@@ -382,7 +382,7 @@ def delete_ride(event_id):
 
 
 # Leave a ride
-@app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["GET"])
+@app.route('/delete/rider/<string:car_id>/<string:rider_username>', methods=["POST"])
 @login_required
 def leave_ride(car_id, rider_username):
     username = current_user.id

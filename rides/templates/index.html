@@ -38,8 +38,9 @@
                   {% if current_user.is_authenticated %}
                   {% if event.id not in rider_instance %}
                   {% if ((car.current_capacity < car.max_capacity) or (car.max_capacity == 0)) %}
-                  <a class="btn btn-primary btn-sm" href="/join/{{car.id}}/{{current_user.id}}" id="join::{{car.id}}"
-                     type="button">Join Ride</a>
+                  <form action="/join/{{car.id}}/{{current_user.id}}" method="post">
+                    <button class="btn btn-primary btn-sm" name="delete_db" value="{{db.id}}" id="db::{{db.id}}">Join Ride</button>
+                  </form>
                   {% endif %}
                   {% endif %}
                   {% for person in car.riders %}
@@ -61,8 +62,8 @@
                         <div class="modal-footer">
                           <!-- TODO: Probably should not be using form and buttons and rather be using input. -->
                           <!-- <a class="btn btn-primary btn-sm" href="/delete/rider/{{car.id}}/{{current_user.id}}" id="delete::rider::{{car.id}}" type="button btn-danger">Yes</a> -->
-                          <form method="get" action="/delete/rider/{{car.id}}/{{current_user.id}}" id="delete::rider::{{car.id}}">
-                          <button type="submit" class="btn btn-danger">Yes</button>
+                          <form method="post" action="/delete/rider/{{car.id}}/{{current_user.id}}" id="delete::rider::{{car.id}}">
+                            <button type="submit" class="btn btn-danger">Yes</button>
                           </form>
                           <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
                           </button>
@@ -93,7 +94,7 @@
                           </p>
                         </div>
                         <div class="modal-footer">
-                          <form method="get" action="/delete/car/{{ car.id }}" id="delete::car::{{ car.id }}">
+                          <form method="post" action="/delete/car/{{ car.id }}" id="delete::car::{{ car.id }}">
                             <button type="submit" class="btn btn-danger">Yes</button>
                           </form>
                           <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
@@ -140,7 +141,7 @@
             <!-- If you already created a ride or are in one, you cannot create one.-->
             {% if current_user.is_authenticated %}{% if event.id not in rider_instance %}
             <hr class="my-3">
-            <form method="get" action="/carform/{{event.id}}" id="ride">
+            <form method="post" action="/carform/{{event.id}}" id="ride">
               <button class="btn btn-success btn-sm btn-block my-2" type="submit">Create Ride</button>
             </form>
             {% endif %}{% endif %}
@@ -168,7 +169,7 @@
                           <p>Are you sure you want to delete this event?</p>
                         </div>
                         <div class="modal-footer">
-                          <form method="get" action="/delete/ride/{{event.id}}" id="delete::ride::{{event.id}}">
+                          <form method="post" action="/delete/ride/{{event.id}}" id="delete::ride::{{event.id}}">
                             <button type="submit" class="btn btn-danger">Yes</button>
                           </form>
                           <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
