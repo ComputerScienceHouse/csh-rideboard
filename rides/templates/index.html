@@ -39,6 +39,7 @@
                   {% if event.id not in rider_instance %}
                   {% if ((car.current_capacity < car.max_capacity) or (car.max_capacity == 0)) %}
                   <form action="/join/{{car.id}}/{{current_user.id}}" method="post">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                       <input type="submit" value="Join Ride" class="btn btn-primary btn-sm" />
                   </form>
                   {% endif %}
@@ -63,6 +64,7 @@
                           <!-- TODO: Probably should not be using form and buttons and rather be using input. -->
                           <!-- <a class="btn btn-primary btn-sm" href="/delete/rider/{{car.id}}/{{current_user.id}}" id="delete::rider::{{car.id}}" type="button btn-danger">Yes</a> -->
                           <form method="post" action="/delete/rider/{{car.id}}/{{current_user.id}}" id="delete::rider::{{car.id}}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-danger">Yes</button>
                           </form>
                           <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
@@ -95,6 +97,7 @@
                         </div>
                         <div class="modal-footer">
                           <form method="post" action="/delete/car/{{ car.id }}" id="delete::car::{{ car.id }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-danger">Yes</button>
                           </form>
                           <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No
@@ -142,6 +145,7 @@
             {% if current_user.is_authenticated %}{% if event.id not in rider_instance %}
             <hr class="my-3">
             <form method="post" action="/carform/{{event.id}}" id="ride">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button class="btn btn-success btn-sm btn-block my-2" type="submit">Create Ride</button>
             </form>
             {% endif %}{% endif %}
@@ -170,6 +174,7 @@
                         </div>
                         <div class="modal-footer">
                           <form method="post" action="/delete/ride/{{event.id}}" id="delete::ride::{{event.id}}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-danger">Yes</button>
                           </form>
                           <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">No

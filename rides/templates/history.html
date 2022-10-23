@@ -107,6 +107,7 @@
                         </div>
                         <div class="modal-footer">
                           <form method="post" action="/delete/ride/{{event.id}}" id="delete::ride::{{event.id}}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-danger">Yes</button>
                           </form>
                           <button type="button" class="btn btn-success" data-dismiss="modal"
