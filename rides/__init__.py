@@ -343,10 +343,13 @@ def join_ride(car_id, user):
             db.session.commit()
             u = User.query.get(username)
             user_str = f"{u.firstname} {u.lastname}"
+            event = Event.query.get(car.event_id)
             # if the first character if the username is a digit, it is not a csh user
             if not u.id[0].isdigit():
                 user_str += f" (@{username})"
-            send_join(car.username, user_str, car.name)
+            if user_str[0] == "@":
+                user_str = user_str[1:]
+            send_join(car.username, user_str, event.name)
     return redirect(url_for('index'))
 
 
@@ -395,8 +398,11 @@ def leave_ride(car_id, rider_username):
         db.session.commit()
         u = User.query.get(username)
         user_str = f"{u.firstname} {u.lastname}"
+        event = Event.query.get(car.event_id)
         # if the first character if the username is a digit, it is not a csh user
         if not u.id[0].isdigit():
             user_str += f" (@{username})"
-        send_leave(car.username, user_str, car.name)
+        if user_str[0] == "@":
+            user_str = user_str[1:]
+        send_leave(car.username, user_str, event.name)
     return redirect(url_for('index'))
