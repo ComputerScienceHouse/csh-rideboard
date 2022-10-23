@@ -39,7 +39,7 @@
                   {% if event.id not in rider_instance %}
                   {% if ((car.current_capacity < car.max_capacity) or (car.max_capacity == 0)) %}
                   <form action="/join/{{car.id}}/{{current_user.id}}" method="post">
-                    <button class="btn btn-primary btn-sm" name="delete_db" value="{{db.id}}" id="db::{{db.id}}">Join Ride</button>
+                      <input type="submit" value="Join Ride" class="btn btn-primary btn-sm" />
                   </form>
                   {% endif %}
                   {% endif %}
