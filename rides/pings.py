@@ -14,7 +14,7 @@ def send_join(to, join, ride):
             f"https://pings.csh.rit.edu/service/route/{pings_join_route}/ping",
             json = {
                 "username": to,
-                "body": f"@{join} has joined \"{ride}\""
+                "body": f"{join} has joined \"{ride}\""
             },
             headers = {
                 "Authorization": f"Bearer {pings_token}"
@@ -37,7 +37,7 @@ def send_leave(to, leave, ride):
             f"https://pings.csh.rit.edu/service/route/{pings_leave_route}/ping",
             json = {
                 "username": to,
-                "body": f"@{leave} has left \"{ride}\""
+                "body": f"{leave} has left \"{ride}\""
             },
             headers = {
                 "Authorization": f"Bearer {pings_token}"
